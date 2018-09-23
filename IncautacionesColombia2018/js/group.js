@@ -165,6 +165,9 @@ shuffle(colors);
       .style("font-size",11)
       .attr("y", 10);
   
+
+  console.log("AAAAAA    "+keys)
+
   var legend = svg.append( "g" )
       .attr( "font-family", "sans-serif" )
       .attr( "font-size", 12 )
