@@ -166,7 +166,7 @@ shuffle(colors);
   g.append( "g" )
       .attr( "class", "axis" )
       .attr( "transform", "translate(0," + iheight + ")" )
-      .call( d3.axisBottom( x0 ) );
+      .call( d3.axisBottom( x0 ) ).ticks(null, "s");
   
 
   console.log("adsfasfadsfadsf   "+y( y.ticks().pop() ) + 0.5)
@@ -174,10 +174,10 @@ shuffle(colors);
 
   g.append( "g" )
       .attr( "class", "axis" )
-      .call( d3.axisLeft( y ).ticks( null, ".0f" ) )
+      .call( d3.axisLeft( y ).ticks( null, "s" ) )
     .append( "text" )
       .attr( "x", 2 )
-      .attr( "y", 0.5 )
+      /*.attr( "y", y( y.ticks().pop() ) + 0.5 )*/
       .attr( "dy", "0.32em" )
       .attr( "fill", "#000" )
       .attr( "font-weight", "bold" )
