@@ -12,6 +12,7 @@ cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijo
   };
 } );
 
+console.log("pepeeeeee")
 console.log(cantidad_incautaciones_mes)
 
 
