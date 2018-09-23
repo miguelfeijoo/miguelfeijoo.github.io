@@ -1,8 +1,4 @@
-{  
-
-d3 = require("d3@5", "d3-svg-legend")
-
-var cantidad_incautaciones_mes=d3.csv('recursos/data//CANTIDAD_INCAUTADA.csv', function ( d ) {
+cantidad_incautaciones_mes=d3.csv('recursos/data//CANTIDAD_INCAUTADA.csv', function ( d ) {
   return {
     'MES': d[ 'MES' ],
     'BASE DE COCA': +d[ 'BASE DE COCA' ],
@@ -17,7 +13,6 @@ var cantidad_incautaciones_mes=d3.csv('recursos/data//CANTIDAD_INCAUTADA.csv', f
 
 console.log(cantidad_incautaciones_mes);
 
-}
 
 /*
   var svg = d3.select( DOM.svg( width, 500 ) ),
