@@ -166,10 +166,10 @@ shuffle(colors);
       .attr("y", 10);
   
 
-  console.log("AAAAAA    "+keys.then(function(data){
+  keys.then(function(data){
 
-      data
-  }))
+     console.log("AAAAAA    "+ data)
+  })
 
   var legend = svg.append( "g" )
       .attr( "font-family", "sans-serif" )
