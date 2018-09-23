@@ -1,4 +1,17 @@
    
+  cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/CANTIDAD_INCAUTADA.csv', function ( d ) {
+  return {
+    'MES': d[ 'MES' ],
+    'BASE DE COCA': +d[ 'BASE DE COCA' ],
+    'BASUCO': +d[ 'BASUCO' ],
+    'COCAINA': d[ 'COCAINA' ],
+    'HEROINA': +d[ 'HEROINA' ],
+    'MARIHUANA': +d[ 'MARIHUANA' ]
+    
+  };
+} );
+
+
   var svg = d3.select("#d3_01_grafico"),
     margin = { top: 50, right: 30, bottom: 30, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
