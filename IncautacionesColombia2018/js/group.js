@@ -12,7 +12,7 @@ var cantidad_incautaciones_mes=d3.csv('data/CANTIDAD_INCAUTADA.csv', function ( 
   };
 } );
 
-console.log("pepeeeeee    " +cantidad_incautaciones_mes)
+console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(d=>d))
 
 
 var svg = d3.select( 'body' ),
