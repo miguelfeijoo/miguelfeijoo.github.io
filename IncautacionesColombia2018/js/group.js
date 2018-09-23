@@ -13,7 +13,7 @@ var cantidad_incautaciones_mes=d3.csv('data/CANTIDAD_INCAUTADA.csv', function ( 
 } );
 
 console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
-    console.log('all is complted', data.columns);
+    console.log('all is complted', data.columns.slice(1));
 }))
 
 
@@ -52,7 +52,7 @@ var svg = d3.select( 'body' ),
                             .style("fill","none")
                             .style('stroke','black');
      
-  var keys = cantidad_incautaciones_mes.then(function(data) {data.columns.slice( 1 )});
+  var keys = cantidad_incautaciones_mes.then(function(data) {data.columns.slice(1)});
 
   keys.then(function(data){
 
