@@ -185,5 +185,5 @@ shuffle(colors);
     .attr( "dy", "0.5em" )
     .text( d => d ).style("font-size","8px").style('font-weight',"bold");
   
-  return svg.node();
+  return svg.node()
 }
