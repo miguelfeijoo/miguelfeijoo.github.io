@@ -166,18 +166,19 @@ shuffle(colors);
   g.append( "g" )
       .attr( "class", "axis" )
       .attr( "transform", "translate(0," + iheight + ")" )
-      .call( d3.axisBottom( x0 ).ticks(null, "s") );
+      .call( d3.axisBottom( x0 ) );
   
 
-  console.log("adsfasfadsfadsf   "+y( y.ticks().pop() ) + 0.5)
+  console.log("ticks   "+y.ticks().pop())
+  console.log("adsfasfadsfadsf   "+y( 35000000 ) + 0.5)
 
 
   g.append( "g" )
       .attr( "class", "axis" )
-      .call( d3.axisLeft( y ).ticks( null, "s" ) )
+      .call( d3.axisLeft( y ).ticks( null, ".0f" ) )
     .append( "text" )
       .attr( "x", 2 )
-      /*.attr( "y", y( y.ticks().pop() ) + 0.5 )*/
+      .attr( "y", y( y.ticks().pop() ) + 0.5 )
       .attr( "dy", "0.32em" )
       .attr( "fill", "#000" )
       .attr( "font-weight", "bold" )
