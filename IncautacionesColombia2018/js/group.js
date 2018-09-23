@@ -16,11 +16,28 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
     console.log('all is completed', data.columns.slice(1));
 }))
 
+/*
 var svg = d3.select( "#viz1" ),
     margin = { top: 50, right: 30, bottom: 30, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
     g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
+
+*/
+
+
+var width = WIDTH,
+    height = HEIGHT,
+    margin = {top: 60, right: 80, bottom: 50, left: 80},
+    svg = d3.select("#viz1")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height),    
+    g = svg3.append("g").attr("transform", "translate(" + margin.left + "," + margin3.top + ")"),
+    iwidth = d3.scaleLinear().range([0,width - margin.left -margin.right]),
+    iheight = d3.scaleLinear().range([height -margin.top - margin.bottom,0]),
+
+
   
   let tooltip = g.append("text")
         .style("font-size", "10pt")
