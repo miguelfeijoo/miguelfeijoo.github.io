@@ -1,6 +1,6 @@
 function first(){
 //d3 = require("d3", "d3-svg-legend");
-cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/CANTIDAD_INCAUTADA.csv', function ( d ) {
+cantidad_incautaciones_mes=d3.csv('data/CANTIDAD_INCAUTADA.csv', function ( d ) {
   return {
     'MES': d[ 'MES' ],
     'BASE DE COCA': +d[ 'BASE DE COCA' ],
