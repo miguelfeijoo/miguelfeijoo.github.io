@@ -61,6 +61,9 @@ var width = WIDTH,
   var y = d3.scaleLinear()
     .rangeRound( [ iheight, 0 ] );
 
+  console.log("rango  "+y.range()) 
+
+
   var rectangle = svg.append("rect").attr("id","rectangle")
                             .attr("x", iwidth-380)
                             .attr("y", iheight-400)
@@ -90,7 +93,10 @@ shuffle(colors);
   x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
   y.domain( [ 0, d3.max( cantidad_incautaciones_mes.then(function(data) {data}), function(d) { return d3.max( keys, function( key ) { return d[ key ]; } ); } ) ] ).nice();
-  
+ 
+  console.log("dominio   "+y.domain())
+
+
   g.append( "g" )
     .selectAll( "g" )
     .data( cantidad_incautaciones_mes.then(function(data) {data}) )
