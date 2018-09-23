@@ -166,7 +166,7 @@ shuffle(colors);
   g.append( "g" )
       .attr( "class", "axis" )
       .attr( "transform", "translate(0," + iheight + ")" )
-      .call( d3.axisBottom( x0 ) ).ticks(null, "s");
+      .call( d3.axisBottom( x0 ).ticks(null, "s") );
   
 
   console.log("adsfasfadsfadsf   "+y( y.ticks().pop() ) + 0.5)
