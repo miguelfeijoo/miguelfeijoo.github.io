@@ -54,10 +54,6 @@ var svg = d3.select( 'body' ),
      
   var keys = cantidad_incautaciones_mes.then(function(data) {data.columns.slice(1)});
 
-  keys.then(function(data){
-
-     console.log("pepepepepepepepep    "+ data)
-  })
 
 
   
@@ -178,6 +174,7 @@ shuffle(colors);
      console.log("AAAAAA    "+ data)
   })
 
+/*
   var legend = svg.append( "g" )
       .attr( "font-family", "sans-serif" )
       .attr( "font-size", 12 )
@@ -196,6 +193,8 @@ shuffle(colors);
     .attr( "y", 25 )
     .attr( "dy", "0.5em" )
     .text( d => d ).style("font-size","8px").style('font-weight',"bold");
+
+  */
   
   return svg.node();
 }
