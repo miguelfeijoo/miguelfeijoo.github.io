@@ -35,7 +35,7 @@ var width = WIDTH,
             .attr("height", height),    
     g = svg3.append("g").attr("transform", "translate(" + margin.left + "," + margin3.top + ")"),
     iwidth = d3.scaleLinear().range([0,width - margin.left -margin.right]),
-    iheight = d3.scaleLinear().range([height -margin.top - margin.bottom,0]),
+    iheight = d3.scaleLinear().range([height -margin.top - margin.bottom,0]);
 
 
   
