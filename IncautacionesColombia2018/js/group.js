@@ -67,13 +67,13 @@ shuffle(colors);
   
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
-  x0.domain( cantidad_incautaciones_mes.map( d => d[ 'MES' ] ) );
+  x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} );
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
-  y.domain( [ 0, d3.max( cantidad_incautaciones_mes, function(d) { return d3.max( keys, function( key ) { return d[ key ]; } ); } ) ] ).nice();
+  y.domain( [ 0, d3.max( cantidad_incautaciones_mes.then(function(data) {data}), function(d) { return d3.max( keys, function( key ) { return d[ key ]; } ); } ) ] ).nice();
   
   g.append( "g" )
     .selectAll( "g" )
-    .data( cantidad_incautaciones_mes )
+    .data( cantidad_incautaciones_mes.then(function(data) {data}) )
     .enter().append( "g" )
       .attr( "transform", d => "translate(" + x0( d[ 'MES' ] ) + ",0)" )
     .selectAll( "rect" )
@@ -110,7 +110,7 @@ shuffle(colors);
           .y( dj => y( dj[ d.key ] ) );
     
         g.append( "path" )
-          .datum( cantidad_incautaciones_mes )
+          .datum( cantidad_incautaciones_mes.then(function(data) {data}) )
           .attr( "class", "line" )
           .attr( "fill", "none" )
           .attr( "stroke", 'black' )
@@ -118,7 +118,7 @@ shuffle(colors);
           .attr( "d", line );
          
         g.selectAll( "circle" )
-          .data( cantidad_incautaciones_mes ).enter()   
+          .data( cantidad_incautaciones_mes.then(function(data) {data}) ).enter()   
           .append( "circle" )
             .attr( "cx", dj => x0( dj[ 'MES' ] ) + x1( d.key ) + ( x1.bandwidth() / 2 ) )
             .attr( "cy",  dj => y( dj[ d.key ] ) )
