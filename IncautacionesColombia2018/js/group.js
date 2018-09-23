@@ -13,11 +13,11 @@ var cantidad_incautaciones_mes=d3.csv('data/CANTIDAD_INCAUTADA.csv', function ( 
 } );
 
 console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
-    console.log('all is complted', data.columns.slice(1));
+    console.log('all is completed', data.columns.slice(1));
 }))
 
 
-var svg = d3.select( 'body' ),
+var svg = d3.select( DOM.svg( width, 500 ) ),
     margin = { top: 50, right: 30, bottom: 30, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
