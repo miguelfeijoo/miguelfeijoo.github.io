@@ -177,7 +177,7 @@ shuffle(colors);
       .call( d3.axisLeft( y ).ticks( null, ".0f" ) )
     .append( "text" )
       .attr( "x", 2 )
-      .attr( "y", y( y.ticks().pop() ) + 0.5 )
+      .attr( "y", 0.5 )
       .attr( "dy", "0.32em" )
       .attr( "fill", "#000" )
       .attr( "font-weight", "bold" )
