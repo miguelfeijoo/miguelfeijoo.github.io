@@ -33,7 +33,7 @@ var width = WIDTH,
             .append("svg")
             .attr("width", width)
             .attr("height", height),    
-    g = svg3.append("g").attr("transform", "translate(" + margin.left + "," + margin3.top + ")"),
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
     iwidth = d3.scaleLinear().range([0,width - margin.left -margin.right]),
     iheight = d3.scaleLinear().range([height -margin.top - margin.bottom,0]);
 
