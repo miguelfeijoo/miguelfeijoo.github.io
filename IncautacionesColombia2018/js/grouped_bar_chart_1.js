@@ -9,10 +9,9 @@
     'MARIHUANA': +d[ 'MARIHUANA' ]
     
   };
-} );
+} )
 
-
-  var svg = d3.select("#d3_01_grafico"),
+  var svg = d3.select( DOM.svg( width, 500 ) ),
     margin = { top: 50, right: 30, bottom: 30, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
@@ -45,11 +44,11 @@
                             .attr("width", 430)
                             .attr("height", 30)
                             .style("fill","none")
-                            .style('stroke','black')
+                            .style('stroke','black');
      
   var keys = cantidad_incautaciones_mes.columns.slice( 1 );
   
-  var colors=["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"]
+  var colors=["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"];
 
 var n = 6;
 function shuffle(a) {
@@ -58,7 +57,7 @@ function shuffle(a) {
         [a[i - 1], a[j]] = [a[j], a[i - 1]];
     }
 }
-shuffle(colors)
+shuffle(colors);
   
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
@@ -172,7 +171,7 @@ shuffle(colors)
   legend.append( "circle" )
     .attr( "class", "legend" )
     .attr("cx",( d, i ) => iwidth - ( i * 150 - 25 )).attr("cy",25).attr("r",10)
-    .attr( "fill", z )
+    .attr( "fill", z );
   
   legend.append( "text" )
     .attr( "x", ( d, i ) => iwidth - ( i * 150 -10) )
