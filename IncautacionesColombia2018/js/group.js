@@ -167,11 +167,7 @@ shuffle(colors);
       .style("font-size",11)
       .attr("y", 10);
   
-
-  data.columns.slice(1).then(function(data){
-
-     console.log("AAAAAA    "+ data)
-  })
+ 
 
 
   var legend = svg.append( "g" )
