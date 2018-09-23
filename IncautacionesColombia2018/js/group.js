@@ -34,10 +34,11 @@ var width = WIDTH,
             .attr("width", width)
             .attr("height", height),    
     g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
-    iwidth = d3.scaleLinear().range([0,width - margin.left -margin.right]),
-    iheight = d3.scaleLinear().range([height -margin.top - margin.bottom,0]);
+    iwidth = +svg.attr( "width" ) - margin.left - margin.right,
+    iheight = +svg.attr( "height" ) - margin.top - margin.bottom;
 
-
+    console.log("iwidth:   "+iwidth)
+    console.log("iheight:   "+iheight)
   
   let tooltip = g.append("text")
         .style("font-size", "10pt")
