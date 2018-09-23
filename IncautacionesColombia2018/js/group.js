@@ -1,4 +1,4 @@
-{
+function first(){
 d3 = require("d3", "d3-svg-legend");
 cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/CANTIDAD_INCAUTADA.csv', function ( d ) {
   return {
@@ -13,11 +13,7 @@ cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijo
 } );
 
 
-console.log(cantidad_incautaciones_mes);
-
-
-
-  var svg = d3.select( DOM.svg( width, 500 ) ),
+var svg = d3.select( DOM.svg( width, 500 ) ),
     margin = { top: 50, right: 30, bottom: 30, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
@@ -185,5 +181,7 @@ shuffle(colors);
     .attr( "dy", "0.5em" )
     .text( d => d ).style("font-size","8px").style('font-weight',"bold");
   
-  return svg.node()
+  return svg.node();
 }
+
+first();
