@@ -15,7 +15,7 @@ cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijo
 console.log(cantidad_incautaciones_mes)
 
 
-var svg = d3.select( '#d3_01_grafico' ),
+var svg = d3.select( 'body' ),
     margin = { top: 50, right: 30, bottom: 30, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
