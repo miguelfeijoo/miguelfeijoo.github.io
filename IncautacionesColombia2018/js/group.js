@@ -16,7 +16,7 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
     console.log('all is completed', data.columns.slice(1));
 }))
 
-var svg = d3.select( svg ),
+var svg = d3.select( DOM.svg( width, 500 ) ),
     margin = { top: 50, right: 30, bottom: 30, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
