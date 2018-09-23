@@ -169,9 +169,8 @@ shuffle(colors);
       .attr( "font-family", "sans-serif" )
       .attr( "font-size", 12 )
       .attr( "text-anchor", "end" )
-    .selectAll( "g" )
-    .data( keys.slice().reverse() )
-    .enter().append( "g" )
+      .selectAll( "g" )
+      .data( keys.then(function(data) {data.slice().reverse() }))    .enter().append( "g" )
       .attr( "transform", ( d, i ) => "translate(" + i*70 + ",10)" );
   
   legend.append( "circle" )
