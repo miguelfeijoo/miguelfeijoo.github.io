@@ -1,5 +1,5 @@
    
-  var cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/CANTIDAD_INCAUTADA.csv', function ( d ) {
+  var cantidad_incautaciones_mes=d3.csv('data/CANTIDAD_INCAUTADA.csv', function ( d ) {
   return {
     'MES': d[ 'MES' ],
     'BASE DE COCA': +d[ 'BASE DE COCA' ],
@@ -10,6 +10,8 @@
     
   };
 } )
+
+  console.log(cantidad_incautaciones_mes)
 
   var svg = d3.select( DOM.svg( width, 500 ) ),
     margin = { top: 50, right: 30, bottom: 30, left: 80 },
