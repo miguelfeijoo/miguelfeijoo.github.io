@@ -14,6 +14,7 @@ cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijo
 
 console.log(cantidad_incautaciones_mes);
 
+/*
   var svg = d3.select( DOM.svg( width, 500 ) ),
     margin = { top: 50, right: 30, bottom: 30, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
@@ -183,3 +184,4 @@ shuffle(colors);
     .text( d => d ).style("font-size","8px").style('font-weight',"bold");
   
   return svg.node();
+  */
