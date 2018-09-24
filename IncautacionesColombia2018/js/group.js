@@ -90,8 +90,9 @@ shuffle(colors);
   
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
-  console.log("keysssssss    "+keys.then(function(data) {data}).then(d=>d));
-
+console.log("pepeeeeee    " +keys.then(function(data) {
+    console.log('all is completed', data);
+}))
 
   x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
