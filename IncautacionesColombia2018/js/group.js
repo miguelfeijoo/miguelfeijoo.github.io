@@ -101,7 +101,7 @@ shuffle(colors);
 
   console.log("json   "+cantidad_incautaciones_mes.then(function(data) {return data} ));
 
-  var arreglo;
+  var arreglo=[];
   x0.domain( cantidad_incautaciones_mes.then(function(data) {arreglo=data; return arreglo} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
   y.domain( [ 0, 35000000 ] ).nice();
