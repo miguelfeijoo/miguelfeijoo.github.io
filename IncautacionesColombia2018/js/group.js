@@ -37,8 +37,7 @@ var width = WIDTH,
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom;
 
-    console.log("iwidth:   "+iwidth)
-    console.log("iheight:   "+iheight)
+    
   
   let tooltip = g.append("text")
         .style("font-size", "10pt")
@@ -61,7 +60,7 @@ var width = WIDTH,
   var y = d3.scaleLinear()
     .rangeRound( [ iheight, 0 ] );
 
-  console.log("rango  "+y.range()) 
+
 
 
   var rectangle = svg.append("rect").attr("id","rectangle")
@@ -90,18 +89,20 @@ shuffle(colors);
   
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
-console.log("miguel    "+d3.max( cantidad_incautaciones_mes.then(function(data) {data.columns.slice(1)}), function( key ) { return d[ key ]; } ))
+console.log("miguel    "+cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ))
+
+
+
 
   x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
   y.domain( [ 0, 35000000 ] ).nice();
  
-  console.log("dominio   "+y.domain())
 
 
   g.append( "g" )
     .selectAll( "g" )
-    .data( cantidad_incautaciones_mes.then(function(data) {data}) )
+    .data( cantidad_incautaciones_mes.then(d=>d) )
     .enter().append( "g" )
       .attr( "transform", d => "translate(" + x0( d[ 'MES' ] ) + ",0)" )
     .selectAll( "rect" )
@@ -176,10 +177,6 @@ console.log("miguel    "+d3.max( cantidad_incautaciones_mes.then(function(data) 
       .attr( "transform", "translate(0," + iheight + ")" )
       .call( d3.axisBottom( x0 ) );
   
-
-  console.log("ticks   "+y.ticks().pop())
-  console.log("adsfasfadsfadsf   "+y( 35000000 ) + 0.5)
-
 
   g.append( "g" )
       .attr( "class", "axis" )
