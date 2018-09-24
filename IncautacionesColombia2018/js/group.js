@@ -71,7 +71,7 @@ var width = WIDTH,
                             .style("fill","none")
                             .style('stroke','black');
      
-  var keys = cantidad_incautaciones_mes.then(function(data) {data.columns.slice(1)});
+  var keys = cantidad_incautaciones_mes.then(function(data) {return data.columns.slice(1)});
 
 
 
@@ -138,7 +138,7 @@ shuffle(colors);
           .y( dj => y( dj[ d.key ] ) );
     
         g.append( "path" )
-          .datum( cantidad_incautaciones_mes.then(function(data) {data}) )
+          .datum( cantidad_incautaciones_mes.then(function(data) {return data}) )
           .attr( "class", "line" )
           .attr( "fill", "none" )
           .attr( "stroke", 'black' )
@@ -146,7 +146,7 @@ shuffle(colors);
           .attr( "d", line );
          
         g.selectAll( "circle" )
-          .data( cantidad_incautaciones_mes.then(function(data) {data}) ).enter()   
+          .data( cantidad_incautaciones_mes.then(function(data) {return data}) ).enter()   
           .append( "circle" )
             .attr( "cx", dj => x0( dj[ 'MES' ] ) + x1( d.key ) + ( x1.bandwidth() / 2 ) )
             .attr( "cy",  dj => y( dj[ d.key ] ) )
