@@ -91,7 +91,7 @@ shuffle(colors);
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
 
-  console.log("uno    "+cantidad_incautaciones_mes.then(function(data) {data}));
+  console.log("uno    "+cantidad_incautaciones_mes.then(function(data) {data}).then(function(data) {data}));
   console.log("dos    "+function(d) { return d3.max( keys, function( key ) { return d[ key ]; } ); });
 
 
