@@ -90,7 +90,7 @@ shuffle(colors);
   
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
-  console.log("uno-dos    "+cantidad_incautaciones_mes.then(function(data) {data}).then(d=>d));
+  console.log("keysssssss    "+keys.then(function(data) {data}).then(d=>d));
 
 
   x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ));
