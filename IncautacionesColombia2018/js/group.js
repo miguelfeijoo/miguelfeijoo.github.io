@@ -102,13 +102,13 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
 
 
 
-
+console.log("yyyyyyy     "+cantidad_incautaciones_mes.then(d=>d))
 
   g.append( "g" )
     .selectAll( "g" )
     .data( cantidad_incautaciones_mes.then(d=>d) )
     .enter().append( "g" )
-      .attr( "transform", function(d){"translate(" + x0( d.map(d=>console.log("comentario      "+d.MES)) ) + ",0)" })
+      .attr( "transform", function(d){"translate(" + x0( d.map(d=>d.MES))  + ",0)" })
     .selectAll( "rect" )
     .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d.map(d=> d.key) }; } ); } )
     .enter().append( "rect" )
