@@ -105,7 +105,7 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
     .selectAll( "g" )
     .data( cantidad_incautaciones_mes.then(d=>d) )
     .enter().append( "g" )
-      .attr( "transform", d => "translate(" + x0( d.map(c=>c.MES) + ",0)" )
+      .attr( "transform", function(d){ console.log(x0( d.map(d=>d.MES));"translate(" + x0( d.map(d=>d.MES) + ",0)"} )
     .selectAll( "rect" )
     .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d[ key ] }; } ); } )
     .enter().append( "rect" )
