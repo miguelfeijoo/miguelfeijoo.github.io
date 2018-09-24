@@ -98,13 +98,13 @@ shuffle(colors);
   y.domain( [ 0, 35000000 ] ).nice();
  
   
-  function(d){ console.log("sirveeee    "+x0(d.MES))}
+
 
   g.append( "g" )
     .selectAll( "g" )
     .data( cantidad_incautaciones_mes.then( function(d){return d} ) )
     .enter().append( "g" )
-      .attr( "transform", function(d){ console.log("sirveeee    "+x0(d.MES));return "translate(" + x0( d.MES ) + ",0)"} )
+      .attr( "transform", function(d){ return "translate(" + x0( d.map(d=>d.MES) ) + ",0)"} )
     .selectAll( "rect" )
     .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d[ key ] }; } ); } )
     .enter().append( "rect" )
