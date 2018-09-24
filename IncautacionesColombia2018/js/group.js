@@ -12,6 +12,9 @@ var cantidad_incautaciones_mes=d3.csv('data/CANTIDAD_INCAUTADA.csv', function ( 
   };
 } );
 
+
+console.log("data  "+cantidad_incautaciones_mes)
+
 console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
     console.log('all is completed', data);
 }))
@@ -90,10 +93,10 @@ shuffle(colors);
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
 
-  console.log(cantidad_incautaciones_mes.then(function(data) {return data} ).resolve( d => d.MES ))
+  console.log(cantidad_incautaciones_mes.then(function(data) {return data} ));
 
 
-  x0.domain( cantidad_incautaciones_mes.then(function(data) {return data} ).resolve( d => d.MES ));
+  x0.domain( cantidad_incautaciones_mes.then(function(data) {return data} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
   y.domain( [ 0, 35000000 ] ).nice();
  
