@@ -99,7 +99,7 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
   y.domain( [ 0, 35000000 ] ).nice();
  
-
+  function(d){"translate(" + console.log(x0( d.map(d=>d.MES) ))
 
   g.append( "g" )
     .selectAll( "g" )
@@ -107,14 +107,14 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
     .enter().append( "g" )
       .attr( "transform", function(d){"translate(" + x0( d.map(d=>d.MES) ) + ",0)" })
     .selectAll( "rect" )
-    .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d[ key ] }; } ); } )
+    .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d.map(d=> d.key) }; } ); } )
     .enter().append( "rect" )
       .attr( "class", "bar" ).style("stroke-weigth",10).style("stroke","black")
-      .attr( "x", function(d){console.log("a  "+x1( d.key )); return x1( d.key ) })
-      .attr( "y", function(d){console.log("b  "+y( d.value ));return y( d.value )} )
+      .attr( "x", function(d){console.log("a  "+x1( d.map(d=>d.key) )); return x1( d.map(d=>d.key) ) })
+      .attr( "y", function(d){console.log("b  "+y( d.map(d=>d.value) ));return y( d.map(d=>d.value) )} )
       .attr( "width", x1.bandwidth())
-      .attr( "height", d => iheight - y( d.value ) )
-      .attr( "fill", d => z( d.key ) )
+      .attr( "height", d => iheight - y( d.map(d=>d.value) ) )
+      .attr( "fill", d => z( d.map(d=>d.key) ) )
       .on("mouseover", function( d ) {  
     
       
@@ -126,17 +126,17 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
     
         tooltip2.attr("x", iwidth-360)
         .attr("y", iheight-385)
-        .html(`Estupefaciente Incautado: ${d.key}`)
+        .html(`Estupefaciente Incautado: ${d.map(d=>d.key)}`)
         .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px');
     
             
         d3.select( "svg" ).selectAll( "rect.bar" )
-          .select( function( di ) { return di.key !== d.key ? this : null ; } )
+          .select( function( di ) { return di.map(d=>d.key) !== d.map(d=>d.key) ? this : null ; } )
           .transition()
              .style( "opacity", "0.2" );
         
         var line = d3.line()
-          .x( dj => x0( dj[ 'MES' ] ) + x1( d.key ) + ( x1.bandwidth() / 2 ) )
+          .x( dj => x0( dj.map(d=>d.MES) ) + x1( d.map(d=>d.key) ) + ( x1.bandwidth() / 2 ) )
           .y( dj => y( dj[ d.key ] ) );
     
         g.append( "path" )
