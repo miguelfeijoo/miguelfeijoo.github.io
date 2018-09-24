@@ -89,35 +89,31 @@ shuffle(colors);
   
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
-console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
-    console.log('all is completed -2', data.map(d=>d.MES));
-}))
+console.log("miguel    "+cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ))
 
 
 
-  x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d.MES )} ));
+
+  x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
   y.domain( [ 0, 35000000 ] ).nice();
  
 
 
-
-console.log("yyyyyyy     "+cantidad_incautaciones_mes.then(d=>d).then(d=>d)) 
-
   g.append( "g" )
     .selectAll( "g" )
-    .data( cantidad_incautaciones_mes.then(d=>d.then(d=>d)) )
+    .data( cantidad_incautaciones_mes.then(d=>d) )
     .enter().append( "g" )
-      .attr( "transform", function(d){"translate(" + x0( d.map(d=>d.MES))  + ",0)" })
+      .attr( "transform", d => "translate(" + x0( d[ 'MES' ] ) + ",0)" )
     .selectAll( "rect" )
-    .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d.map(d=> d.key) }; } ); } )
+    .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d[ key ] }; } ); } )
     .enter().append( "rect" )
       .attr( "class", "bar" ).style("stroke-weigth",10).style("stroke","black")
-      .attr( "x", function(d){console.log("a  "+x1( d.map(d=>d.key) )); return x1( d.map(d=>d.key) ) })
-      .attr( "y", function(d){console.log("b  "+y( d.map(d=>d.value) ));return y( d.map(d=>d.value) )} )
+      .attr( "x", function(d){console.log("a  "+x1( d.key )); return x1( d.key ) })
+      .attr( "y", function(d){console.log("b  "+y( d.value ));return y( d.value )} )
       .attr( "width", x1.bandwidth())
-      .attr( "height", d => iheight - y( d.map(d=>d.value) ) )
-      .attr( "fill", d => z( d.map(d=>d.key) ) )
+      .attr( "height", d => iheight - y( d.value ) )
+      .attr( "fill", d => z( d.key ) )
       .on("mouseover", function( d ) {  
     
       
@@ -129,17 +125,17 @@ console.log("yyyyyyy     "+cantidad_incautaciones_mes.then(d=>d).then(d=>d))
     
         tooltip2.attr("x", iwidth-360)
         .attr("y", iheight-385)
-        .html(`Estupefaciente Incautado: ${d.map(d=>d.key)}`)
+        .html(`Estupefaciente Incautado: ${d.key}`)
         .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px');
     
             
         d3.select( "svg" ).selectAll( "rect.bar" )
-          .select( function( di ) { return di.map(d=>d.key) !== d.map(d=>d.key) ? this : null ; } )
+          .select( function( di ) { return di.key !== d.key ? this : null ; } )
           .transition()
              .style( "opacity", "0.2" );
         
         var line = d3.line()
-          .x( dj => x0( dj.map(d=>d.MES) ) + x1( d.map(d=>d.key) ) + ( x1.bandwidth() / 2 ) )
+          .x( dj => x0( dj[ 'MES' ] ) + x1( d.key ) + ( x1.bandwidth() / 2 ) )
           .y( dj => y( dj[ d.key ] ) );
     
         g.append( "path" )
@@ -181,6 +177,8 @@ console.log("yyyyyyy     "+cantidad_incautaciones_mes.then(d=>d).then(d=>d))
       .attr( "transform", "translate(0," + iheight + ")" )
       .call( d3.axisBottom( x0 ) );
   
+
+
 
   g.append( "g" )
       .attr( "class", "axis" )
