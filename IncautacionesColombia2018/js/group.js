@@ -100,7 +100,7 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
   y.domain( [ 0, 35000000 ] ).nice();
  
 
-console.log(d=>x0( console.log(d.map(d=>d.MES) )));
+
 
 
 
@@ -108,7 +108,7 @@ console.log(d=>x0( console.log(d.map(d=>d.MES) )));
     .selectAll( "g" )
     .data( cantidad_incautaciones_mes.then(d=>d) )
     .enter().append( "g" )
-      .attr( "transform", function(d){"translate(" + x0( d.map(d=>d.MES) ) + ",0)" })
+      .attr( "transform", function(d){"translate(" + x0( d.map(d=>console.log("comentario      "+d.MES) ) + ",0)" })
     .selectAll( "rect" )
     .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d.map(d=> d.key) }; } ); } )
     .enter().append( "rect" )
