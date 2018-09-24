@@ -94,7 +94,7 @@ console.log("miguel    "+cantidad_incautaciones_mes.then(function(data) {data.ma
 
 
 
-  x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ));
+  x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d.MES )} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
   y.domain( [ 0, 35000000 ] ).nice();
  
