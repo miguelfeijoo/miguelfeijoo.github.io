@@ -99,7 +99,7 @@ shuffle(colors);
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
 
-  console.log("json   "+cantidad_incautaciones_mes.then(function(data) {return data.json()} ));
+  console.log("json   "+cantidad_incautaciones_mes.then(function(data) {return data} ));
 
 
   x0.domain( cantidad_incautaciones_mes.then(function(data) {return data} ));
