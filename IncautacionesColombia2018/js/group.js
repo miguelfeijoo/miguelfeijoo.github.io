@@ -94,7 +94,7 @@ console.log("miguel    "+d3.max( cantidad_incautaciones_mes.then(function(data) 
 
   x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
-  y.domain( [ 0, d3.max( cantidad_incautaciones_mes.then(function(data) {data}), function(d) { return d3.max( cantidad_incautaciones_mes.then(function(data) {data.columns.slice(1)}), function( key ) { return d[ key ]; } ); } ) ] ).nice();
+  y.domain( [ 0, 35000000 ] ).nice();
  
   console.log("dominio   "+y.domain())
 
