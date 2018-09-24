@@ -98,6 +98,7 @@ shuffle(colors);
   y.domain( [ 0, 35000000 ] ).nice();
  
   
+  function(d){ console.log("sirveeee    "+x0(d.MES))}
 
   g.append( "g" )
     .selectAll( "g" )
