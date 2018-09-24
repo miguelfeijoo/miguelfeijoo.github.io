@@ -90,13 +90,11 @@ shuffle(colors);
   
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
-console.log("pepeeeeee    " +keys.then(function(data) {
-    console.log('all is completed', data);
-}))
+console.log("miguel    "+d3.max( cantidad_incautaciones_mes.then(function(data) {data.columns.slice(1)}), function( key ) { return d[ key ]; } ))
 
   x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
-  y.domain( [ 0, d3.max( cantidad_incautaciones_mes.then(function(data) {data}), function(d) { return d3.max( keys, function( key ) { return d[ key ]; } ); } ) ] ).nice();
+  y.domain( [ 0, d3.max( cantidad_incautaciones_mes.then(function(data) {data}), function(d) { return d3.max( cantidad_incautaciones_mes.then(function(data) {data.columns.slice(1)}), function( key ) { return d[ key ]; } ); } ) ] ).nice();
  
   console.log("dominio   "+y.domain())
 
