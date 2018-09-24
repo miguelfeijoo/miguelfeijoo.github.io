@@ -102,7 +102,7 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
 
 
 
-console.log("yyyyyyy     "+cantidad_incautaciones_mes.then(d=>d.then(d=>d)) )
+console.log("yyyyyyy     "+cantidad_incautaciones_mes.then(d=>d).then(d=>d)) 
 
   g.append( "g" )
     .selectAll( "g" )
