@@ -90,6 +90,11 @@ shuffle(colors);
   
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
+
+  console.log("uno    "+cantidad_incautaciones_mes.then(function(data) {data}));
+  console.log("dos    "+function(d) { return d3.max( keys, function( key ) { return d[ key ]; } ); });
+
+
   x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
   y.domain( [ 0, d3.max( cantidad_incautaciones_mes.then(function(data) {data}), function(d) { return d3.max( keys, function( key ) { return d[ key ]; } ); } ) ] ).nice();
