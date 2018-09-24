@@ -95,7 +95,7 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
 
 
 
-  x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ));
+  x0.domain( cantidad_incautaciones_mes.then(function(data) {data.map( d => d.MES )} ));
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
   y.domain( [ 0, 35000000 ] ).nice();
  
@@ -105,7 +105,7 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
     .selectAll( "g" )
     .data( cantidad_incautaciones_mes.then(d=>d) )
     .enter().append( "g" )
-      .attr( "transform", d => "translate(" + x0( d[ 'MES' ] ) + ",0)" )
+      .attr( "transform", d => "translate(" + x0( d.map(c=>c.MES) + ",0)" )
     .selectAll( "rect" )
     .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d[ key ] }; } ); } )
     .enter().append( "rect" )
