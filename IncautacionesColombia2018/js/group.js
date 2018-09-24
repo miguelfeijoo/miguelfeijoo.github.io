@@ -102,11 +102,11 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
 
 
 
-console.log("yyyyyyy     "+cantidad_incautaciones_mes.then(d=>d.map(x=>x)))
+console.log("yyyyyyy     "+cantidad_incautaciones_mes.then(d=>d.then(d=>d)) )
 
   g.append( "g" )
     .selectAll( "g" )
-    .data( cantidad_incautaciones_mes.then(d=>d) )
+    .data( cantidad_incautaciones_mes.then(d=>d.then(d=>d)) )
     .enter().append( "g" )
       .attr( "transform", function(d){"translate(" + x0( d.map(d=>d.MES))  + ",0)" })
     .selectAll( "rect" )
