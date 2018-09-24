@@ -89,8 +89,9 @@ shuffle(colors);
   
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
-console.log("miguel    "+cantidad_incautaciones_mes.then(function(data) {data.map( d => d[ 'MES' ] )} ))
-
+console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
+    console.log('all is completed -2', data['MES']);
+}))
 
 
 
