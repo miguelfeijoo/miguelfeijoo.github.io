@@ -19,6 +19,12 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
     console.log('all is completed', data);
 }))
 
+
+
+
+
+
+
 /*
 var svg = d3.select( "#viz1" ),
     margin = { top: 50, right: 30, bottom: 30, left: 80 },
@@ -93,7 +99,7 @@ shuffle(colors);
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
 
-  console.log(cantidad_incautaciones_mes.then(function(data) {return data} ));
+  console.log("json   "+cantidad_incautaciones_mes.then(function(data) {return data.json} ));
 
 
   x0.domain( cantidad_incautaciones_mes.then(function(data) {return data} ));
