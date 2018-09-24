@@ -100,7 +100,7 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
   y.domain( [ 0, 35000000 ] ).nice();
  
 
-console.log(d=>x0( d.map(d=>d.MES) ));
+console.log(d=>x0( console.log(d.map(d=>d.MES) )));
 
 
 
