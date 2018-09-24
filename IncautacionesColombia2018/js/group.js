@@ -99,7 +99,7 @@ console.log("pepeeeeee    " +cantidad_incautaciones_mes.then(function(data) {
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
   y.domain( [ 0, 35000000 ] ).nice();
  
-  function(d){"translate(" + console.log(x0( d.map(d=>d.MES) ))
+  function(d){"translate(" + console.log(x0( d.map(d=>d.MES) ))}
 
   g.append( "g" )
     .selectAll( "g" )
