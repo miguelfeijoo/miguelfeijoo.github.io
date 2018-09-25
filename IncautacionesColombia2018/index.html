@@ -54,7 +54,6 @@
 
             <script>  
 
-              
                 d3.csv("https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/CANTIDAD_INCAUTADA.csv", function(error, cantidad_incautaciones_mes) {
                 if (error) throw error;
                 cantidad_incautaciones_mes.forEach(function(d) {
@@ -256,15 +255,11 @@
                 .attr( "x", ( d, i ) => iwidth - ( i * 150 -10) )
                 .attr( "y", 25 )
                 .attr( "dy", "0.5em" )
-                .text( d => d ).style("font-size","8px").style('font-weight',"bold");
-
-  
-  
-            return svg.node();
-  
+                .text( d => d ).style("font-size","8px").style('font-weight',"bold");})
 
 
 
+            
 
             </script>
 
