@@ -1,11 +1,4 @@
 
-function removeGraph(svg){
-
-svg.html("")
-
-}
-
-
 function grafica(depto,svg){
 
 
@@ -192,7 +185,7 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
   d3.select("#depto").on("change", function(){
                 depto = this.value;
 
-  removeGraph(svg)
+  svg.html("")
   grafica(depto)
 
 
