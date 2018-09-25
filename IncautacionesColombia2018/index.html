@@ -36,29 +36,32 @@
 
                 <br>
             <p class="main-text">
-                Desde finales de los años 60, Colombia ha tenido una economía subterránea basada en el tráfico de estupefacientes tanto a nivel nacional como internacional, la cual viene creciendo desde entonces; sin embargo, dada la reciente firma del acuerdo de paz con las Fuerzas Armadas Revolucionarias de Colombia - FARC y el constante trabajo de las Fuerzas Armadas de Colombia, se espera que el nivel de producción y distribución de estupefacientes a nivel nacional disminuya. 
+               El tráfico de estupefacientes tanto a nivel nacional como internacional ha sido parte oscura de la historia de Colombia y su imagen. Desde los años 60, ha habio un incremento en la compra, venta e incautaciones de todo tipo de estupefacientes po haber. Aun así, el Estado se encuentra en una fuerte lucha para reducir el nivel de producción y distribución de los mismos a nivel nacional.
             </p>
             
             <p class="main-text">                
-                Según lo anterior, se realizó un análisis mediante visualizaciones de la base de datos
+                Considerando lo anterior, se realizó un análisis mediante visualizaciones de la base de datos
                 <a href="https://www.datos.gov.co/Seguridad-y-Defensa/Incautacion-estupefacientes-2018/svze-44jj/data" target="_blank">Incautación estupefacientes 2018</a> disponible en el portal de <a href="https://www.datos.gov.co/" target="_blank">Datos Abiertos de Colombia</a>
-                 , proporcionada por el Grupo Información de Criminalidad (GICRI) - DIJIN de la Policía Nacional, con el propósito de entender mejor el estado actual de cómo se distribuyen los estupefacientes a nivel nacional.
+                 , proporcionada por el Grupo Información de Criminalidad (GICRI) - DIJIN de la Policía Nacional, con el propósito de entender mejor el estado actual de cómo se distribuyen las incautaciones y caracerísticas de los estupefacientes a nivel nacional y regional. 
+                 El principal objetivo, será entonces el de PRESENTAR UN RESUMEN DE TENDENCIAS, OUTLIERS Y/O CARACTERÍTICAS PARA SU IDENTIFICACIÓN Y COMPARACIÓN ENTRE ESTUPEFACIENTES/DEPARTAMENTOS. 
             </p>
 
-            <h2>Cifras</h2>
+            <h2>CIFRAS GENERALES - CANTIDAD .... MUCHOS NÚMEROS!!!   [PARTE 1]</h2>
             
             <p class="main-text">            
-                Como primera aproximación a los datos, se procedió a visualizar la cantidad de estupefacientes incautados en el 2016 por cada departamento, entre los cuales se debe prestar atención a los siguientes <strong>Nariño, Antioquia y Valle del Cauca, en los cuales se incautaron 58 , 31 y 27 toneladas respectivamente.</strong>
+                Inicialmente, se procedió con la realización de una visualización genérica que muestra la relación entre la <strong> CANTIDAD</strong> por tipo de <strong> Estupefaciente</strong> por <strong>Mes</strong> para lo que llevamos del 2018, en donde se puede ver una relación respecto a la Marihuana y la Cocaina, sobresaliend sobre el resto de los estupefacientes. Adicionalmente, esto se da por causa de el crecimiento de los cultivos ilíticos para lo que llevamos del 2018 como bien indican las noticias: "Colombia llega a niveles de récord en cultivos de coca y producción de cocaína, según informe de EE.UU. [CNN - Español]." Así, en la primera visaulización se puede ver y comparar la información entre los diferentes tipos de estupefacientes disponibles en los registros, como también la distribución en el transcurso del tiempo para lo que llevamos del 2018 para cada uno de los eestupefacientes en particular.
             </p>
             
-            <p class="main-text">
-                En mayor detalle se tiene que en Nariño el 98,6% del total de estupefacientes incautados corresponden a Cocaína, en el departamento de Antioquia se presenta una distribución principalmente entre Cocaína con el 60,1% y Marihuana con el 33,9% de las incautaciones, por último, en el departamento del Valle del Cauca de la cantidad de estupefacientes incautados predominaron la Marihuana con el 57,6%, seguido por la Cocaína con un 38,7%.
-            </p>
-
-
+       
             <div id="viz1" class="grafica"></div>
            
+ 
 
+            <h2>CIFRAS GENERALES - CANTIDAD .... MUCHOS NÚMEROS!!!  [PARTE 2]</h2>
+
+             <p class="main-text">            
+                Adicionalmente, se procedió con la realización de una visualización genérica por departamento, indicando el <strong> NÚMERO DE INCAUTACIONES TOTALES </strong> por tipo de <strong> Estupefaciente</strong> por <strong>Mes</strong> para lo que llevamos del 2018, en donde se puede presentar discriminado para cada departamento el número de incautaciones por estupefaciente, indicando una relación entre Antioquia y Cundinamarca como las dominantes. Se puede presentar por relación de carreteras y conexiones entre los dos departamentos contigüos.
+            </p>
 
             <h2>Selecciona un Departamento y observa la segunda gráfica con la información respectiva:</h2>
             deptos=  <input list="deptos" type="text" id="depto">
@@ -98,6 +101,13 @@
                     </datalist>
 
 
+            <h2>CIFRAS GENERALES - CANTIDAD .... MUCHOS NÚMEROS!!!  [PARTE 2]</h2>
+
+             <p class="main-text">            
+                Finalmente, se procedió con la realización de una visualización genérica de la distribución, indicando el <strong> NÚMERO DE INCAUTACIONES TOTALES </strong> discriminado por tipo de <strong> Estupefaciente</strong> por <strong>Mes</strong> para lo que llevamos del 2018, en donde se puede veruna relación en el territorio Nacional de qué estupefaciente es la estrella en producción, consumo y transporte.
+            </p>
+
+
 
                 <div id="viz2" class="grafica"></div>
 
@@ -121,30 +131,20 @@
 
 
 
-
-
-
+        
             
-            <p class="main-text">
-                Continuando con el análisis, se procedió a visualizar el número de incautaciones realizadas por departamento, nuevamente destacaron por contar con el mayor número de incautaciones, los departamentos de <strong>Antioquia (40.953) y Valle del Cauca (27.733)</strong>, seguidos por <strong>Cundinamarca (12.263)</strong>. Se debe mencionar que a pesar de contar con la mayor cantidad de estupefacientes incautados (58.1 Toneladas) que el departamento de <strong>Nariño se ubica en la posición 12 a nivel nacional en el número de incautaciones con 1.448.</strong> 
-            </p>
             
-            <p class="main-text">                
-                Teniendo en cuenta la tendencia predominante de tener una mayor presencia de estupefacientes en los departamentos de Nariño, Antioquia, Valle del Cauca y Cundinamarca, se realizó una visualización tipo Scatter Plot (o diagrama de dispersión) para explorar la relación entre las variables "Número de Incautaciones" y "Cantidad de estupefacientes incautados".
-            </p>
-            
+            <h2>Conclusiones y Framework</h2>                
             <p class="main-text">            
-                La visualización anterior permite identificar que los departamentos de Nariño, Antioquia, Valle del Cauca y Cundinamarca presentan un comportamiento atípico en comparación con los demás departamentos del país. Estos últimos no deben ser pasados por alto a pesar de contar con cifras mucho menores, ya que pueden ocultar una problemática que los datos analizados no reflejan.
-            
-            <h2>Conclusiones</h2>                
-            <p class="main-text">            
-                Se debe tener presente que los datos analizados corresponden a incautaciones de estupefacientes y no reflejan la intención de uso, ya sea consumo o distribución de los mismos. Sin embargo, se pudo tener un panorama general de la dinámica de los estupefacientes en los departamentos con mayor incidencia en este fenómeno. A continuación, se presentan los principales hallazgos basados en las visualizaciones presentadas.
+                Para el desarrollo de cada una de las visualizaciones se estableció con información que se reparte de forma tanto CATERÓRICA (NOMBRE DE LOS MESES Y DEPARTAMENTOS) como CUANTITATIVOS SECUENCIALES (CONTEOS DE CANTIDAD Y NÚUMERO DE INCAUTACIONES), a través de fuentes de datos que on ESTÁTICAS, con tipo de dataset principalmente: TABLAS, teniendo como atributos cada uno de los elementos descrito previamente. Sobre las marcas y los canales, para la visualziación 1, se puede observar como MARCA líneas y POSITION ON COMMON SCALE, con manejo de discriminiación por colores para cada uno de los subgrupos. Para la visualización 2, se tiene una relación de MARCA: Lineas y de Canal de igual forma POSITION ON COMMON SCALE. Para la visualización 3, se tiene una relación de MARCAS: PUNTOS, con atributos ESPACIALES. El encode, está relacionado, principalmente con EXPRESS dada la importancia de los valores de número y cantidad relacionados en todas las gráficas.
             </p>
             
             
 
            <script type="text/javascript" src="js/group.js"></script>
            <script type="text/javascript" src="js/bar_viz2.js"></script>
+           <script type="text/javascript" src="js/dot_viz3.js"></script>
+
 
                                        
 

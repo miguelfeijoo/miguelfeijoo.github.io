@@ -1,5 +1,5 @@
 
-function grafica(depto,incautaciones_depto_sitio_mes,svg, g, iwidth, iheigth){
+function grafica(depto,incautaciones_depto_sitio_mes,svg, g, iwidth, iheight){
 
 
 svg.selectAll(["id_1","id_2","id_3","id_4"]).remove();
