@@ -102,10 +102,7 @@ shuffle(colors)
         .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px');
     
             
-        d3.select( "svg" ).selectAll( "rect.bar" )
-          .select( function( di ) { return di.key !== d.key ? this : null ; } )
-          .transition()
-             .style( "opacity", "0.2" );
+  
         
          
        
@@ -113,10 +110,7 @@ shuffle(colors)
       .on( "mouseout", function( d ) {    
         
         
-        d3.select( "svg" ).selectAll( "rect" )
-          .select( function( di ) { console.log(di.key);return di.key !== d.key ? this : null ; } )
-          .transition()
-          .style( "opacity", "1" );
+   
          
         tooltip.text("") .transition()
         .duration(300)
