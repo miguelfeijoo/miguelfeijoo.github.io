@@ -47,7 +47,7 @@ function graph_line(g,array,x1,y1,eje_y,eje_x,color){
 
 
 
-function grafica(clase_sitio,incautaciones_depto,svg){
+function grafica(clase_sitio,incautaciones_depto,svg,iwidth,iheight,g){
 
   svg.selectAll(["id_5","id_6"]).remove();
 
@@ -125,7 +125,7 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
   d3.select("#clase_sitio").on("change", function(){
                 depto = this.value;
 
- grafica(depto,incautaciones_depto,svg)
+ grafica(depto,incautaciones_depto,svg,iwidth,iheight,g)
 
 
 
