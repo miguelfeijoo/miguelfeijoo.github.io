@@ -117,11 +117,11 @@ function first(){
                     d3.select(this)
                       .transition()   
                       .duration(400)
-                      .attr('width', xScale.bandwidth() + 10)
-                      .attr("y", function(d) { return yScale(d.value) - 10; })
-                      .attr("height", function(d) { return height/2.5 - yScale(d.value) + 10; })
+                      .attr('width', x1.bandwidth() + 10)
+                      .attr("y", function(d) { return y(d.value) - 10; })
+                      .attr("height", function(d) { return height/2.5 - y(d.value) + 10; })
                       .attr('y', function() {
-                      return yScale(d.value) - 15;})
+                      return y(d.value) - 15;})
 
 
                    
