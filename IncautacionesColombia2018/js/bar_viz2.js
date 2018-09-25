@@ -1,14 +1,13 @@
 function grafica(depto){
 
-let svg
-svg.html("")
+
 svg = d3.select( "svg.d" ),
     margin = { top: 50, right: 30, bottom: 70, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
     g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
-
+svg.html("")
 
 
 
