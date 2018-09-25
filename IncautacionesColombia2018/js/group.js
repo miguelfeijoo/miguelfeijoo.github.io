@@ -34,9 +34,6 @@ function first(){
 
 
             
-
-
-
             
 
               var svg = d3.select( "svg.c" ),
