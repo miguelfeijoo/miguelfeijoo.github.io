@@ -1,5 +1,23 @@
-function grafica(depto){
+function second(){
 
+
+
+
+d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/INCAUTACIONES_DEPARTAMENTO.csv', function ( d ) {
+  return {
+    'DEPARTAMENTO': d[ 'DEPARTAMENTO' ],
+    'BASE DE COCA': +d[ 'BASE DE COCA' ],
+    'BASUCO': +d[ 'BASUCO' ],
+    'COCAINA': d[ 'COCAINA' ],
+    'HEROINA': +d[ 'HEROINA' ],
+    'MARIHUANA': +d[ 'MARIHUANA' ]
+    
+  };
+} ).then(function(incautaciones_depto_sitio_mes){
+
+
+  d3.select("#depto").on("change", function(){
+                depto = this.value;
 
 var svg = d3.select( "svg.d" ),
     margin = { top: 50, right: 30, bottom: 70, left: 80 },
@@ -144,36 +162,6 @@ shuffle(colors)
     .text( d => d ).style("font-size","8px").style('font-weight',"bold");
   
   return svg.node();
-
-
-
-}
-
-
-
-
-function second(){
-
-
-
-
-d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/INCAUTACIONES_DEPARTAMENTO.csv', function ( d ) {
-  return {
-    'DEPARTAMENTO': d[ 'DEPARTAMENTO' ],
-    'BASE DE COCA': +d[ 'BASE DE COCA' ],
-    'BASUCO': +d[ 'BASUCO' ],
-    'COCAINA': d[ 'COCAINA' ],
-    'HEROINA': +d[ 'HEROINA' ],
-    'MARIHUANA': +d[ 'MARIHUANA' ]
-    
-  };
-} ).then(function(incautaciones_depto_sitio_mes){
-
-
-  d3.select("#depto").on("change", function(){
-                depto = this.value;
-
-  grafica(depto)
 
 
 
