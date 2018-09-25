@@ -54,7 +54,7 @@
 
             <script>  
 
-                /*    
+                    
                 d3.csv("data/CANTIDAD_INCAUTADA.csv", function(error, cantidad_incautaciones_mes) {
                 if (error) throw error;
                 cantidad_incautaciones_mes.forEach(function(d) {
@@ -64,10 +64,13 @@
                 d['COCAINA']= d[ 'COCAINA' ],
                 d['HEROINA']= +d[ 'HEROINA' ],
                 d['MARIHUANA']= +d[ 'MARIHUANA' ]
-                });
-                */
+                });})
 
-                 
+
+
+                console.log(cantidad_incautaciones_mes.then(d=>d).catch(d=>d).catch(d=>console.log(d.message)))
+
+              /*      
               cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/CANTIDAD_INCAUTADA.csv', function ( d ) {
               return {
                 'MES': d[ 'MES' ],
@@ -79,12 +82,7 @@
                 
               };
             } )  
-        
-
-
-                console.log(cantidad_incautaciones_mes.then(d=>d).catch(d=>d).catch(d=>console.log(d.message)))
-
-              
+            */
 
               var svg = d3.select( "svg.c" ),
                 margin = { top: 50, right: 30, bottom: 30, left: 80 },
@@ -93,7 +91,7 @@
                 g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
               
               
-              //console.log(width)
+              console.log(width)
               
               let tooltip = g.append("text")
                     .style("font-size", "10pt")
@@ -261,7 +259,7 @@
                 .attr( "x", ( d, i ) => iwidth - ( i * 150 -10) )
                 .attr( "y", 25 )
                 .attr( "dy", "0.5em" )
-                .text( d => d ).style("font-size","8px").style('font-weight',"bold");
+                .text( d => d ).style("font-size","8px").style('font-weight',"bold");})
 
 
 
