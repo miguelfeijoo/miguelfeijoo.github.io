@@ -13,7 +13,7 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
   };
 } ).then(function(incautaciones_depto_sitio_mes){
 
-var svg = d3.select( DOM.svg( width, 500 ) ),
+var svg = d3.select( "svg.d" ),
     margin = { top: 50, right: 30, bottom: 70, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
