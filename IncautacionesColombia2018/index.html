@@ -90,6 +90,8 @@
                                     .attr("height", 30)
                                     .style("fill","none")
                                     .style('stroke','black');
+
+            console.log("por queeeeee    "+cantidad_incautaciones_mes)
              
             var keys = cantidad_incautaciones_mes.columns.slice( 1 );
 
@@ -254,6 +256,10 @@
                 Teniendo en cuenta la tendencia predominante de tener una mayor presencia de estupefacientes en los departamentos de Nariño, Antioquia, Valle del Cauca y Cundinamarca, se realizó una visualización tipo Scatter Plot (o diagrama de dispersión) para explorar la relación entre las variables "Número de Incautaciones" y "Cantidad de estupefacientes incautados".
             </p>
             <!--<div id="d3_03_grafico" class="grafica"></div> -->
+             <div class="container">
+            <svg id='principal' width="960" height="500"></svg>
+            <svg id='legend' class="legend_container" width="200" height="80"></svg>
+            </div>  
             
             <p class="main-text">            
                 La visualización anterior permite identificar que los departamentos de Nariño, Antioquia, Valle del Cauca y Cundinamarca presentan un comportamiento atípico en comparación con los demás departamentos del país. Estos últimos no deben ser pasados por alto a pesar de contar con cifras mucho menores, ya que pueden ocultar una problemática que los datos analizados no reflejan.
