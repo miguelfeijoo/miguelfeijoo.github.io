@@ -1,20 +1,12 @@
+function grafica(depto){
 
-function grafica(depto,svg){
 
-
-svg = d3.select( "svg.d" ),
+var svg = d3.select( "svg.d" ),
     margin = { top: 50, right: 30, bottom: 70, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
     g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
-
-
-
-
-
-
-
- 
+  
   let tooltip = g.append("text")
         .style("font-size", "10pt")
         .style("font-family", "sans-serif")  
@@ -163,11 +155,7 @@ shuffle(colors)
 function second(){
 
 
-var svg = d3.select( "svg.d" ),
-    margin = { top: 50, right: 30, bottom: 70, left: 80 },
-    iwidth = +svg.attr( "width" ) - margin.left - margin.right,
-    iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
-    g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
+
 
 d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/INCAUTACIONES_DEPARTAMENTO.csv', function ( d ) {
   return {
@@ -185,7 +173,6 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
   d3.select("#depto").on("change", function(){
                 depto = this.value;
 
-  svg.html("")
   grafica(depto)
 
 
