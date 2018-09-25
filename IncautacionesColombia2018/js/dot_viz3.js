@@ -117,14 +117,16 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
   };
 } ).then(function(incautaciones_depto){
 
-var svg = d3.select( "svg.e" ),
+
+
+  d3.select("#clase_sitio").on("change", function(){
+                depto = this.value;
+
+  var svg = d3.select( "svg.e" ),
       margin = { top: 50, right: 30, bottom: 150, left: 80 },
       iwidth = +svg.attr( "width" ) - margin.left - margin.right,
       iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
       g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
-      
-  d3.select("#clase_sitio").on("change", function(){
-                depto = this.value;
 
  grafica(depto,incautaciones_depto,svg,iwidth,iheight,g)
 
