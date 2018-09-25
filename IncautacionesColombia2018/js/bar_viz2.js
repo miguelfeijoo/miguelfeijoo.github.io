@@ -190,6 +190,8 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
   d3.select("#depto").on("change", function(){
                 depto = this.value;
 
+  svg.html("")
+
   grafica(depto,incautaciones_depto_sitio_mes)
 
 
