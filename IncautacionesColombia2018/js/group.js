@@ -170,17 +170,13 @@ function first(){
                                 
                                 
                                 
-                    d3.select(this)
-                      .transition()   
-                      .duration(400)
-                      .attr('width', x1.bandwidth())
-                      .attr("y", function(d) { return y(d.value); })
-                      .attr("fill",d => z( d.key ) )
-                      .attr("stroke",d => z( d.key ) )
-                      .attr("stroke-weigth",0)
-                      .attr("height", function(d) { return iheight-y(d.value); })
-                      .attr('y', function() {
-                      return y(d.value) - 15;})
+                   d3.select(this).attr('class', 'bar');
+                                    d3.select(this)
+                                      .transition()     
+                                      .duration(400)
+                                      .attr('width', x1.bandwidth())
+                                      .attr("y", function(d) { return y(d.Homicidios); })
+                                      .attr("height", function(d) { return iheight - y(d.value); });
                                          
                     tooltip.text("") .transition()
                     .duration(300)
