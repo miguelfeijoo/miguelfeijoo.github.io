@@ -36,7 +36,7 @@ function first(){
             
             
 
-              var svg = d3.select( "#viz1" ),
+              var svg = d3.select( "svg.c" ),
                 margin = { top: 50, right: 30, bottom: 30, left: 80 },
                 iwidth = +svg.attr( "width" ) - margin.left - margin.right,
                 iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
