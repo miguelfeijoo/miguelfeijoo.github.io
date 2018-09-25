@@ -119,7 +119,7 @@ function first(){
                       .duration(400)
                       .attr('width', x1.bandwidth() + 10)
                       .attr("y", function(d) { return y(d.value) - 10; })
-                      .attr("height", function(d) { return iheight-y(d.value) + 10; })
+                      .attr("height", function(d) { return iheight-y(d.value) + 15; })
                       .attr('y', function() {
                       return y(d.value) - 15;})
 
