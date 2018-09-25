@@ -170,8 +170,9 @@ function second(){
 
 
 
-d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/INCAUTACIONES_DEPARTAMENTO.csv', function ( d ) {
+d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/INCAUTACIONES_SITIO_DEPART.csv', function ( d ) {
   return {
+    'MES': d[ 'MES' ],
     'DEPARTAMENTO': d[ 'DEPARTAMENTO' ],
     'BASE DE COCA': +d[ 'BASE DE COCA' ],
     'BASUCO': +d[ 'BASUCO' ],
@@ -185,7 +186,7 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
 
 
 
-  d3.select("#depto").on("change", function(){
+  d3.select("#clase_sitio").on("change", function(){
                 depto = this.value;
 
    var svg = d3.select( "svg.d" ),
