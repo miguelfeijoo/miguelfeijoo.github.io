@@ -1,14 +1,8 @@
 
-function grafica(depto,incautaciones_depto_sitio_mes){
+function grafica(depto,incautaciones_depto_sitio_mes,svg){
 
-svg.selectAll(["id_1","id_2","id_3","id_4"]).remove();
+  svg.selectAll(["id_1","id_2","id_3","id_4"]).remove();
 
-
-var svg = d3.select( "svg.d" ),
-    margin = { top: 50, right: 30, bottom: 70, left: 80 },
-    iwidth = +svg.attr( "width" ) - margin.left - margin.right,
-    iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
-    g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
   
   let tooltip = g.append("text")
         .style("font-size", "10pt")
@@ -173,6 +167,12 @@ shuffle(colors)
 
 function second(){
 
+var svg = d3.select( "svg.d" ),
+    margin = { top: 50, right: 30, bottom: 70, left: 80 },
+    iwidth = +svg.attr( "width" ) - margin.left - margin.right,
+    iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
+    g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
+
 d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/INCAUTACIONES_DEPARTAMENTO.csv', function ( d ) {
   return {
     'DEPARTAMENTO': d[ 'DEPARTAMENTO' ],
@@ -189,7 +189,7 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
   d3.select("#depto").on("change", function(){
                 depto = this.value;
 
- grafica(depto,incautaciones_depto_sitio_mes)
+ grafica(depto,incautaciones_depto_sitio_mes,svg)
 
 
 
