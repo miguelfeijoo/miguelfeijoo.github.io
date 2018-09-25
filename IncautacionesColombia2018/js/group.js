@@ -109,6 +109,20 @@ function first(){
                   .on("mouseover", function( d ) {  
                 
                   
+                    d3.select(this).attr('class', 'highlight');
+                                
+                                                               
+                                
+                    d3.select(this)
+                      .transition()   
+                      .duration(400)
+                      .attr('width', xScale.bandwidth() + 10)
+                      .attr("y", function(d) { return yScale(d.value) - 10; })
+                      .attr("height", function(d) { return height/2.5 - yScale(d.value) + 10; })
+                      .attr('y', function() {
+                      return yScale(d.value) - 15;
+
+
                    
                     tooltip.attr("x", iwidth-360)
                     .attr("y", iheight-400)
