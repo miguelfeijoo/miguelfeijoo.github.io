@@ -1,23 +1,5 @@
 function first(){
 
-  /*
-                d3.csv("data/CANTIDAD_INCAUTADA.csv", function(error, cantidad_incautaciones_mes) {
-                if (error) throw error;
-                cantidad_incautaciones_mes.forEach(function(d) {
-                d['MES']= d[ 'MES' ],
-                d['BASE DE COCA'] +d[ 'BASE DE COCA' ],
-                d['BASUCO']= +d[ 'BASUCO' ],
-                d['COCAINA']= d[ 'COCAINA' ],
-                d['HEROINA']= +d[ 'HEROINA' ],
-                d['MARIHUANA']= +d[ 'MARIHUANA' ]
-                });
-
-*/
-
-
-
-              
-
                     
               d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/CANTIDAD_INCAUTADA.csv', function ( d ) {
               return {

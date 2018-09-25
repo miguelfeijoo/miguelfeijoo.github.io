@@ -103,7 +103,7 @@ function grafica(clase_sitio,incautaciones_depto,svg){
 
 function third(){
 
-var svg = d3.select( DOM.svg( width, 500 ) ),
+var svg = d3.select( "svg.e" ),
       margin = { top: 50, right: 30, bottom: 150, left: 80 },
       iwidth = +svg.attr( "width" ) - margin.left - margin.right,
       iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
