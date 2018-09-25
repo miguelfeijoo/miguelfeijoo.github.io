@@ -118,7 +118,7 @@ function first(){
                       .transition()   
                       .duration(400)
                       .attr('width', x1.bandwidth() + 10)
-                      .attr("y", function(d) { return y(d.value) - 10; })
+                      .attr("y", function(d) { return y(d.value) - 15; })
                       .attr("fill","black")
                       .attr("stroke",d => z( d.key ) )
                       .attr("stroke-weigth",10)
@@ -165,7 +165,22 @@ function first(){
                     } )                 
                   .on( "mouseout", function( d ) {      
                     
-                    
+                     d3.select(this).attr('class', 'highlight');
+                                
+                                
+                                
+                                
+                    d3.select(this)
+                      .transition()   
+                      .duration(400)
+                      .attr('width', x1.bandwidth())
+                      .attr("y", function(d) { return y(d.value); })
+                      .attr("fill",d => z( d.key ) )
+                      .attr("stroke",d => z( d.key ) )
+                      .attr("stroke-weigth",0)
+                      .attr("height", function(d) { return iheight-y(d.value); })
+                      .attr('y', function() {
+                      return y(d.value) - 15;})
                                          
                     tooltip.text("") .transition()
                     .duration(300)
