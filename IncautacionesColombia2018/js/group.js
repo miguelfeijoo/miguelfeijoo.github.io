@@ -121,7 +121,7 @@ function first(){
                       .attr("y", function(d) { return yScale(d.value) - 10; })
                       .attr("height", function(d) { return height/2.5 - yScale(d.value) + 10; })
                       .attr('y', function() {
-                      return yScale(d.value) - 15;}
+                      return yScale(d.value) - 15;})
 
 
                    
