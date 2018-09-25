@@ -121,7 +121,7 @@ function first(){
                       .attr("height", function(d) { return height/2.5 - yScale(d.value) + 10; })
                       .attr('y', function() {
                       return yScale(d.value) - 15;
-
+                      }
 
                    
                     tooltip.attr("x", iwidth-360)
