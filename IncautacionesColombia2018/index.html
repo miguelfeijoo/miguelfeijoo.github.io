@@ -68,7 +68,7 @@
 
 
 
-                console.log([cantidad_incautaciones_mes].then(d=>d).catch(d=>d).catch(d=>console.log(d.message)))
+                console.log([cantidad_incautaciones_mes])
 
               /*      
               cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/CANTIDAD_INCAUTADA.csv', function ( d ) {
@@ -91,7 +91,6 @@
                 g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
               
               
-              console.log(width)
               
               let tooltip = g.append("text")
                     .style("font-size", "10pt")
