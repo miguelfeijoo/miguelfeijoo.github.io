@@ -1,11 +1,7 @@
-function removegraph(svg){
-
-svg.html("")
-
-}
 
 function grafica(depto,incautaciones_depto_sitio_mes){
 
+svg.selectAll(["id_1","id_2","id_3","id_4"]).remove();
 
 
 var svg = d3.select( "svg.d" ),
@@ -69,7 +65,7 @@ shuffle(colors)
       .attr( "transform", d => "translate(" + x0( d[ 'MES' ] ) + ",0)" )
     .selectAll( "rect" )
     .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d[ key ] }; } ); } )
-    .enter().append( "rect" )
+    .enter().append( "rect" ).attr("id","id_1")
       .attr( "class", "bar" ).style("stroke-weigth",10).style("stroke","black")
       .attr( "x", d => x1( d.key ) )
       .attr( "y", d => y( d.value ) )
@@ -127,12 +123,12 @@ shuffle(colors)
   g.append( "g" )
       .attr( "class", "axis" )
       .attr( "transform", "translate(0," + iheight + ")" )
-      .call( d3.axisBottom( x0 ) );
+      .call( d3.axisBottom( x0 ) ).attr("id","id_2");
   
   g.append( "g" )
       .attr( "class", "axis" )
-      .call( d3.axisLeft( y ).ticks( null, ".0f" ) )
-    .append( "text" )
+      .call( d3.axisLeft( y ).ticks( null, ".0f" ) ).attr("id","id_3")
+    .append( "text" ).attr("id","id_4")
       .attr( "x", 2 )
       .attr( "y", y( y.ticks().pop() ) + 0.5 )
       .attr( "dy", "0.45em" )
@@ -193,8 +189,7 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
   d3.select("#depto").on("change", function(){
                 depto = this.value;
 
- removegraph(svg);
-  grafica(depto,incautaciones_depto_sitio_mes)
+ grafica(depto,incautaciones_depto_sitio_mes)
 
 
 
