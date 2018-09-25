@@ -73,6 +73,15 @@ shuffle(colors)
       .on("mouseover", function( d ) {  
     
       
+        d3.select(this).attr('class', 'highlight');
+                                
+                                
+        d3.select(this)
+          .transition()   
+          .duration(400)
+          .attr("fill","black")
+          .attr("stroke",d => z( d.key ) )
+          .attr("stroke-weigth",10)
        
         tooltip.attr("x", iwidth-360)
         .attr("y", iheight-400)
@@ -93,7 +102,14 @@ shuffle(colors)
       .on( "mouseout", function( d ) {    
         
         
-   
+        d3.select(this).attr('class', 'highlight');
+                                
+                                     
+        d3.select(this)
+          .transition()   
+          .duration(400)
+          .attr("fill",d => z( d.key ) )
+          .attr("stroke",d => z( d.key ) )
          
         tooltip.text("") .transition()
         .duration(300)
