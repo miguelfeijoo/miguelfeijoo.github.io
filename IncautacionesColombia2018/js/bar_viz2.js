@@ -194,7 +194,7 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
     g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
- grafica(depto,incautaciones_depto_sitio_mes,svg, g, iwidth,iheight)
+ grafica(depto,incautaciones_depto_sitio_mes,svg, iwidth,iheight,g)
 
 
 
