@@ -57,7 +57,6 @@
                 d3.csv("https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/CANTIDAD_INCAUTADA.csv", function(error, cantidad_incautaciones_mes) {
                 if (error) throw error;
                 cantidad_incautaciones_mes.forEach(function(d) {
-                //console.log("fecha1:",d.FECHA)
                 d['MES']= d[ 'MES' ],
                 d['BASE DE COCA'] +d[ 'BASE DE COCA' ],
                 d['BASUCO']= +d[ 'BASUCO' ],
@@ -65,6 +64,9 @@
                 d['HEROINA']= +d[ 'HEROINA' ],
                 d['MARIHUANA']= +d[ 'MARIHUANA' ]
                 });
+
+
+                console.log(cantidad_incautaciones_mes.then(d=>d).catch(d=>d).catch(d=>console.log(d.message)))
 
               /*      
               cantidad_incautaciones_mes=d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018/master/DATOS/CANTIDAD_INCAUTADA.csv', function ( d ) {
