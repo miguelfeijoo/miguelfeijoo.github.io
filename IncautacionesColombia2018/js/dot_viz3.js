@@ -33,7 +33,7 @@ function graph_line(g,array,x1,y1,eje_y,eje_x,color){
    
  }).on('mouseout',function(d){
   
- svg.selectAll( "#id_5" ).transition().duration(350).remove()
+ svg.selectAll( ["#id_5","#id_6","#id_7","#id_8"] ).transition().duration(350).remove()
  d3.select(this)
         .transition()
         .duration(300)
