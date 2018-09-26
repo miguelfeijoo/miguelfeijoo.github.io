@@ -63,14 +63,14 @@ function grafica(clase_sitio,incautaciones_depto,svg,iwidth,iheight,g){
   g.append( "g" )
     .attr( "class", "axis" )
     .attr( "transform", "translate(0," + iheight + ")" )
-    .call( d3.axisBottom( x1 ) ).selectAll("text")
+    .call( d3.axisBottom( x1 ) ).selectAll("text").attr("id","id_7")
     .attr("transform", "rotate(90)").attr("y", 0)
     .attr("x", 10)
     .attr("dy", ".50em").style("text-anchor", "start");
 
   g.append( "g" )
     .attr( "class", "axis" )
-    .call( d3.axisLeft( y1 ).ticks( null, ".0f" ) )
+    .call( d3.axisLeft( y1 ).ticks( null, ".0f" ) ).attr("id","id_8")
     .append( "text" )
     .attr( "x", 2 )
     .attr( "y", y1( y1.ticks().pop() ) + 0.5 )
