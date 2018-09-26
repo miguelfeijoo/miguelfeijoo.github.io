@@ -1,8 +1,9 @@
 
 function grafica(depto,incautaciones_depto_sitio_mes,svg, iwidth, iheight, g){
 
-
+  console.log("4    entro a la funcion grafica")
   svg.selectAll(["#id_1","#id_2","#id_3","#id_4"]).remove();
+  console.log("5   borro ids")
 
   
   let tooltip = g.append("text")
@@ -19,12 +20,20 @@ function grafica(depto,incautaciones_depto_sitio_mes,svg, iwidth, iheight, g){
   var x0 = d3.scaleBand()
     .rangeRound( [ 0, iwidth ] )
     .paddingInner( 0.3 );
+
+  console.log("6    x0  range     "+x0.range())
   
   var x1 = d3.scaleBand()
     .padding( 0.05 );
 
+    console.log("7    x1   range    "+x1.range())
+
+
   var y = d3.scaleLinear()
     .rangeRound( [ iheight, 0 ] );
+
+  console.log("8    y  range     "+y.range())
+
 
   var rectangle = svg.append("rect").attr("id","rectangle")
                             .attr("x", iwidth-380)
@@ -35,6 +44,10 @@ function grafica(depto,incautaciones_depto_sitio_mes,svg, iwidth, iheight, g){
                             .style('stroke','black')
      
   var keys = incautaciones_depto_sitio_mes.columns.slice( 2 );
+
+
+    console.log("9    keys       "+keys)
+
   
   var colors=["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"]
 
@@ -50,9 +63,25 @@ shuffle(colors)
   var z = d3.scaleOrdinal( colors.slice(0,n));
     
   x0.domain( incautaciones_depto_sitio_mes.filter(d=>d.DEPARTAMENTO == depto).map( d => d[ 'MES' ] ) );
+
+  console.log("10    x0  domain      "+x0.domain())
+
+
   x1.domain( keys ).rangeRound( [ 0, x0.bandwidth() ] );
+
+
+  console.log("11    x1  domain      "+x1.domain())
+
+
   y.domain( [ 0, d3.max( incautaciones_depto_sitio_mes.filter(d=>d.DEPARTAMENTO == depto), function(d) { return d3.max( keys, function( key ) { return d[ key ]; } ); } ) ] );
+
+
+  console.log("12    y  domain      "+y.domain())
+
   
+  console.log("13   filtro depto  "+incautaciones_depto_sitio_mes.filter(d=>d.DEPARTAMENTO == depto))
+
+
   g.append( "g" )
     .selectAll( "g" )
     .data( incautaciones_depto_sitio_mes.filter(d=>d.DEPARTAMENTO == depto) )
@@ -184,13 +213,13 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
 } ).then(function(incautaciones_depto_sitio_mes){
 
 
-console.log(incautaciones_depto_sitio_mes)
+console.log("1   "+ incautaciones_depto_sitio_mes)
 
   d3.select("#clase_sitio").on("change", function(){
                 depto = this.value;
 
 
-
+  console.log("2    ")
    var svg = d3.select( "svg.d" ),
     margin = { top: 50, right: 30, bottom: 70, left: 80 },
     iwidth = +svg.attr( "width" ) - margin.left - margin.right,
@@ -198,11 +227,11 @@ console.log(incautaciones_depto_sitio_mes)
     g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
 
+console.log("3     pinto "+depto )
 
 
  grafica(depto,incautaciones_depto_sitio_mes,svg, iwidth,iheight,g)
 
-console.log("pinto "+depto )
 
 
 })})
