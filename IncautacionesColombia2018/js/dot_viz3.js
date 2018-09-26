@@ -30,6 +30,11 @@ function graph_line(g,array,x1,y1,eje_y,eje_x,color){
         .duration(300)
         .attr("r", 8)
         .style("fill", "black");
+
+    tooltip.attr("x", iwidth-360)
+        .attr("y", iheight-400)
+        .html(`Se registraron ${parseInt(d.value).toLocaleString()} incautaciones ese mes`)
+        .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px');
    
  }).on('mouseout',function(d){
   
@@ -39,6 +44,9 @@ function graph_line(g,array,x1,y1,eje_y,eje_x,color){
         .duration(300)
         .attr("r", 4)
         .style("fill", color);
+
+  tooltip.text("") .transition()
+        .duration(300)
  
  });
 
@@ -51,6 +59,11 @@ function grafica(clase_sitio,incautaciones_depto,svg,iwidth,iheight,g){
 
  svg.selectAll( ["#id_5","#id_6","#id_7","#id_8"] ).transition().duration(350).remove()
 
+let tooltip = g.append("text")
+        .style("font-size", "10pt")
+        .style("font-family", "sans-serif")  
+        .style("color", "steelblue")
+        .attr("x", 0);
   
   const x1 = d3.scaleBand()
   .domain(incautaciones_depto.map(d=>d['DEPARTAMENTO']))
