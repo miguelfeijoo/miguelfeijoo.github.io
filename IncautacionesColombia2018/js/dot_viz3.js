@@ -33,7 +33,7 @@ function graph_line(g,array,x1,y1,eje_y,eje_x,color){
    
  }).on('mouseout',function(d){
   
- g.selectAll( "#id_path" ).transition().duration(350).remove()
+ g.selectAll( "#id_5" ).transition().duration(350).remove()
  d3.select(this)
         .transition()
         .duration(300)
@@ -49,7 +49,7 @@ function graph_line(g,array,x1,y1,eje_y,eje_x,color){
 
 function grafica(clase_sitio,incautaciones_depto,svg,iwidth,iheight,g){
 
-  svg.selectAll(["#id_5","#id_6"]).remove();
+  svg.selectAll(["#id_6"]).remove();
 
   
   const x1 = d3.scaleBand()
