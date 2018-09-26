@@ -1,4 +1,4 @@
-function graph_line(g,array,x1,y1,eje_y,eje_x,color){
+function graph_line(g,array,x1,y1,eje_y,eje_x,color, iwidth, iheight){
 
 
 let tooltip = g.append("text")
@@ -100,7 +100,7 @@ function grafica(clase_sitio,incautaciones_depto,svg,iwidth,iheight,g){
 
   
 
- graph_line(g, incautaciones_depto, x1, y1, clase_sitio, 'DEPARTAMENTO', 'firebrick')
+ graph_line(g, incautaciones_depto, x1, y1, clase_sitio, 'DEPARTAMENTO', 'firebrick',iwidth,iheight)
  
 
 
