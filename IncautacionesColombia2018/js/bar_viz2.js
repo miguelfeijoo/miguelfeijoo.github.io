@@ -1,4 +1,4 @@
-function grafica(depto,incautaciones_depto_sitio_mes,svg,g,iwidth,iheight){
+function grafica2(depto,incautaciones_depto_sitio_mes,svg,g,iwidth,iheight){
 
   svg.selectAll(["id_1","id_2","id_3","id_4"]).remove();
 
@@ -190,7 +190,7 @@ var svg = d3.select( "svg.d" ),
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
     g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
- grafica(depto,incautaciones_depto_sitio_mes,svg,g,iwidth,iheight)
+ grafica2(depto,incautaciones_depto_sitio_mes,svg,g,iwidth,iheight)
 
 
 
