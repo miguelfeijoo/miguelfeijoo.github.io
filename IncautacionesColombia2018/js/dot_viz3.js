@@ -1,7 +1,11 @@
 function graph_line(g,array,x1,y1,eje_y,eje_x,color){
 
 
-
+let tooltip = g.append("text")
+        .style("font-size", "10pt")
+        .style("font-family", "sans-serif")  
+        .style("color", "steelblue")
+        .attr("x", 0);
 
  g.selectAll( "circle" )
     .data( array ).enter()   
@@ -59,11 +63,7 @@ function grafica(clase_sitio,incautaciones_depto,svg,iwidth,iheight,g){
 
  svg.selectAll( ["#id_5","#id_6","#id_7","#id_8"] ).transition().duration(350).remove()
 
-let tooltip = g.append("text")
-        .style("font-size", "10pt")
-        .style("font-family", "sans-serif")  
-        .style("color", "steelblue")
-        .attr("x", 0);
+
   
   const x1 = d3.scaleBand()
   .domain(incautaciones_depto.map(d=>d['DEPARTAMENTO']))
