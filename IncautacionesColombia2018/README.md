@@ -14,5 +14,5 @@ Por otro lado, para el pre-procesamiento de la información, se llevó a cabo util
 
 
 
-SCREENSHOT:
+SCREENSHOT: https://raw.githubusercontent.com/miguelfeijoo/miguelfeijoo.github.io/master/IncautacionesColombia2018/grafica_estupefacientes2018.png
 
