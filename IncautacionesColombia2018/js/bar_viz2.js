@@ -1,6 +1,6 @@
 function grafica2(depto,incautaciones_depto_sitio_mes,svg,g,iwidth,iheight){
 
-  svg.selectAll(["id_1","id_2","id_3","id_4"]).remove();
+  svg.selectAll(["#id_1","#id_2","#id_3","#id_4"]).remove();
 
   
   let tooltip = g.append("text")
