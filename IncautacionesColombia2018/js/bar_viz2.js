@@ -2,6 +2,7 @@
 function grafica(depto,incautaciones_depto_sitio_mes,svg, iwidth, iheight, g){
 
 
+  svg.selectAll(["#id_1","#id_2","#id_3","#id_4"]).remove();
 
   
   let tooltip = g.append("text")
@@ -183,10 +184,12 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
 } ).then(function(incautaciones_depto_sitio_mes){
 
 
-
+console.log(incautaciones_depto_sitio_mes)
 
   d3.select("#clase_sitio").on("change", function(){
                 depto = this.value;
+
+
 
    var svg = d3.select( "svg.d" ),
     margin = { top: 50, right: 30, bottom: 70, left: 80 },
@@ -194,8 +197,12 @@ d3.csv('https://raw.githubusercontent.com/miguelfeijoo/IncautacionesColombia2018
     iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
     g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
+
+
+
  grafica(depto,incautaciones_depto_sitio_mes,svg, iwidth,iheight,g)
 
+console.log("pinto "+depto )
 
 
 })})
