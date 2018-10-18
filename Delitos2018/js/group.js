@@ -28,7 +28,7 @@ function first(){
 				    
 
 				y =  d3.scaleLog()
-				      .domain([1/(d3.nest().key(d => d.name).rollup(data => d3.max(data, d => d.value) / d3.min(data, d => d.value)).entries(data).reduce((p, d) => Math.max(p, d.value), 0);), (d3.nest().key(d => d.name).rollup(data => d3.max(data, d => d.value) / d3.min(data, d => d.value)).entries(data).reduce((p, d) => Math.max(p, d.value), 0);)])
+				      .domain([1/(d3.nest().key(d => d.name).rollup(data => d3.max(data, d => d.value) / d3.min(data, d => d.value)).entries(data).reduce((p, d) => Math.max(p, d.value), 0)), (d3.nest().key(d => d.name).rollup(data => d3.max(data, d => d.value) / d3.min(data, d => d.value)).entries(data).reduce((p, d) => Math.max(p, d.value), 0))])
 				      .range([height - margin.bottom, margin.top]);	
 				
 
