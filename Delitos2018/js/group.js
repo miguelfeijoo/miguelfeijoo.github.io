@@ -19,7 +19,7 @@ function first(){
 
 
                 height = 600;
-                width = 750;
+                width = 720;
 
 
 
