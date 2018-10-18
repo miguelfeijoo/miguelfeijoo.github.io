@@ -20,6 +20,9 @@ function first(){
                 g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
 
+                height = 600;
+
+
 
 				x = d3.scaleTime()
 				    .domain(d3.extent(data, d => d.date))
