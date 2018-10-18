@@ -13,7 +13,8 @@ function first(){
 
 
             	
-				var svg = d3.select( "svg.c" ),
+				var svg = d3.select( "svg.c" ).style("-webkit-tap-highlight-color", "transparent")
+      .on("mousemove touchmove", moved);,
                 margin = ({top: 20, right: 150, bottom: 150, left: 40}),
                 g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
