@@ -13,9 +13,11 @@ function first(){
 
 
             	
-				const svg = d3.select(DOM.svg(width, height))
-				  .style("-webkit-tap-highlight-color", "transparent")
-				  .on("mousemove touchmove", moved);
+				var svg = d3.select( "svg.c" ),
+                margin = { top: 50, right: 30, bottom: 30, left: 80 },
+                iwidth = +svg.attr( "width" ) - margin.left - margin.right,
+                iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
+                g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
 				svg.append("g")
 				  .call(xAxis);
