@@ -17,7 +17,7 @@ function first(){
 				.style("-webkit-tap-highlight-color", "transparent")
 				.on("mousemove touchmove", moved);
 
-				margin = ({top: 20, right: 10, bottom: 120, left: 40})
+				margin = ({top: 20, right: -30, bottom: 120, left: 40})
 
 
                 height = 600;
