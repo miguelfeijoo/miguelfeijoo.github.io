@@ -14,19 +14,18 @@ function first(){
 
             	
 				var svg = d3.select( "svg.c" ),
-                margin = { top: 50, right: 30, bottom: 30, left: 80 },
-                iwidth = +svg.attr( "width" ) - margin.left - margin.right,
-                iheight = +svg.attr( "height" ) - margin.top - margin.bottom,
+                margin = ({top: 20, right: 100, bottom: 30, left: 40}),
                 g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
 
                 height = 600;
+                width = 750;
 
 
 
 				x = d3.scaleTime()
 				    .domain(d3.extent(data, d => d.date))
-				    .range([margin.left, iwidth - margin.right])
+				    .range([margin.left, width - margin.right])
 				    .clamp(true)	    
 				    
 
@@ -41,7 +40,7 @@ function first(){
 
 				xAxis = g => g
 				    .attr("transform", `translate(0,${height - margin.bottom})`)
-				    .call(d3.axisBottom(x).ticks(iwidth / 80).tickSizeOuter(0))
+				    .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
 				    .call(g => g.select(".domain").remove())
 
 
@@ -51,7 +50,7 @@ function first(){
 				        .ticks(null, 6))
 				    .call(g => g.selectAll(".tick line").clone()
 				        .attr("stroke-opacity", d => d === 1 ? null : 0.2)
-				        .attr("x2", iwidth - margin.left - margin.right))
+				        .attr("x2", width - margin.left - margin.right))
 				    .call(g => g.select(".domain").remove())	
 				    
 				line = d3.line()
