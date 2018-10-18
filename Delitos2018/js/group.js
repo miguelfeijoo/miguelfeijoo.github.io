@@ -13,7 +13,7 @@ function first(){
 
 
             	
-				svg = d3.select(DOM.svg(width, height))
+				svg = d3.select("svg.c")
 				.style("-webkit-tap-highlight-color", "transparent")
 				.on("mousemove touchmove", moved);
 
