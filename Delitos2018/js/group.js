@@ -14,7 +14,7 @@ function first(){
 
             	
 				var svg = d3.select( "svg.c" ),
-                margin = ({top: 20, right: 100, bottom: 100, left: 40}),
+                margin = ({top: 20, right: 150, bottom: 150, left: 40}),
                 g = svg.append( "g" ).attr( "transform", "translate(" + margin.left + "," + margin.top + ")" );
 
 
