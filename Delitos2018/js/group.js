@@ -28,7 +28,7 @@ function first(){
 				    
 
 				y = {
-				  const k = d3.nest()
+				  k = d3.nest()
 				      .key(d => d.name)
 				      .rollup(data => d3.max(data, d => d.value) / d3.min(data, d => d.value))
 				    .entries(data)
