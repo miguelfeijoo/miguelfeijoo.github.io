@@ -1,4 +1,4 @@
-function graph(depto,data,svg,width,height,margin){
+function graph1(depto,data,svg,width,height,margin){
 
 				svg.selectAll(["#id_1","#id_2","#id_3","#id_4","#id_5"]).remove();
 
@@ -61,7 +61,7 @@ function graph(depto,data,svg,width,height,margin){
 
 }
 
-function second(){
+function third(){
 
               parseDate = d3.timeParse("%d/%m/%Y")
               formatDate = d3.timeFormat("%B, %Y")     
@@ -93,7 +93,7 @@ function second(){
 
 				
 
-               graph(depto,data,svg,width,height,margin)
+               graph1(depto,data,svg,width,height,margin)
 
                 bisect = d3.bisector(d => d.date).left	
 
@@ -167,4 +167,4 @@ function second(){
 
 )}
 
-second();
+third();
