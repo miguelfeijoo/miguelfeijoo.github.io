@@ -65,7 +65,7 @@ function second(){
 
               parseDate = d3.timeParse("%d/%m/%Y")
               formatDate = d3.timeFormat("%B, %Y")     
-              d3.csv('https://raw.githubusercontent.com/miguelfeijoo/miguelfeijoo.github.io/master/Delitos2018/data/processed/df_sexo.csv', function ( d ) {
+              d3.csv('https://raw.githubusercontent.com/miguelfeijoo/miguelfeijoo.github.io/master/Delitos2018/data/processed/df_depto.csv', function ( d ) {
               return {
            	    'date': parseDate(d["Fecha"]),
                 'name': d[ 'name' ],
