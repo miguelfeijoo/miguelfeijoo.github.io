@@ -51,32 +51,7 @@ function graph(genero,data,svg,width,height,margin){
 
 				
 
-				const serie = svg.append("g")
-				  .style("font", "bold 10px sans-serif")
-				.selectAll("g")
-				.data(series)
-				.enter().append("g");
-
-				serie.append("path")
-				  .attr("fill", "none")
-				  .attr("stroke-width", 1.5)
-				  .attr("stroke-linejoin", "round")
-				  .attr("stroke-linecap", "round")
-				  .attr("stroke", d => z(d.key))
-				  .attr("d", d => line(d.values));
-
-				serie.append("text")
-				  .datum(d => ({key: d.key, value: d.values[d.values.length - 1].value}))
-				  .attr("fill", "none")
-				  .attr("stroke", "white")
-				  .attr("stroke-width", 3)
-				  .attr("x", x.range()[1] + 3)
-				  .attr("y", d => y(d.value))
-				  .attr("dy", "0.35em")
-				  .text(d => d.key)
-				.clone(true)
-				  .attr("fill", d => z(d.key))
-				  .attr("stroke", null);
+				
 
 				
 
@@ -121,6 +96,33 @@ function second(){
 				  .attr("y1", height)
 				  .attr("y2", 0)
 				  .attr("stroke", "black");
+
+				const serie = svg.append("g")
+				  .style("font", "bold 10px sans-serif")
+				.selectAll("g")
+				.data(series)
+				.enter().append("g");
+
+				serie.append("path")
+				  .attr("fill", "none")
+				  .attr("stroke-width", 1.5)
+				  .attr("stroke-linejoin", "round")
+				  .attr("stroke-linecap", "round")
+				  .attr("stroke", d => z(d.key))
+				  .attr("d", d => line(d.values));
+
+				serie.append("text")
+				  .datum(d => ({key: d.key, value: d.values[d.values.length - 1].value}))
+				  .attr("fill", "none")
+				  .attr("stroke", "white")
+				  .attr("stroke-width", 3)
+				  .attr("x", x.range()[1] + 3)
+				  .attr("y", d => y(d.value))
+				  .attr("dy", "0.35em")
+				  .text(d => d.key)
+				.clone(true)
+				  .attr("fill", d => z(d.key))
+				  .attr("stroke", null);
 
                 d3.transition()
 				  .ease(d3.easeCubicOut)
