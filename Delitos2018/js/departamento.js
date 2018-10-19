@@ -78,7 +78,7 @@ function third(){
             	d3.select("#depto").on("change", function(){
                 depto = this.value;
             	
-				svg = d3.select("svg.d")
+				svg = d3.select("svg.e")
 				.style("-webkit-tap-highlight-color", "transparent")
 				.on("mousemove touchmove", moved);
 
