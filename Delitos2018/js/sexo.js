@@ -89,6 +89,12 @@ function second(){
                 width = 720;
 
 
+               
+
+				
+
+               graph(genero,data,svg,width,height,margin)
+
                 bisect = d3.bisector(d => d.date).left	
 
                 const rule = svg.append("g")
@@ -148,10 +154,6 @@ function second(){
 				}
 
 				update(x.domain()[0]);
-
-				
-
-               graph(genero,data,svg,width,height,margin)
 
             
             
