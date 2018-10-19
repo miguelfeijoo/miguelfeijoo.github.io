@@ -12,7 +12,8 @@ function second(){
               };
             } ).then(function(data){
 
-
+            	d3.select("#genero").on("change", function(){
+                genero = this.value;
             	
 				svg = d3.select("svg.d")
 				.style("-webkit-tap-highlight-color", "transparent")
