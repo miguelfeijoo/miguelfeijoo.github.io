@@ -1,31 +1,6 @@
-function second(){
+function graph(genero,data,svg,width,height,margin){
 
-              parseDate = d3.timeParse("%d/%m/%Y")
-              formatDate = d3.timeFormat("%B, %Y")     
-              d3.csv('https://raw.githubusercontent.com/miguelfeijoo/miguelfeijoo.github.io/master/Delitos2018/data/processed/df_sexo.csv', function ( d ) {
-              return {
-           	    'date': parseDate(d["Fecha"]),
-                'name': d[ 'name' ],
-                'sexo': d['Sexo'],
-                'value': +d[ 'CantidadTotal' ]
-                
-              };
-            } ).then(function(data){
-
-            	d3.select("#genero").on("change", function(){
-                genero = this.value;
-            	
-				svg = d3.select("svg.d")
-				.style("-webkit-tap-highlight-color", "transparent")
-				.on("mousemove touchmove", moved);
-
-				margin = ({top: 20, right: -30, bottom: 120, left: 40})
-
-
-                height = 600;
-                width = 720;
-
-
+				svg.selectAll(["#id_1","#id_2","#id_3","#id_4"]).remove();
 
 				x = d3.scaleTime()
 				    .domain(d3.extent(data.filter(d=>d.sexo == genero), d => d.date))
@@ -44,17 +19,17 @@ function second(){
 
 				xAxis = g => g
 				    .attr("transform", `translate(0,${height - margin.bottom})`)
-				    .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
+				    .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0)).attr("id","id_1")
 				    .call(g => g.select(".domain").remove())
 
 
 				yAxis = g => g
 				    .attr("transform", `translate(${margin.left},0)`)
-				    .call(d3.axisLeft(y)
+				    .call(d3.axisLeft(y).attr("id","id_2")
 				        .ticks(null, 6))
 				    .call(g => g.selectAll(".tick line").clone()
 				        .attr("stroke-opacity", d => d === 1 ? null : 0.2)
-				        .attr("x2", width - margin.left - margin.right))
+				        .attr("x2", width - margin.left - margin.right)).attr("id","id_3")
 				    .call(g => g.select(".domain").remove())	
 				    
 				line = d3.line()
@@ -135,6 +110,41 @@ function second(){
 				return svg.node();
 
 
+
+}
+
+function second(){
+
+              parseDate = d3.timeParse("%d/%m/%Y")
+              formatDate = d3.timeFormat("%B, %Y")     
+              d3.csv('https://raw.githubusercontent.com/miguelfeijoo/miguelfeijoo.github.io/master/Delitos2018/data/processed/df_sexo.csv', function ( d ) {
+              return {
+           	    'date': parseDate(d["Fecha"]),
+                'name': d[ 'name' ],
+                'sexo': d['Sexo'],
+                'value': +d[ 'CantidadTotal' ]
+                
+              };
+            } ).then(function(data){
+
+            	d3.select("#genero").on("change", function(){
+                genero = this.value;
+            	
+				svg = d3.select("svg.d")
+				.style("-webkit-tap-highlight-color", "transparent")
+				.on("mousemove touchmove", moved);
+
+				margin = ({top: 20, right: -30, bottom: 120, left: 40})
+
+
+                height = 600;
+                width = 720;
+
+
+
+				
+
+               graph(genero,data,svg,width,height,margin)
 
             
             
