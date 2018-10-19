@@ -14,22 +14,22 @@ function graph(genero,data,svg,width,height,margin){
 				
 
 
-				z = d3.scaleOrdinal(d3.schemeCategory10).domain(data.filter(d=>d.sexo == genero).map(d => d.name)).attr("id","id_3")	
+				z = d3.scaleOrdinal(d3.schemeCategory10).domain(data.filter(d=>d.sexo == genero).map(d => d.name))	
 				
 
 				xAxis = g => g
 				    .attr("transform", `translate(0,${height - margin.bottom})`)
-				    .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0)).attr("id","id_4")
+				    .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
 				    .call(g => g.select(".domain").remove())
 
 
 				yAxis = g => g
 				    .attr("transform", `translate(${margin.left},0)`)
 				    .call(d3.axisLeft(y)
-				        .ticks(null, 6)).attr("id","id_1")
+				        .ticks(null, 6))
 				    .call(g => g.selectAll(".tick line").clone()
 				        .attr("stroke-opacity", d => d === 1 ? null : 0.2)
-				        .attr("x2", width - margin.left - margin.right)).attr("id","id_2")
+				        .attr("x2", width - margin.left - margin.right))
 				    .call(g => g.select(".domain").remove())	
 				    
 				line = d3.line()
