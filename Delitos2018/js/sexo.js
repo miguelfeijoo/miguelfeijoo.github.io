@@ -49,11 +49,7 @@ function graph(genero,data,svg,width,height,margin){
 				svg.append("g")
 				  .call(yAxis);
 
-				const rule = svg.append("g")
-				.append("line")
-				  .attr("y1", height)
-				  .attr("y2", 0)
-				  .attr("stroke", "black");
+				
 
 				const serie = svg.append("g")
 				  .style("font", "bold 10px sans-serif")
@@ -119,6 +115,12 @@ function second(){
 
 
                 bisect = d3.bisector(d => d.date).left	
+
+                const rule = svg.append("g")
+				.append("line")
+				  .attr("y1", height)
+				  .attr("y2", 0)
+				  .attr("stroke", "black");
 
                 d3.transition()
 				  .ease(d3.easeCubicOut)
