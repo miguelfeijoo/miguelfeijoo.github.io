@@ -1,6 +1,6 @@
 function graph(genero,data,svg,width,height,margin){
 
-				svg.selectAll(["#id_1","#id_2","#id_3","#id_4"]).remove();
+				svg.selectAll(["#id_1","#id_2","#id_3","#id_4","#id_5"]).remove();
 
 				x = d3.scaleTime()
 				    .domain(d3.extent(data.filter(d=>d.sexo == genero), d => d.date))
@@ -92,7 +92,7 @@ function second(){
                 bisect = d3.bisector(d => d.date).left	
 
                 const rule = svg.append("g")
-				.append("line")
+				.append("line").attr('id','id_3')
 				  .attr("y1", height)
 				  .attr("y2", 0)
 				  .attr("stroke", "black");
@@ -103,7 +103,7 @@ function second(){
 				.data(series)
 				.enter().append("g");
 
-				serie.append("path")
+				serie.append("path").attr('id','id_4')
 				  .attr("fill", "none")
 				  .attr("stroke-width", 1.5)
 				  .attr("stroke-linejoin", "round")
@@ -111,7 +111,7 @@ function second(){
 				  .attr("stroke", d => z(d.key))
 				  .attr("d", d => line(d.values));
 
-				serie.append("text")
+				serie.append("text").attr('id','id_5')
 				  .datum(d => ({key: d.key, value: d.values[d.values.length - 1].value}))
 				  .attr("fill", "none")
 				  .attr("stroke", "white")
