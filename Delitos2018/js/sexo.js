@@ -1,4 +1,4 @@
-function graph(genero,data,svg,width,height,margin){
+function graph(genero,data,svg,width,height,margin,moved){
 
 				svg.selectAll(["#id_1","#id_2","#id_3","#id_4"]).remove();
 
@@ -144,7 +144,7 @@ function second(){
 
 				
 
-               graph(genero,data,svg,width,height,margin)
+               graph(genero,data,svg,width,height,margin,moved)
 
             
             
