@@ -1,29 +1,29 @@
 function graph(genero,data,svg,width,height,margin){
 
-				svg.selectAll(["#id_1","#id_2","#id_3","#id_4","#id_5"]).remove();
+				svg.selectAll(["#id_1","#id_2","#id_3","#id_4"]).remove();
 
-				var x = d3.scaleTime()
+				x = d3.scaleTime()
 				    .domain(d3.extent(data.filter(d=>d.sexo == genero), d => d.date))
 				    .range([margin.left, width - margin.right])
 				    .clamp(true)	    
 				    
 
-				var y =  d3.scaleLog()
+				y =  d3.scaleLog()
 				      .domain([1/(d3.nest().key(d => d.name).rollup(data => d3.max(data.filter(d=>d.sexo == genero), d => d.value) / d3.min(data.filter(d=>d.sexo == genero), d => d.value)).entries(data.filter(d=>d.sexo == genero)).reduce((p, d) => Math.max(p, d.value), 0)), (d3.nest().key(d => d.name).rollup(data => d3.max(data.filter(d=>d.sexo == genero), d => d.value) / d3.min(data.filter(d=>d.sexo == genero), d => d.value)).entries(data.filter(d=>d.sexo == genero)).reduce((p, d) => Math.max(p, d.value), 0))])
 				      .range([height - margin.bottom, margin.top]);	
 				
 
 
-				var z = d3.scaleOrdinal(d3.schemeCategory10).domain(data.filter(d=>d.sexo == genero).map(d => d.name)).attr("id","id_5")
+				z = d3.scaleOrdinal(d3.schemeCategory10).domain(data.filter(d=>d.sexo == genero).map(d => d.name))	
 				
 
-				var xAxis = g => g
+				xAxis = g => g
 				    .attr("transform", `translate(0,${height - margin.bottom})`)
 				    .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0)).attr("id","id_1")
 				    .call(g => g.select(".domain").remove())
 
 
-				var yAxis = g => g
+				yAxis = g => g
 				    .attr("transform", `translate(${margin.left},0)`)
 				    .call(d3.axisLeft(y).attr("id","id_2")
 				        .ticks(null, 6))
@@ -32,7 +32,7 @@ function graph(genero,data,svg,width,height,margin){
 				        .attr("x2", width - margin.left - margin.right)).attr("id","id_3")
 				    .call(g => g.select(".domain").remove())	
 				    
-				var line = d3.line()
+				line = d3.line()
 				    .x(d => x(d.date))
 				    .y(d => y(d.value))
 
