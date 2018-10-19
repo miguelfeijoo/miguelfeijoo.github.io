@@ -1,4 +1,4 @@
-function graph(genero,data,svg,width,height,margin,moved){
+function graph(genero,data,svg,width,height,margin){
 
 				svg.selectAll(["#id_1","#id_2","#id_3","#id_4"]).remove();
 
@@ -36,7 +36,7 @@ function graph(genero,data,svg,width,height,margin,moved){
 				    .x(d => x(d.date))
 				    .y(d => y(d.value))
 
-				bisect = d3.bisector(d => d.date).left				    							    								            
+							    							    								            
 
 				series = d3.nest().key(d => d.name).entries(data.filter(d=>d.sexo == genero)).map(({key, values}) => {
 				  const v = values[0].value;
@@ -82,30 +82,7 @@ function graph(genero,data,svg,width,height,margin,moved){
 				  .attr("fill", d => z(d.key))
 				  .attr("stroke", null);
 
-				d3.transition()
-				  .ease(d3.easeCubicOut)
-				  .duration(1500)
-				  .tween("date", () => {
-				    const i = d3.interpolateDate(x.domain()[1], x.domain()[0]);
-				    return t => update(i(t));
-				  });
-
-				function update(date) {
-				date = d3.timeDay.round(date);
-				rule.attr("transform", `translate(${x(date) + 0.5},0)`);
-				serie.attr("transform", ({values}) => {
-				  const i = bisect(values, date, 0, values.length - 1);
-				  return `translate(0,${y(1) - y(values[i].value / values[0].value)})`;
-				});
-				svg.property("value", date).dispatch("input");
-				}
-
-				function moved() {
-				update(x.invert(d3.mouse(this)[0]));
-				d3.event.preventDefault();
-				}
-
-				update(x.domain()[0]);
+				
 
 				return svg.node();
 
@@ -141,10 +118,36 @@ function second(){
                 width = 720;
 
 
+                bisect = d3.bisector(d => d.date).left	
+
+                d3.transition()
+				  .ease(d3.easeCubicOut)
+				  .duration(1500)
+				  .tween("date", () => {
+				    const i = d3.interpolateDate(x.domain()[1], x.domain()[0]);
+				    return t => update(i(t));
+				  });
+
+				function update(date) {
+				date = d3.timeDay.round(date);
+				rule.attr("transform", `translate(${x(date) + 0.5},0)`);
+				serie.attr("transform", ({values}) => {
+				  const i = bisect(values, date, 0, values.length - 1);
+				  return `translate(0,${y(1) - y(values[i].value / values[0].value)})`;
+				});
+				svg.property("value", date).dispatch("input");
+				}
+
+				function moved() {
+				update(x.invert(d3.mouse(this)[0]));
+				d3.event.preventDefault();
+				}
+
+				update(x.domain()[0]);
 
 				
 
-               graph(genero,data,svg,width,height,margin,moved)
+               graph(genero,data,svg,width,height,margin)
 
             
             
