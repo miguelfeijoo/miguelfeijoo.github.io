@@ -1,43 +1,20 @@
-function first(){
+function graph(genero,data,svg,width,height,margin){
 
-              parseDate = d3.timeParse("%d/%m/%Y")
-              formatDate = d3.timeFormat("%B, %Y")     
-              d3.csv('https://raw.githubusercontent.com/miguelfeijoo/miguelfeijoo.github.io/master/Delitos2018/data/processed/df_total.csv', function ( d ) {
-              return {
-           	    'date': parseDate(d["Fecha"]),
-                'name': d[ 'name' ],
-                'value': +d[ 'CantidadTotal' ]
-                
-              };
-            } ).then(function(data){
-
-
-            	
-				svg = d3.select("svg.c")
-				.style("-webkit-tap-highlight-color", "transparent")
-				.on("mousemove touchmove", moved);
-
-				margin = ({top: 20, right: -30, bottom: 120, left: 40})
-
-
-                height = 600;
-                width = 720;
-
-
+				svg.selectAll(["#id_1","#id_2","#id_3","#id_4","#id_5"]).remove();
 
 				x = d3.scaleTime()
-				    .domain(d3.extent(data, d => d.date))
+				    .domain(d3.extent(data.filter(d=>d.departamento == depto), d => d.date))
 				    .range([margin.left, width - margin.right])
 				    .clamp(true)	    
 				    
 
 				y =  d3.scaleLog()
-				      .domain([1/(d3.nest().key(d => d.name).rollup(data => d3.max(data, d => d.value) / d3.min(data, d => d.value)).entries(data).reduce((p, d) => Math.max(p, d.value), 0)), (d3.nest().key(d => d.name).rollup(data => d3.max(data, d => d.value) / d3.min(data, d => d.value)).entries(data).reduce((p, d) => Math.max(p, d.value), 0))])
+				      .domain([1/(d3.nest().key(d => d.name).rollup(data => d3.max(data.filter(d=>d.departamento == depto), d => d.value) / d3.min(data.filter(d=>d.departamento == depto), d => d.value)).entries(data.filter(d=>d.departamento == depto)).reduce((p, d) => Math.max(p, d.value), 0)), (d3.nest().key(d => d.name).rollup(data => d3.max(data.filter(d=>d.departamento == depto), d => d.value) / d3.min(data.filter(d=>d.departamento == depto), d => d.value)).entries(data.filter(d=>d.departamento == depto)).reduce((p, d) => Math.max(p, d.value), 0))])
 				      .range([height - margin.bottom, margin.top]);	
 				
 
 
-				z = d3.scaleOrdinal(d3.schemeCategory10).domain(data.map(d => d.name))	
+				z = d3.scaleOrdinal(d3.schemeCategory10).domain(data.filter(d=>d.departamento == depto).map(d => d.name))	
 				
 
 				xAxis = g => g
@@ -59,21 +36,69 @@ function first(){
 				    .x(d => x(d.date))
 				    .y(d => y(d.value))
 
-				bisect = d3.bisector(d => d.date).left				    							    								            
+							    							    								            
 
-				series = d3.nest().key(d => d.name).entries(data).map(({key, values}) => {
+				series = d3.nest().key(d => d.name).entries(data.filter(d=>d.departamento == depto)).map(({key, values}) => {
 				  const v = values[0].value;
 				  return {key, values: values.map(({date, value}) => ({date, value: value / v}))};
-				})				
+				})		
 
 				svg.append("g")
-				  .call(xAxis);
+				  .call(xAxis).attr('id','id_1');
 
 				svg.append("g")
-				  .call(yAxis);
+				  .call(yAxis).attr('id','id_2');
 
-				const rule = svg.append("g")
-				.append("line")
+				
+
+				
+
+				
+
+				return svg.node();
+
+
+
+}
+
+function second(){
+
+              parseDate = d3.timeParse("%d/%m/%Y")
+              formatDate = d3.timeFormat("%B, %Y")     
+              d3.csv('https://raw.githubusercontent.com/miguelfeijoo/miguelfeijoo.github.io/master/Delitos2018/data/processed/df_sexo.csv', function ( d ) {
+              return {
+           	    'date': parseDate(d["Fecha"]),
+                'name': d[ 'name' ],
+                'departamento': d['Departamento'],
+                'value': +d[ 'CantidadTotal' ]
+                
+              };
+            } ).then(function(data){
+
+            	d3.select("#depto").on("change", function(){
+                depto = this.value;
+            	
+				svg = d3.select("svg.d")
+				.style("-webkit-tap-highlight-color", "transparent")
+				.on("mousemove touchmove", moved);
+
+				margin = ({top: 20, right: -30, bottom: 120, left: 40})
+
+
+                height = 600;
+                width = 720;
+
+
+               
+
+				
+
+               graph(genero,data,svg,width,height,margin)
+
+                bisect = d3.bisector(d => d.date).left	
+
+                const rule = svg.append("g")
+				.append("line").attr('id','id_3')
 				  .attr("y1", height)
 				  .attr("y2", 0)
 				  .attr("stroke", "black");
@@ -84,7 +109,7 @@ function first(){
 				.data(series)
 				.enter().append("g");
 
-				serie.append("path")
+				serie.append("path").attr('id','id_4')
 				  .attr("fill", "none")
 				  .attr("stroke-width", 1.5)
 				  .attr("stroke-linejoin", "round")
@@ -92,7 +117,7 @@ function first(){
 				  .attr("stroke", d => z(d.key))
 				  .attr("d", d => line(d.values));
 
-				serie.append("text")
+				serie.append("text").attr('id','id_5')
 				  .datum(d => ({key: d.key, value: d.values[d.values.length - 1].value}))
 				  .attr("fill", "none")
 				  .attr("stroke", "white")
@@ -105,7 +130,7 @@ function first(){
 				  .attr("fill", d => z(d.key))
 				  .attr("stroke", null);
 
-				d3.transition()
+                d3.transition()
 				  .ease(d3.easeCubicOut)
 				  .duration(1500)
 				  .tween("date", () => {
@@ -130,15 +155,11 @@ function first(){
 
 				update(x.domain()[0]);
 
-				return svg.node();
-
-
-
             
             
 
             
-			}
+			})}
 
 
 
@@ -146,4 +167,4 @@ function first(){
 
 )}
 
-first();
+second();
