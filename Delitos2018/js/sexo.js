@@ -92,7 +92,7 @@ function second(){
                 bisect = d3.bisector(d => d.date).left	
 
                 const rule = svg.append("g")
-				.append("line")
+				.append("line").attr("id","id_1")
 				  .attr("y1", height)
 				  .attr("y2", 0)
 				  .attr("stroke", "black");
@@ -103,7 +103,7 @@ function second(){
 				.data(series)
 				.enter().append("g");
 
-				serie.append("path")
+				serie.append("path").attr("id","id_2")
 				  .attr("fill", "none")
 				  .attr("stroke-width", 1.5)
 				  .attr("stroke-linejoin", "round")
