@@ -1,6 +1,6 @@
 function graph1(depto,data,svg,width,height,margin){
 
-				svg.selectAll(["#id_1","#id_2","#id_3","#id_4","#id_5"]).remove();
+				svg.selectAll(["#id_6","#id_7","#id_8","#id_9","#id_10"]).remove();
 
 				x = d3.scaleTime()
 				    .domain(d3.extent(data.filter(d=>d.departamento == depto), d => d.date))
@@ -44,10 +44,10 @@ function graph1(depto,data,svg,width,height,margin){
 				})		
 
 				svg.append("g")
-				  .call(xAxis).attr('id','id_1');
+				  .call(xAxis).attr('id','id_6');
 
 				svg.append("g")
-				  .call(yAxis).attr('id','id_2');
+				  .call(yAxis).attr('id','id_7');
 
 				
 
@@ -98,7 +98,7 @@ function third(){
                 bisect = d3.bisector(d => d.date).left	
 
                 const rule = svg.append("g")
-				.append("line").attr('id','id_3')
+				.append("line").attr('id','id_8')
 				  .attr("y1", height)
 				  .attr("y2", 0)
 				  .attr("stroke", "black");
@@ -109,7 +109,7 @@ function third(){
 				.data(series)
 				.enter().append("g");
 
-				serie.append("path").attr('id','id_4')
+				serie.append("path").attr('id','id_9')
 				  .attr("fill", "none")
 				  .attr("stroke-width", 1.5)
 				  .attr("stroke-linejoin", "round")
@@ -117,7 +117,7 @@ function third(){
 				  .attr("stroke", d => z(d.key))
 				  .attr("d", d => line(d.values));
 
-				serie.append("text").attr('id','id_5')
+				serie.append("text").attr('id','id_10')
 				  .datum(d => ({key: d.key, value: d.values[d.values.length - 1].value}))
 				  .attr("fill", "none")
 				  .attr("stroke", "white")
