@@ -1,4 +1,4 @@
-function graph(genero,data,svg,width,height,margin){
+function graph(depto,data,svg,width,height,margin){
 
 				svg.selectAll(["#id_1","#id_2","#id_3","#id_4","#id_5"]).remove();
 
@@ -93,7 +93,7 @@ function second(){
 
 				
 
-               graph(genero,data,svg,width,height,margin)
+               graph(depto,data,svg,width,height,margin)
 
                 bisect = d3.bisector(d => d.date).left	
 
