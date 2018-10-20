@@ -13,13 +13,13 @@
 
     <tr>
         <td>
-            <svg class = c width="1550" height="500"></svg>     
+            <svg class = c width="1800" height="800"></svg>     
         </td>
          <td>
-            <svg class = "d" width="1550" height="500"></svg>     
+            <svg class = "d" width="1800" height="800"></svg>     
         </td>
         <td>
-            <svg class = e width="1550" height="500"></svg>     
+            <svg class = e width="1800" height="800"></svg>     
         </td>
         
     </tr>
@@ -46,14 +46,23 @@
                 <a href="https://www.datos.gov.co/Seguridad-y-Defensa/Homicidios-2017/mkw6-468s/data" target="_blank">Homicidios 2017</a>, <a href="https://www.datos.gov.co/Seguridad-y-Defensa/Homicidios-2018/miiu-38jg/data" target="_blank">Homicidios 2018</a>, <a href="https://www.datos.gov.co/Seguridad-y-Defensa/Delitos-sexuales-2017/sify-mege/data" target="_blank">Delitos Sexuales 2017</a>, <a href="https://www.datos.gov.co/Seguridad-y-Defensa/Delitos-sexuales-2018/macp-zxhz/data" target="_blank">Delitos Sexuales 2018</a>, <a href="https://www.datos.gov.co/Seguridad-y-Defensa/Amenazas-2017/khxb-7s8e/data" target="_blank">Amenazas 2017</a> y <a href="https://www.datos.gov.co/Seguridad-y-Defensa/Amenazas-2018/jpv6-82wk/data" target="_blank">Amenazas 2017</a> disponible en el portal de <a href="https://www.datos.gov.co/" target="_blank">Datos Abiertos de Colombia</a>
                  , proporcionada por el Grupo Información de Criminalidad (GICRI) - DIJIN de la Policía Nacional, con el propósito de entender mejor el estado actual de cómo se distribuyen las incautaciones y caracerísticas de los estupefacientes a nivel nacional y regional. 
                  El principal objetivo, será entonces el de PRESENTAR UN RESUMEN DE TENDENCIAS, OUTLIERS Y/O CARACTERÍTICAS PARA SU IDENTIFICACIÓN Y COMPARACIÓN ENTRE ESTUPEFACIENTES/DEPARTAMENTOS. 
+                 Los datos mencionados previamente son de tipo <strong>Temporal</strong>, en donde cada Ítem representa un tipo de crimen (Delito Sexual, Amenaza u Homicidio) en alguna zona del país. Se dispone de <strong>Attributes</strong> de tipo <strong>Quantitative Sequential</strong> como la fecha en la que ocurrio en incidente, así como otro de tipo <strong>Categorical</strong> como el género de la misma persona o el registro de departamentos. El dataset puede llegar a ser de tipo <strong>Dynamic</strong> dado que la entidad que lo proporciona es la Policia Nacional, quienes disponen de un sistema de información descentralizado para el reporte de este y otros incidentes. Sin embargo, para efectos de la presente interfaz se dispone de un dataset de tipo <strong>Static</strong> dada la naturaleza de los datos exportados para 2017 hasta lo que llevamos del 2018.
             </p>
 
-            <h2>CIFRAS GENERALES - CANTIDAD  [PARTE 1]</h2>
+            <h2>CIFRAS GENERALES - CANTIDAD / HOMICIDIOS, DELITOS SEXUALES y AMENAZAS  [PARTE 1]</h2>
             
             <p class="main-text">            
                 Mediante las siguientes visualizaciones, se pretende presentar al espectador un resumen general de los datos sobre los delitos [Delitos Sexuales, Delitos por Homicidio y Delitos por Amenaza], reportados para el año 2018 hasta el mes de Junio, para los Departamentos y Municipios de Colombia, por la DIJIN - Policía Nacional.
 
                 A continuación, se podrá encontrar información asociada por Departamento para establecer hallazgo del número de alǵun crimen o conjunto de crímenes para el periodo de estudio (2017 / Junio de 2018). De esta forma, se podrá encontrar información asociada con el conteo discriminado por delito por departamento e información generalizada del total de delitos por municipio/departamento.
+
+                Como se puede observar en las visualizaciones, la criminalidad por homicidios y amenazas, particularmente, no ha sido en decremento su tendencia. Considerando que se tratan de index charts, los cuales son multi series line charts, que representan los índices por fecha, se puede ver que la tendencia de delitos, a diferencia de los otros dos delitos, tiene cierto decremento. Sin embargo, cabe mencionar que se registran aumentos repentinos aproximadas a las fechas de festividades. Esta relación de incremento se presenta debido a la situación de la llamada PAZ, en donde homicidios y amenazas a líderes sociales está siendo un hito de crecimiento en tendencia. 
+
+
+                Por otro lado, al realizar el análisis discriminado por género, es evidente que el género masculino tiene una relación superior del 90% en los reportes de los delitos para todos los meses desde 2017. Adicionalmente, al realizar el análisis discriminado por departamento, se puede ver la tendencia de crecimiento y en mantenimiento, para los departamentos capitales del país con órdenes de medición superior a la mayoría entre los 32 departamentos con los que consta Colombia. Así,se peude ver que los que sobresalen son: Norte de Santander, Cauca, Antioquia, Cundinamarca y Valle.  
+
+
+                Es importante mencionar que estas cifras no se encuentran normalizadas por cantidad de habitantes para cada grupo de población, solo se habla en términos de reportes globales.
             </p>
             
        
@@ -111,7 +120,7 @@
             <h2>CIFRAS GENERALES - CANTIDAD  [PARTE 3]</h2>
 
              <p class="main-text">            
-                Finalmente, se procedió con la realización de una visualización genérica representativa por género, para verificar la relación en el tiempo de los crímenes en cuestión. 
+                Finalmente, como ya se mencionó, se procedió con la realización de una visualización genérica representativa por género, para verificar la relación en el tiempo de los crímenes en cuestión. 
             </p>
 
 
@@ -139,9 +148,18 @@
         
             
             
-            <h2>Conclusiones y Framework</h2>                
+            <h2>Conclusiones y Abstracción</h2>                
             <p class="main-text">            
-                Para el desarrollo de cada una de las visualizaciones se estableció con información que se reparte de forma tanto CATERÓRICA (NOMBRE DE LOS MESES Y DEPARTAMENTOS) como CUANTITATIVOS SECUENCIALES (CONTEOS DE CANTIDAD Y NÚUMERO DE INCAUTACIONES), a través de fuentes de datos que on ESTÁTICAS, con tipo de dataset principalmente: TABLAS, teniendo como atributos cada uno de los elementos descrito previamente. Sobre las marcas y los canales, para la visualziación 1, se puede observar como MARCA líneas y POSITION ON COMMON SCALE, con manejo de discriminiación por colores para cada uno de los subgrupos. Para la visualización 2, se tiene una relación de MARCA: Lineas y de Canal de igual forma POSITION ON COMMON SCALE. Para la visualización 3, se tiene una relación de MARCAS: PUNTOS, con atributos ESPACIALES. El encode, está relacionado, principalmente con EXPRESS dada la importancia de los valores de número y cantidad relacionados en todas las gráficas.
+                Como bien muestran cada una de las tres visualizaciones presentadas (mismo tipo de modismo: Multi Series Line Chart): 
+
+                (1) Promedio logarítmico de la cantidad por crimen registrado para una fecha (día) particular, expresada en un eje con escala de tiempo, desde enero del 2017 hasta junio de 2018   
+                (2) Promedio logarítmico de la cantidad por crimen registrado para una fecha (día) particular, expresada en un eje con escala de tiempo, desde enero del 2017 hasta junio de 2018, filtrada por género de interés: MASCULINO O FEMENINO.
+                (3)   Promedio logarítmico de la cantidad por crimen registrado para una fecha (día) particular, expresada en un eje con escala de tiempo, desde enero del 2017 hasta junio de 2018, filtrada por departamento de interés entre 32 que constan a Colombia.
+
+
+                Mediante dichas visualizaciones se le da al usuario la posibilidad de discriminar su análisis por género o departamento. La tarea global indentificada, de acuerdo al framework de Tamara Munzner es la de <strong>Compare Trends o Similarities </strong> de las diferentes series de tiempo mostradas (total promedio logarítmico de homicidios/delitos sexuales/amenazas, discriminado por género o departamento). Adicionalmente, por el tipo de modismo usado en las representaciones presentadas, el usuario también podrá estar en la capacidad de <strong>Identify Outliers o Extremes</strong> para una serie de tiempo específica, por ejemplo al existir un incremento notorio de la cantidad para alguno de los crímines para un único año.
+
+                Por otra parte, para el Encode, se utiliza <strong>Arrange Express </strong> con una Mark de tipo <strong>Line</strong> en un Channel de tipo <strong>Position on common scale</strong>, tanto vertical como horizontal. 
             </p>
             
             
