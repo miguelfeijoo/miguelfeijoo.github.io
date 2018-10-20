@@ -20,3 +20,6 @@ Por otro lado, para el pre-procesamiento de la información, se llevó a cabo util
 
 SCREENSHOT: https://raw.githubusercontent.com/miguelfeijoo/miguelfeijoo.github.io/master/Delitos2018/delitos2018_screenshot_tarea4.JPG
 
+Video:
+https://www.youtube.com/watch?v=sDBzEqzHE7Y&feature=youtu.be
+
