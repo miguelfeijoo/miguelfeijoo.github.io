@@ -1,374 +1,210 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
-body {
-  overflow:hidden;
-   margin:0;
-}
 
-text {
-  font-family: sans-serif;
-  pointer-events: none;
-}
+<svg width="960" height="600"></svg>
 
-</style>
-<body>
-<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>  
-<link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="css/style.css">
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
-var w = window.innerWidth;
-var h = window.innerHeight;
-
-var keyc = true, keys = true, keyt = true, keyr = true, keyx = true, keyd = true, keyl = true, keym = true, keyh = true, key1 = true, key2 = true, key3 = true, key0 = true
-
-var focus_node = null, highlight_node = null;
-
-var text_center = false;
-var outline = false;
-
-var min_score = 0;
-var max_score = 1;
-
-var color = d3.scale.linear()
-  .domain([min_score, (min_score+max_score)/2, max_score])
-  .range(["lime", "yellow", "red"]);
-
-var highlight_color = "blue";
-var highlight_trans = 0.1;
-  
-var size = d3.scale.pow().exponent(1)
-  .domain([1,100])
-  .range([8,24]);
-  
-var force = d3.layout.force()
-  .linkDistance(60)
-  .charge(-300)
-  .size([w,h]);
-
-var default_node_color = "#ccc";
-//var default_node_color = "rgb(3,190,100)";
-var default_link_color = "#888";
-var nominal_base_node_size = 8;
-var nominal_text_size = 10;
-var max_text_size = 24;
-var nominal_stroke = 1.5;
-var max_stroke = 4.5;
-var max_base_node_size = 36;
-var min_zoom = 0.1;
-var max_zoom = 7;
-var svg = d3.select("body").append("svg");
-var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
-var g = svg.append("g");
-svg.style("cursor","move");
-
-d3.json("data/graph.json", function(error, graph) {
-
-var linkedByIndex = {};
-    graph.links.forEach(function(d) {
-  linkedByIndex[d.source + "," + d.target] = true;
-    });
-
-  function isConnected(a, b) {
-        return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index == b.index;
-    }
-
-  function hasConnections(a) {
-    for (var property in linkedByIndex) {
-        s = property.split(",");
-        if ((s[0] == a.index || s[1] == a.index) && linkedByIndex[property])          return true;
-    }
-  return false;
+var baseNodes = [
+  { id: "mammal", group: 0, label: "Mammals", level: 1 },
+  { id: "dog"   , group: 0, label: "Dogs"   , level: 2 },
+  { id: "cat"   , group: 0, label: "Cats"   , level: 2 },
+  { id: "fox"   , group: 0, label: "Foxes"  , level: 2 },
+  { id: "elk"   , group: 0, label: "Elk"    , level: 2 },
+  { id: "insect", group: 1, label: "Insects", level: 1 },
+  { id: "ant"   , group: 1, label: "Ants"   , level: 2 },
+  { id: "bee"   , group: 1, label: "Bees"   , level: 2 },
+  { id: "fish"  , group: 2, label: "Fish"   , level: 1 },
+  { id: "carp"  , group: 2, label: "Carp"   , level: 2 },
+  { id: "pike"  , group: 2, label: "Pikes"  , level: 2 }
+]
+var baseLinks = [
+  { target: "mammal", source: "dog" , strength: 0.7 },
+  { target: "mammal", source: "cat" , strength: 0.7 },
+  { target: "mammal", source: "fox" , strength: 0.7 },
+  { target: "mammal", source: "elk" , strength: 0.7 },
+  { target: "insect", source: "ant" , strength: 0.7 },
+  { target: "insect", source: "bee" , strength: 0.7 },
+  { target: "fish"  , source: "carp", strength: 0.7 },
+  { target: "fish"  , source: "pike", strength: 0.7 },
+  { target: "cat"   , source: "elk" , strength: 0.1 },
+  { target: "carp"  , source: "ant" , strength: 0.1 },
+  { target: "elk"   , source: "bee" , strength: 0.1 },
+  { target: "dog"   , source: "cat" , strength: 0.1 },
+  { target: "fox"   , source: "ant" , strength: 0.1 },
+  { target: "pike"  , source: "cat" , strength: 0.1 }
+]
+var nodes = [...baseNodes]
+var links = [...baseLinks]
+function getNeighbors(node) {
+  return baseLinks.reduce(function (neighbors, link) {
+      if (link.target.id === node.id) {
+        neighbors.push(link.source.id)
+      } else if (link.source.id === node.id) {
+        neighbors.push(link.target.id)
+      }
+      return neighbors
+    },
+    [node.id]
+  )
+}
+function isNeighborLink(node, link) {
+  return link.target.id === node.id || link.source.id === node.id
+}
+function getNodeColor(node, neighbors) {
+  if (Array.isArray(neighbors) && neighbors.indexOf(node.id) > -1) {
+    return node.level === 1 ? 'blue' : 'green'
   }
-  
-  force
-    .nodes(graph.nodes)
-    .links(graph.links)
-    .start();
-
-  var link = g.selectAll(".link")
-    .data(graph.links)
-    .enter().append("line")
-    .attr("class", "link")
-  .style("stroke-width",nominal_stroke)
-  .style("stroke", function(d) { 
-  if (isNumber(d.score) && d.score>=0) return color(d.score);
-  else return default_link_color; })
-
-
-  var node = g.selectAll(".node")
-    .data(graph.nodes)
-    .enter().append("g")
-    .attr("class", "node")
-  
-    .call(force.drag)
-
-  
-  node.on("dblclick.zoom", function(d) { d3.event.stopPropagation();
-  var dcx = (window.innerWidth/2-d.x*zoom.scale());
-  var dcy = (window.innerHeight/2-d.y*zoom.scale());
-  zoom.translate([dcx,dcy]);
-   g.attr("transform", "translate("+ dcx + "," + dcy  + ")scale(" + zoom.scale() + ")");
-   
-   
-  });
-  
-
-
-  
-  var tocolor = "fill";
-  var towhite = "stroke";
-  if (outline) {
-    tocolor = "stroke"
-    towhite = "fill"
+  return node.level === 1 ? 'red' : 'gray'
+}
+function getLinkColor(node, link) {
+  return isNeighborLink(node, link) ? 'green' : '#E5E5E5'
+}
+function getTextColor(node, neighbors) {
+  return Array.isArray(neighbors) && neighbors.indexOf(node.id) > -1 ? 'green' : 'black'
+}
+var width = window.innerWidth
+var height = window.innerHeight
+var svg = d3.select('svg')
+svg.attr('width', width).attr('height', height)
+var linkElements,
+  nodeElements,
+  textElements
+// we use svg groups to logically group the elements together
+var linkGroup = svg.append('g').attr('class', 'links')
+var nodeGroup = svg.append('g').attr('class', 'nodes')
+var textGroup = svg.append('g').attr('class', 'texts')
+// we use this reference to select/deselect
+// after clicking the same element twice
+var selectedId
+// simulation setup with all forces
+var linkForce = d3
+  .forceLink()
+  .id(function (link) { return link.id })
+  .strength(function (link) { return link.strength })
+var simulation = d3
+  .forceSimulation()
+  .force('link', linkForce)
+  .force('charge', d3.forceManyBody().strength(-120))
+  .force('center', d3.forceCenter(width / 2, height / 2))
+var dragDrop = d3.drag().on('start', function (node) {
+  node.fx = node.x
+  node.fy = node.y
+}).on('drag', function (node) {
+  simulation.alphaTarget(0.7).restart()
+  node.fx = d3.event.x
+  node.fy = d3.event.y
+}).on('end', function (node) {
+  if (!d3.event.active) {
+    simulation.alphaTarget(0)
   }
-    
-  
-  
-  var circle = node.append("path")
-  
-  
-      .attr("d", d3.svg.symbol()
-        .size(function(d) { return Math.PI*Math.pow(size(d.size)||nominal_base_node_size,2); })
-        .type(function(d) { return d.type; }))
-  
-  .style(tocolor, function(d) { 
-  if (isNumber(d.score) && d.score>=0) return color(d.score);
-  else return default_node_color; })
-    //.attr("r", function(d) { return size(d.size)||nominal_base_node_size; })
-  .style("stroke-width", nominal_stroke)
-  .style(towhite, "white");
-    
-        
-  var text = g.selectAll(".text")
-    .data(graph.nodes)
-    .enter().append("text")
-    .attr("dy", ".35em")
-  .style("font-size", nominal_text_size + "px")
-
-  if (text_center)
-   text.text(function(d) { return d.id; })
-  .style("text-anchor", "middle");
-  else 
-  text.attr("dx", function(d) {return (size(d.size)||nominal_base_node_size);})
-    .text(function(d) { return '\u2002'+d.id; });
-
-  node.on("mouseover", function(d) {
-  set_highlight(d);
+  node.fx = null
+  node.fy = null
+})
+// select node is called on every click
+// we either update the data according to the selection
+// or reset the data if the same node is clicked twice
+function selectNode(selectedNode) {
+  if (selectedId === selectedNode.id) {
+    selectedId = undefined
+    resetData()
+    updateSimulation()
+  } else {
+    selectedId = selectedNode.id
+    updateData(selectedNode)
+    updateSimulation()
+  }
+  var neighbors = getNeighbors(selectedNode)
+  // we modify the styles to highlight selected nodes
+  nodeElements.attr('fill', function (node) { return getNodeColor(node, neighbors) })
+  textElements.attr('fill', function (node) { return getTextColor(node, neighbors) })
+  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode, link) })
+}
+// this helper simple adds all nodes and links
+// that are missing, to recreate the initial state
+function resetData() {
+  var nodeIds = nodes.map(function (node) { return node.id })
+  baseNodes.forEach(function (node) {
+    if (nodeIds.indexOf(node.id) === -1) {
+      nodes.push(node)
+    }
   })
-  .on("mousedown", function(d) { d3.event.stopPropagation();
-    focus_node = d;
-  set_focus(d)
-  if (highlight_node === null) set_highlight(d)
-  
-} ).on("mouseout", function(d) {
-    exit_highlight();
-
-} );
-
-    d3.select(window).on("mouseup",  
-    function() {
-    if (focus_node!==null)
-    {
-      focus_node = null;
-      if (highlight_trans<1)
-      {
-  
-    circle.style("opacity", 1);
-    text.style("opacity", 1);
-    link.style("opacity", 1);
+  links = baseLinks
+}
+// diffing and mutating the data
+function updateData(selectedNode) {
+  var neighbors = getNeighbors(selectedNode)
+  var newNodes = baseNodes.filter(function (node) {
+    return neighbors.indexOf(node.id) > -1 || node.level === 1
+  })
+  var diff = {
+    removed: nodes.filter(function (node) { return newNodes.indexOf(node) === -1 }),
+    added: newNodes.filter(function (node) { return nodes.indexOf(node) === -1 })
   }
-    }
-  
-  if (highlight_node === null) exit_highlight();
-    });
-
-function exit_highlight()
-{
-    highlight_node = null;
-  if (focus_node===null)
-  {
-    svg.style("cursor","move");
-    if (highlight_color!="white")
-  {
-      circle.style(towhite, "white");
-    text.style("font-weight", "normal");
-    link.style("stroke", function(o) {return (isNumber(o.score) && o.score>=0)?color(o.score):default_link_color});
- }
-      
-  }
+  diff.removed.forEach(function (node) { nodes.splice(nodes.indexOf(node), 1) })
+  diff.added.forEach(function (node) { nodes.push(node) })
+  links = baseLinks.filter(function (link) {
+    return link.target.id === selectedNode.id || link.source.id === selectedNode.id
+  })
 }
-
-function set_focus(d)
-{ 
-if (highlight_trans<1)  {
-    circle.style("opacity", function(o) {
-                return isConnected(d, o) ? 1 : highlight_trans;
-            });
-
-      text.style("opacity", function(o) {
-                return isConnected(d, o) ? 1 : highlight_trans;
-            });
-      
-            link.style("opacity", function(o) {
-                return o.source.index == d.index || o.target.index == d.index ? 1 : highlight_trans;
-            });   
-  }
+function updateGraph() {
+  // links
+  linkElements = linkGroup.selectAll('line')
+    .data(links, function (link) {
+      return link.target.id + link.source.id
+    })
+  linkElements.exit().remove()
+  var linkEnter = linkElements
+    .enter().append('line')
+    .attr('stroke-width', 1)
+    .attr('stroke', 'rgba(50, 50, 50, 0.2)')
+  linkElements = linkEnter.merge(linkElements)
+  // nodes
+  nodeElements = nodeGroup.selectAll('circle')
+    .data(nodes, function (node) { return node.id })
+  nodeElements.exit().remove()
+  var nodeEnter = nodeElements
+    .enter()
+    .append('circle')
+    .attr('r', 10)
+    .attr('fill', function (node) { return node.level === 1 ? 'red' : 'gray' })
+    .call(dragDrop)
+    // we link the selectNode method here
+    // to update the graph on every click
+    .on('click', selectNode)
+  nodeElements = nodeEnter.merge(nodeElements)
+  // texts
+  textElements = textGroup.selectAll('text')
+    .data(nodes, function (node) { return node.id })
+  textElements.exit().remove()
+  var textEnter = textElements
+    .enter()
+    .append('text')
+    .text(function (node) { return node.label })
+    .attr('font-size', 15)
+    .attr('dx', 15)
+    .attr('dy', 4)
+  textElements = textEnter.merge(textElements)
 }
-
-
-function set_highlight(d)
-{
-  svg.style("cursor","pointer");
-  if (focus_node!==null) d = focus_node;
-  highlight_node = d;
-
-  if (highlight_color!="white")
-  {
-      circle.style(towhite, function(o) {
-                return isConnected(d, o) ? highlight_color : "white";});
-      text.style("font-weight", function(o) {
-                return isConnected(d, o) ? "bold" : "normal";});
-            link.style("stroke", function(o) {
-          return o.source.index == d.index || o.target.index == d.index ? highlight_color : ((isNumber(o.score) && o.score>=0)?color(o.score):default_link_color);
-
-            });
-  }
+function updateSimulation() {
+  updateGraph()
+  simulation.nodes(nodes).on('tick', () => {
+    nodeElements
+      .attr('cx', function (node) { return node.x })
+      .attr('cy', function (node) { return node.y })
+    textElements
+      .attr('x', function (node) { return node.x })
+      .attr('y', function (node) { return node.y })
+    linkElements
+      .attr('x1', function (link) { return link.source.x })
+      .attr('y1', function (link) { return link.source.y })
+      .attr('x2', function (link) { return link.target.x })
+      .attr('y2', function (link) { return link.target.y })
+  })
+  simulation.force('link').links(links)
+  simulation.alphaTarget(0.7).restart()
 }
-  
-  
-  zoom.on("zoom", function() {
-  
-    var stroke = nominal_stroke;
-    if (nominal_stroke*zoom.scale()>max_stroke) stroke = max_stroke/zoom.scale();
-    link.style("stroke-width",stroke);
-    circle.style("stroke-width",stroke);
-     
-  var base_radius = nominal_base_node_size;
-    if (nominal_base_node_size*zoom.scale()>max_base_node_size) base_radius = max_base_node_size/zoom.scale();
-        circle.attr("d", d3.svg.symbol()
-        .size(function(d) { return Math.PI*Math.pow(size(d.size)*base_radius/nominal_base_node_size||base_radius,2); })
-        .type(function(d) { return d.type; }))
-    
-  //circle.attr("r", function(d) { return (size(d.size)*base_radius/nominal_base_node_size||base_radius); })
-  if (!text_center) text.attr("dx", function(d) { return (size(d.size)*base_radius/nominal_base_node_size||base_radius); });
-  
-  var text_size = nominal_text_size;
-    if (nominal_text_size*zoom.scale()>max_text_size) text_size = max_text_size/zoom.scale();
-    text.style("font-size",text_size + "px");
-
-  g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-  });
-   
-  svg.call(zoom);   
-  
-  resize();
-  //window.focus();
-  d3.select(window).on("resize", resize).on("keydown", keydown);
-    
-  force.on("tick", function() {
-    
-    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-    text.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-  
-    link.attr("x1", function(d) { return d.source.x; })
-      .attr("y1", function(d) { return d.source.y; })
-      .attr("x2", function(d) { return d.target.x; })
-      .attr("y2", function(d) { return d.target.y; });
-    
-    node.attr("cx", function(d) { return d.x; })
-      .attr("cy", function(d) { return d.y; });
-  });
-  
-  function resize() {
-    var width = window.innerWidth, height = window.innerHeight;
-  svg.attr("width", width).attr("height", height);
-    
-  force.size([force.size()[0]+(width-w)/zoom.scale(),force.size()[1]+(height-h)/zoom.scale()]).resume();
-    w = width;
-  h = height;
-  }
-  
-  function keydown() {
-  if (d3.event.keyCode==32) {  force.stop();}
-  else if (d3.event.keyCode>=48 && d3.event.keyCode<=90 && !d3.event.ctrlKey && !d3.event.altKey && !d3.event.metaKey)
-  {
-  switch (String.fromCharCode(d3.event.keyCode)) {
-    case "C": keyc = !keyc; break;
-    case "S": keys = !keys; break;
-  case "T": keyt = !keyt; break;
-  case "R": keyr = !keyr; break;
-    case "X": keyx = !keyx; break;
-  case "D": keyd = !keyd; break;
-  case "L": keyl = !keyl; break;
-  case "M": keym = !keym; break;
-  case "H": keyh = !keyh; break;
-  case "1": key1 = !key1; break;
-  case "2": key2 = !key2; break;
-  case "3": key3 = !key3; break;
-  case "0": key0 = !key0; break;
-  }
-    
-  link.style("display", function(d) {
-        var flag  = vis_by_type(d.source.type)&&vis_by_type(d.target.type)&&vis_by_node_score(d.source.score)&&vis_by_node_score(d.target.score)&&vis_by_link_score(d.score);
-        linkedByIndex[d.source.index + "," + d.target.index] = flag;
-              return flag?"inline":"none";});
-  node.style("display", function(d) {
-        return (key0||hasConnections(d))&&vis_by_type(d.type)&&vis_by_node_score(d.score)?"inline":"none";});
-  text.style("display", function(d) {
-                return (key0||hasConnections(d))&&vis_by_type(d.type)&&vis_by_node_score(d.score)?"inline":"none";});
-        
-        if (highlight_node !== null)
-        {
-          if ((key0||hasConnections(highlight_node))&&vis_by_type(highlight_node.type)&&vis_by_node_score(highlight_node.score)) { 
-          if (focus_node!==null) set_focus(focus_node);
-          set_highlight(highlight_node);
-          }
-          else {exit_highlight();}
-        }
-
-} 
-}
- 
-});
-
-function vis_by_type(type)
-{
-  switch (type) {
-    case "circle": return keyc;
-    case "square": return keys;
-    case "triangle-up": return keyt;
-    case "diamond": return keyr;
-    case "cross": return keyx;
-    case "triangle-down": return keyd;
-    default: return true;
-}
-}
-function vis_by_node_score(score)
-{
-  if (isNumber(score))
-  {
-  if (score>=0.666) return keyh;
-  else if (score>=0.333) return keym;
-  else if (score>=0) return keyl;
-  }
-  return true;
-}
-
-function vis_by_link_score(score)
-{
-  if (isNumber(score))
-  {
-  if (score>=0.666) return key3;
-  else if (score>=0.333) return key2;
-  else if (score>=0) return key1;
-}
-  return true;
-}
-
-function isNumber(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-} 
-
-
+// last but not least, we call updateSimulation
+// to trigger the initial render
+updateSimulation()
 </script>
