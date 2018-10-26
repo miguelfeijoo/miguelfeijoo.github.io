@@ -1,13 +1,7 @@
 {
   "graph": [],
   "links": [
-    {"source": 0, "target": 1},
-    {"source": 0, "target": 2},
-    {"source": 0, "target": 3},
-    {"source": 0, "target": 4},
-    {"source": 0, "target": 5},
-    {"source": 0, "target": 6},
-    {"source": 0, "target": 7}],
+    {"source": "Androsynth", "target": "Podship"}],
   "nodes": [
     {"size": 60, "score": 0, "id": "Androsynth", "type": "circle"},
     {"size": 10, "score": 0.2, "id": "Chenjesu", "type": "circle"},
