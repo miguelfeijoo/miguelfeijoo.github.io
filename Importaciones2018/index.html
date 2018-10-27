@@ -368,7 +368,7 @@ var nodeElements = svg.append("g")
   .enter().append("circle")
     .attr("r", 7)
     .attr("fill", getNodeColor)
-    .call(dragDrop).on('dblclick',function(d){
+    .call(dragDrop).on('mouseover',function(d){
 
       svg.append("title").html(function (node) {   
 
@@ -376,6 +376,15 @@ var nodeElements = svg.append("g")
 
             return "Lugar           : "+d.label+ "<br>" +
                    "Tipo de Lugar   : "+d.type
+
+           })
+    }).on('mouseout',function(d){
+
+      svg.append("title").html(function (node) {   
+
+            console.log("NaN")
+
+            return ""
 
            })
     }).on('click', selectNode)
