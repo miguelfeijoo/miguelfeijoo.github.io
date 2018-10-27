@@ -345,9 +345,9 @@ var dragDrop = d3.drag().on('start', function (node) {
 function selectNode(selectedNode) {
   var neighbors = getNeighbors(selectedNode)
   // we modify the styles to highlight selected nodes
-  nodeElements.attr('fill', function (node) { return getNodeColor(node, neighbors).style('stroke-width',3).style("stroke",'black').attr("r", 9)})
-  textElements.attr('fill', function (node) { return getTextColor(node, neighbors).style('font-weigth','bold') })
-  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode , link).style('stroke-width',3).style("stroke",'black')})
+  nodeElements.attr('fill', function (node) { return getNodeColor(node, neighbors)})
+  textElements.attr('fill', function (node) { return getTextColor(node, neighbors)})
+  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode , link)})
 }
 
 
