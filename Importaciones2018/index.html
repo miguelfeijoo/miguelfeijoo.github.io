@@ -353,6 +353,15 @@ function selectNode(selectedNode) {
 
 }
 
+let tooltip = g.append("text")
+        .style("font-size", "10pt")
+        .style("font-family", "sans-serif")  
+        .style("color", "steelblue")
+        .attr("x", 0);
+
+
+
+
 
 var linkElements = svg.append("g")
   .attr("class", "links")
@@ -370,14 +379,12 @@ var nodeElements = svg.append("g")
     .attr("fill", getNodeColor)
     .call(dragDrop).on('mouseover',function(d){
 
-      svg.append("title").html(function (node) {   
+    tooltip.attr("x", iwidth-360)
+      .attr("y", iheight-400)
+      .html(`${d.type}:  ${d.label}`)
+      .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px');
 
-            console.log(d.label)
 
-            return "Lugar           : "+d.label+ "<br>" +
-                   "Tipo de Lugar   : "+d.type
-
-           })
     }).on('mouseout',function(d){
 
       svg.append("title").html(function (node) {   
