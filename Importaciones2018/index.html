@@ -345,9 +345,9 @@ var dragDrop = d3.drag().on('start', function (node) {
 function selectNode(selectedNode) {
   var neighbors = getNeighbors(selectedNode)
   // we modify the styles to highlight selected nodes
-  nodeElements.attr('fill', function (node) { return getNodeColor(node, neighbors) })
+  nodeElements.attr('fill', function (node) { return getNodeColor(node, neighbors).style('stroke-width',10) })
   textElements.attr('fill', function (node) { return getTextColor(node, neighbors) })
-  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode, link) })
+  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode, link).style('stroke-width',10) })
 }
 var linkElements = svg.append("g")
   .attr("class", "links")
