@@ -347,7 +347,7 @@ function selectNode(selectedNode) {
   // we modify the styles to highlight selected nodes
   nodeElements.attr('fill', function (node) { return getNodeColor(node.style('stroke-width',3).style("stroke",'black').attr("r", 9), neighbors)})
   textElements.attr('fill', function (node) { return getTextColor(node.style('font-weigth','bold'), neighbors) })
-  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode , link.style('stroke-width',3).style("stroke",'black'))})
+  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode , link.style('stroke-width',3).style("stroke",'black'))}
 }
 
 function unselectNode(selectedNode) {
