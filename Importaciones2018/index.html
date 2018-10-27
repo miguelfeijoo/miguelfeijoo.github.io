@@ -92,19 +92,19 @@ var nodes = [
   { id: "Quindío"   , label: "Quindío"   , level: 1 }
 ]
 var links = [
-  { target: "Antioquia", source: "Alemania" , strength: 1 },
-  { target: "Bogotá", source: "Alemania" , strength: 1 },
-  { target: "Cundinamarca", source: "Alemania" , strength: 1 },
-  { target: "Bogotá", source: "Argentina" , strength: 1 },
-  { target: "Bogotá", source: "Belgica" , strength: 1 },
-  { target: "Valle del Cauca", source: "Belgica" , strength: 1 },
-  { target: "Antioquia"  , source: "Brasil", strength: 1 },
-  { target: "Bogotá"  , source: "Brasil", strength: 1 },
-  { target: "Risaralda"  , source: "Brasil", strength: 1 },
-  { target: "Cauca"  , source: "Brasil", strength: 1 },
-  { target: "Valle del Cauca"  , source: "Brasil", strength: 1 },
-  { target: "Bogotá"  , source: "Canada", strength: 1 },
-  { target: "Cundinamarca"  , source: "Canada", strength: 1 }
+  { target: "Antioquia", source: "Alemania" , strength: 0.5 },
+  { target: "Bogotá", source: "Alemania" , strength: 0.5 },
+  { target: "Cundinamarca", source: "Alemania" , strength: 0.5 },
+  { target: "Bogotá", source: "Argentina" , strength: 0.5 },
+  { target: "Bogotá", source: "Belgica" , strength: 0.5 },
+  { target: "Valle del Cauca", source: "Belgica" , strength: 0.5 },
+  { target: "Antioquia"  , source: "Brasil", strength: 0.5 },
+  { target: "Bogotá"  , source: "Brasil", strength: 0.5 },
+  { target: "Risaralda"  , source: "Brasil", strength: 0.5 },
+  { target: "Cauca"  , source: "Brasil", strength: 0.5 },
+  { target: "Valle del Cauca"  , source: "Brasil", strength: 0.5 },
+  { target: "Bogotá"  , source: "Canada", strength: 0.5 },
+  { target: "Cundinamarca"  , source: "Canada", strength: 0.5 }
 ]
 function getNeighbors(node) {
   return links.reduce(function (neighbors, link) {
