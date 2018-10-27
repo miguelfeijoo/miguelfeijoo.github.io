@@ -82,7 +82,7 @@ function first(){
                 .selectAll( "rect" )
                 .data( function( d ) { return keys.map( function( key ) {  return { key: key, value: d[ key ] }; } ); } )
                 .enter().append( "rect" )
-                  .attr( "class", "bar" ).style("stroke-weigth",10).style("stroke","black")
+                  .attr( "class", "bar" ).style("stroke-weigth",5).style("stroke","black")
                   .attr( "x", d => x1( d.key ) )
                   .attr( "y", d => y( d.value ) )
                   .attr( "width", x1.bandwidth())
