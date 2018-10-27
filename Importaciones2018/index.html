@@ -57,7 +57,7 @@ var nodes = [
   { id: "Rumania"   , label: "Rumania"    , level: 2 },
   { id: "Serbia"   , label: "Serbia"   , level: 2 },
   { id: "Singapur"  , label: "Singapur"   , level: 2 },
-  { id: "Suecia"  , label: "Suecia"   , level: 2 },
+  //{ id: "Suecia"  , label: "Suecia"   , level: 2 },
   { id: "Suiza"  , label: "Suiza"  , level: 2 },
   { id: "Taiwan, Provincia China", label: "Taiwan, Provincia China", level: 2 },
   { id: "Tokelau"   , label: "Tokelau"   , level: 2 },
@@ -104,11 +104,89 @@ var links = [
   { target: "Cauca"  , source: "Brasil", strength: 0.5 },
   { target: "Valle del Cauca"  , source: "Brasil", strength: 0.5 },
   { target: "Bogotá"  , source: "Canada", strength: 0.5 },
-  { target: "Cundinamarca"  , source: "Canada", strength: 0.5 }
+  { target: "Cundinamarca"  , source: "Canada", strength: 0.5 },
+  { target: "Cundinamarca", source: "Chile" , strength: 0.5 },
+  { target: "Bogotá", source: "Chile" , strength: 0.5 },
+  { target: "Risaralda", source: "Chile" , strength: 0.5 },
+  { target: "Antioquia", source: "Chile" , strength: 0.5 },
+  { target: "Risaralda", source: "Austria" , strength: 0.5 },
+  { target: "Antioquia", source: "China" , strength: 0.5 },
+  { target: "Atlántico"  , source: "China", strength: 0.5 },
+  { target: "Bogotá"  , source: "China", strength: 0.5 },
+  { target: "Santander"  , source: "China", strength: 0.5 },
+  { target: "Antioquia"  , source: "Colombia", strength: 0.5 },
+  { target: "Bogotá"  , source: "Corea", strength: 0.5 },
+  { target: "Bogotá"  , source: "Costa de Marfil", strength: 0.5 },
+  { target: "Bogotá"  , source: "Costa Rica", strength: 0.5 },
+  { target: "Bogotá", source: "Dinamarca" , strength: 0.5 },
+  { target: "Antioquia", source: "Ecuador" , strength: 0.5 },
+  { target: "Bogotá", source: "Ecuador" , strength: 0.5 },
+  { target: "Caldas", source: "Ecuador" , strength: 0.5 },
+  { target: "Cundinamarca", source: "Ecuador" , strength: 0.5 },
+  { target: "Nariño"  , source: "Ecuador", strength: 0.5 },
+  { target: "Risaralda"  , source: "Ecuador", strength: 0.5 },
+  { target: "Santander"  , source: "Ecuador", strength: 0.5 },
+  { target: "Valle del Cauca"  , source: "Ecuador", strength: 0.5 },
+  { target: "Cundinamarca"  , source: "España", strength: 0.5 },
+  { target: "Antioquia"  , source: "España", strength: 0.5 },
+  { target: "Risaralda"  , source: "España", strength: 0.5 },
+  { target: "Bogotá", source: "España" , strength: 0.5 },
+  { target: "Antioquia", source: "Estados Unidos" , strength: 0.5 },
+  { target: "Atlántico", source: "Estados Unidos" , strength: 0.5 },
+  { target: "Bogotá", source: "Estados Unidos" , strength: 0.5 },
+  { target: "Bolivar", source: "Estados Unidos" , strength: 0.5 },
+  { target: "Cundinamarca", source: "Estados Unidos" , strength: 0.5 },
+  { target: "La Guajira"  , source: "Estados Unidos", strength: 0.5 },
+  { target: "San Andrés y Providencia"  , source: "Estados Unidos", strength: 0.5 },
+  { target: "Valle del Cauda"  , source: "Estados Unidos", strength: 0.5 },
+  { target: "Bogotá"  , source: "Finlandia", strength: 0.5 },
+  { target: "Antioquia"  , source: "Francia", strength: 0.5 },
+  { target: "Bogotá"  , source: "Francia", strength: 0.5 },
+  { target: "Bogotá"  , source: "Indonesia", strength: 0.5 },
+  { target: "Antioquia", source: "Indonesia" , strength: 0.5 },
+  { target: "Antioquia", source: "Italia" , strength: 0.5 },
+  { target: "Bogotá", source: "Italia" , strength: 0.5 },
+  { target: "Bolivar", source: "Italia" , strength: 0.5 },
+  { target: "Cundinamarca", source: "Italia" , strength: 0.5 },
+  { target: "Caldas", source: "Italia" , strength: 0.5 },
+  { target: "Atlántico"  , source: "Libano", strength: 0.5 },
+  { target: "Bogotá"  , source: "Malasia", strength: 0.5 },
+  { target: "Antioquia"  , source: "Mexico", strength: 0.5 },
+  { target: "Bogotá"  , source: "Mexico", strength: 0.5 },
+  { target: "Cundinamarca"  , source: "Mexico", strength: 0.5 },
+  { target: "Risaralda"  , source: "Mexico", strength: 0.5 },
+  { target: "Valle del Cauca"  , source: "Mexico", strength: 0.5 },
+  { target: "Antioquia", source: "Paises Bajos" , strength: 0.5 },
+  { target: "Bogotá", source: "Paises Bajos" , strength: 0.5 },
+  { target: "Cauca", source: "Paises Bajos" , strength: 0.5 },
+  { target: "Cundinamarca", source: "Paises Bajos" , strength: 0.5 },
+  { target: "Valle del Cauca", source: "Paises Bajos" , strength: 0.5 },
+  { target: "Antioquia", source: "Pakistan" , strength: 0.5 },
+  { target: "Antioquia"  , source: "Peru", strength: 0.5 },
+  { target: "Bogotá"  , source: "Peru", strength: 0.5 },
+  { target: "Nariño"  , source: "Peru", strength: 0.5 },
+  { target: "Santander"  , source: "Peru", strength: 0.5 },
+  { target: "Valle del Cauca"  , source: "Peru", strength: 0.5 },
+  { target: "Bogotá"  , source: "Polonia", strength: 0.5 },
+  { target: "Risaralda"  , source: "Polonia", strength: 0.5 },
+  { target: "Bogotá", source: "Portugal" , strength: 0.5 },
+  { target: "Risaralda", source: "Reino Unido" , strength: 0.5 },
+  { target: "Bogotá", source: "Reino Unido" , strength: 0.5 },
+  { target: "Valle del Cauca", source: "Reino Unido" , strength: 0.5 },
+  { target: "Cundinamarca", source: "Republica Checa" , strength: 0.5 },
+  { target: "Antioquia"  , source: "Republica Dominicana", strength: 0.5 },
+  { target: "Bogotá"  , source: "Serbia", strength: 0.5 },
+  { target: "Bogotá"  , source: "Suiza", strength: 0.5 },
+  { target: "Cundinamarca"  , source: "Suiza", strength: 0.5 },
+  { target: "Bogotá"  , source: "Taiwan, Provincia China", strength: 0.5 },
+  { target: "Antioquia"  , source: "Turquia", strength: 0.5 },
+  { target: "Atlántico"  , source: "Turquia", strength: 0.5 },
+  { target: "Bogotá", source: "Turquia" , strength: 0.5 },
+  { target: "Bolivar", source: "Turquia" , strength: 0.5 },
+  { target: "Cundinamarca", source: "Turquia" , strength: 0.5 },
+  { target: "Norte de Santander", source: "Venezuela" , strength: 0.5 },
+  { target: "Risaralda", source: "Venezuela" , strength: 0.5 }
 ]
-
-
-
 function getNeighbors(node) {
   return links.reduce(function (neighbors, link) {
       if (link.target.id === node.id) {
@@ -138,12 +216,7 @@ function getTextColor(node, neighbors) {
 }
 var width = window.innerWidth
 var height = window.innerHeight
-var svg = d3.select("body").append("svg");
-
-var min_zoom = 0.1;
-var max_zoom = 7;
-var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
-
+var svg = d3.select('svg')
 svg.attr('width', width).attr('height', height)
 // simulation setup with all forces
 var linkForce = d3
@@ -192,26 +265,6 @@ var nodeElements = svg.append("g")
     .attr("fill", getNodeColor)
     .call(dragDrop)
     .on('click', selectNode)
-
-nodeElements.on("dblclick.zoom", function(d) { d3.event.stopPropagation();
-  var dcx = (window.innerWidth/2-d.x*zoom.scale());
-  var dcy = (window.innerHeight/2-d.y*zoom.scale());
-  zoom.translate([dcx,dcy]);
-   g.attr("transform", "translate("+ dcx + "," + dcy  + ")scale(" + zoom.scale() + ")");
-   
-   
-  });
-
-  function resize() {
-    var width = window.innerWidth, height = window.innerHeight;
-  svg.attr("width", width).attr("height", height);
-    
-  force.size([force.size()[0]+(width-w)/zoom.scale(),force.size()[1]+(height-h)/zoom.scale()]).resume();
-    w = width;
-  h = height;
-  }
-
-
 var textElements = svg.append("g")
   .attr("class", "texts")
   .selectAll("text")
@@ -221,37 +274,6 @@ var textElements = svg.append("g")
     .attr("font-size", 10)
     .attr("dx", 15)
     .attr("dy", 4)
-
-zoom.on("zoom", function() {
-  
-    var stroke = nominal_stroke;
-    if (nominal_stroke*zoom.scale()>max_stroke) stroke = max_stroke/zoom.scale();
-    link.style("stroke-width",stroke);
-    circle.style("stroke-width",stroke);
-     
-  var base_radius = nominal_base_node_size;
-    if (nominal_base_node_size*zoom.scale()>max_base_node_size) base_radius = max_base_node_size/zoom.scale();
-        circle.attr("d", d3.svg.symbol()
-        .size(function(d) { return Math.PI*Math.pow(size(d.size)*base_radius/nominal_base_node_size||base_radius,2); })
-        .type(function(d) { return d.type; }))
-    
-  //circle.attr("r", function(d) { return (size(d.size)*base_radius/nominal_base_node_size||base_radius); })
-  if (!text_center) text.attr("dx", function(d) { return (size(d.size)*base_radius/nominal_base_node_size||base_radius); });
-  
-  var text_size = nominal_text_size;
-    if (nominal_text_size*zoom.scale()>max_text_size) text_size = max_text_size/zoom.scale();
-    text.style("font-size",text_size + "px");
-
-  g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-  });
-   
-  svg.call(zoom);   
-  
-  resize();
-  //window.focus();
-  d3.select(window).on("resize", resize).on("keydown", keydown);
-
-    
 simulation.nodes(nodes).on('tick', () => {
   nodeElements
     .attr('cx', function (node) { return node.x })
