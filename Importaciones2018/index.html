@@ -368,7 +368,7 @@ var nodeElements = svg.append("g")
     .call(dragDrop)
     .on('click', selectNode)
     .append("title")
-            .html(function (d) {   
+            .html(function (node) {   
 
             return "Lugar           : "+node.label+ "<br>" +
                    "Tipo de Lugar   : "+node.type
