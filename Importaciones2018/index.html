@@ -345,17 +345,17 @@ var dragDrop = d3.drag().on('start', function (node) {
 function selectNode(selectedNode) {
   var neighbors = getNeighbors(selectedNode)
   // we modify the styles to highlight selected nodes
-  nodeElements.attr('fill', function (node) { return getNodeColor(node, neighbors)}).style('stroke-width',5).style("stroke",'black').attr("r", 9)
-  textElements.attr('fill', function (node) { return getTextColor(node, neighbors) }).style('font-weigth','bold')
-  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode, link)}).style('stroke-width',5).style("stroke",'black') 
+  nodeElements.attr('fill', function (node) { return getNodeColor(node.style('stroke-width',3).style("stroke",'black').attr("r", 9), neighbors)})
+  textElements.attr('fill', function (node) { return getTextColor(node.style('font-weigth','bold'), neighbors) })
+  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode , link.style('stroke-width',3).style("stroke",'black'))})
 }
 
 function unselectNode(selectedNode) {
   var neighbors = getNeighbors(selectedNode)
   // we modify the styles to highlight selected nodes
-  nodeElements.attr('fill', function (node) { return getNodeColor(node, neighbors)}).style('stroke-width',0).style("stroke", 'none').attr("r", 7) 
-  textElements.attr('fill', function (node) { return getTextColor(node, neighbors) }).style('font-weigth','normal')
-  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode, link)}).style('stroke-width',1) .style("stroke", "rgba(50, 50, 50, 0.2)")
+  nodeElements.attr('fill', function (node) { return getNodeColor(node.style('stroke-width',0).style("stroke", 'none').attr("r", 7) , neighbors)})
+  textElements.attr('fill', function (node) { return getTextColor(node.style('font-weigth','normal'), neighbors) })
+  linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode, link.style('stroke-width',1).style("stroke", "rgba(50, 50, 50, 0.2)"))})
 }
 var linkElements = svg.append("g")
   .attr("class", "links")
