@@ -232,7 +232,7 @@ var dragDrop = d3.drag().on('start', function (node) {
   node.fx = node.x
   node.fy = node.y
 }).on('drag', function (node) {
-  simulation.alphaTarget(0).restart()
+  simulation.alphaTarget(0.5).restart()
   node.fx = d3.event.x
   node.fy = d3.event.y
 }).on('end', function (node) {
@@ -261,7 +261,7 @@ var nodeElements = svg.append("g")
   .selectAll("circle")
   .data(nodes)
   .enter().append("circle")
-    .attr("r", 10)
+    .attr("r", 7)
     .attr("fill", getNodeColor)
     .call(dragDrop)
     .on('click', selectNode)
