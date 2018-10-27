@@ -3,7 +3,9 @@
 
 <svg width="2500" height="2000"></svg>
 
-<script src="https://d3js.org/d3.v5.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script> 
 <script>
 var nodes = [
   //{ id: "Afganistan", label: "Afganistan", level: 2 },
@@ -368,8 +370,12 @@ var nodeElements = svg.append("g")
     .attr("fill", getNodeColor)
     .call(dragDrop).on('mouseover',function(d){
 
-      console.log(d.label)
+      svg.append("title").html(function (node) {   
 
+            return "Lugar           : "+node.label+ "<br>" +
+                   "Tipo de Lugar   : "+node.type
+
+           })
     }).on('click', selectNode)
     
 var textElements = svg.append("g")

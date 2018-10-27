@@ -41,7 +41,7 @@ header {
 }*/
 
 .container {
-    width: 1140px;
+    width: 1320px;
     
     /*margin: Top Right Button Left;  */   
     margin: 20px  auto 0 auto; 
@@ -100,10 +100,80 @@ header {
   stroke: #000;
 }
 
-/*
+.grafica{
+    /* background-color: rgba(31, 111, 65, 0.42); 
+    border: 1px solid red;
+    
+    border: 1px solid green;
+    */
+}
 
+#wrapper {
+    width: 1320px;
+    /*border: 1px solid black;*/
+    overflow: hidden; /* will contain if #first is longer than #second */
+}
+#first {
+    width: 900px;
+    float:left; /* add this */
+    /*border: 1px solid red;*/
+}
+#second {
+    /*border: 1px solid green;*/
+    overflow: hidden; /* if you don't want #second to wrap below #first */
+}
+#third {
+    /*border: 1px solid blue;*/
+    overflow: hidden; /* if you don't want #second to wrap below #first */
+}
+
+/*
 h1,h2{background-color: #ff8484}
 p{background-color: aqua}
 .grafica{background-color: rgba(31, 111, 65, 0.42)}
-
 */
+
+#button_wrapper {
+    width: auto;
+    /*border: 1px solid black;*/
+    overflow: hidden; /* will contain if #first is longer than #second */
+    margin-bottom: 15px;
+}
+.btn:focus {outline:0;}
+
+.btn {
+  background: #3498db;
+  background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+  background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+  background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+  background-image: -o-linear-gradient(top, #3498db, #2980b9);
+  background-image: linear-gradient(to bottom, #3498db, #2980b9);
+  -webkit-border-radius: 1;
+  -moz-border-radius: 1;
+    
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 7px 20px 7px 20px; 
+  float:left;    
+  margin-right: 15px; 
+  margin-bottom: 0px;
+}
+
+.btn:hover {  
+  background: #fd703c;
+  background-image: -webkit-linear-gradient(top, #fd703c, #ea6838);
+  background-image: -moz-linear-gradient(top, #fd703c, #ea6838);
+  background-image: -ms-linear-gradient(top, #fd703c, #ea6838);
+  background-image: -o-linear-gradient(top, #fd703c, #ea6838);
+  background-image: linear-gradient(to bottom, #fd703c, #ea6838);
+}
+
+.hr{
+    width:100%;
+    color:#555;    
+}
+
+li{
+    margin-left: 30px;
+}
