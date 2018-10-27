@@ -349,12 +349,6 @@ function selectNode(selectedNode) {
   textElements.attr('fill', function (node) { return getTextColor(node, neighbors)})
   linkElements.attr('stroke', function (link) { return getLinkColor(selectedNode , link)})
 
-  selectedNode.append("title").html(function (node) {   
-
-            return "Lugar           : "+node.label+ "<br>" +
-                   "Tipo de Lugar   : "+node.type
-
-           })
 }
 
 
@@ -372,7 +366,12 @@ var nodeElements = svg.append("g")
   .enter().append("circle")
     .attr("r", 7)
     .attr("fill", getNodeColor)
-    .call(dragDrop).on('click', selectNode)
+    .call(dragDrop).on('click', selectNode.append("title").html(function (node) {   
+
+            return "Lugar           : "+node.label+ "<br>" +
+                   "Tipo de Lugar   : "+node.type
+
+           }))
     
 var textElements = svg.append("g")
   .attr("class", "texts")
