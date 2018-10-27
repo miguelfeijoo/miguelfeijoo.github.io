@@ -365,7 +365,7 @@ var nodeElements = svg.append("g")
   .enter().append("circle")
     .attr("r", 7)
     .attr("fill", getNodeColor)
-    .call(dragDrop).html(function (node) {   
+    .call(dragDrop).append("text").html(function (node) {   
 
             return "Lugar           : "+node.label+ "<br>" +
                    "Tipo de Lugar   : "+node.type
