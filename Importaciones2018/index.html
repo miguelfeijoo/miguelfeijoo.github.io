@@ -332,9 +332,9 @@ var dragDrop = d3.drag().on('start', function (node) {
   node.fx = node.x
   node.fy = node.y
 }).on('drag', function (node) {
-  simulation.alphaTarget(0.5).restart()
-  //node.fx = d3.event.x
-  //node.fy = d3.event.y
+  simulation.alphaTarget(0).restart()
+  node.fx = d3.event.x
+  node.fy = d3.event.y
 }).on('end', function (node) {
   if (!d3.event.active) {
     simulation.alphaTarget(0)
