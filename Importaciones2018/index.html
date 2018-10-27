@@ -370,7 +370,7 @@ var nodeElements = svg.append("g")
     .attr("fill", getNodeColor)
     .call(dragDrop).on('mouseover',function(d){
 
-      svg.append("title").html(function (node) {   
+      svg.append("title").html(function (d) {   
 
             return "Lugar           : "+d.label+ "<br>" +
                    "Tipo de Lugar   : "+d.type
