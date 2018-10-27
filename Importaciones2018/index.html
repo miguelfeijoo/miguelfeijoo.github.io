@@ -368,7 +368,7 @@ var nodeElements = svg.append("g")
   .enter().append("circle")
     .attr("r", 7)
     .attr("fill", getNodeColor)
-    .call(dragDrop).on('mouseover',function(d){
+    .call(dragDrop).on('dblclick',function(d){
 
       svg.append("title").html(function (node) {   
 
