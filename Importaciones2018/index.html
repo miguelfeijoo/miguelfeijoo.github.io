@@ -341,13 +341,7 @@ var dragDrop = d3.drag().on('start', function (node) {
   }
   node.fx = null
   node.fy = null
-}).append("title")
-            .html(function (node) {   
-
-            return "Lugar           : "+node.label+ "<br>" +
-                   "Tipo de Lugar   : "+node.type
-
-           });
+})
 function selectNode(selectedNode) {
   var neighbors = getNeighbors(selectedNode)
   // we modify the styles to highlight selected nodes
@@ -371,7 +365,13 @@ var nodeElements = svg.append("g")
   .enter().append("circle")
     .attr("r", 7)
     .attr("fill", getNodeColor)
-    .call(dragDrop)
+    .call(dragDrop).append("title")
+            .html(function (node) {   
+
+            return "Lugar           : "+node.label+ "<br>" +
+                   "Tipo de Lugar   : "+node.type
+
+           });
     .on('click', selectNode)
     
 var textElements = svg.append("g")
