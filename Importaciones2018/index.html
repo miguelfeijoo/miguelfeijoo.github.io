@@ -406,13 +406,22 @@ var nodeElements = svg.append("g")
 
     }).on('mouseout',function(d){
 
-      svg.append("title").html(function (node) {   
+     tooltip.attr("x", width-730)
+      .attr("y", height-625)
+      .html(``)
+      .style('font-weight',"bold").style("fill", "none").style("font-size",'14px');
 
-            console.log("NaN")
+    tooltip2.attr("x", width-730)
+      .attr("y", height-605)
+      .html(``)
+      .style('font-weight',"bold").style("fill", "none").style("font-size",'12px');
 
-            return ""
+    tooltip3.attr("x", width-730)
+      .attr("y", height-585)
+      .html(``)
+      .style('font-weight',"bold").style("fill", "none").style("font-size",'12px'); 
 
-           })
+
     }).on('click', selectNode)
     
 var textElements = svg.append("g")
