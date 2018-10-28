@@ -380,7 +380,7 @@ var nodeElements = svg.append("g")
     .call(dragDrop).on('mouseover',function(d){
 
     tooltip.attr("x", width-1000)
-      .attr("y", height-900)
+      .attr("y", height-300)
       .html(`${d.type}:  ${d.label}`)
       .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px');
 
