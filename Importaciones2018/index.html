@@ -379,8 +379,8 @@ var nodeElements = svg.append("g")
     .attr("fill", getNodeColor)
     .call(dragDrop).on('mouseover',function(d){
 
-    tooltip.attr("x", width-500)
-      .attr("y", height-400)
+    tooltip.attr("x", width-1000)
+      .attr("y", height-900)
       .html(`${d.type}:  ${d.label}`)
       .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px');
 
