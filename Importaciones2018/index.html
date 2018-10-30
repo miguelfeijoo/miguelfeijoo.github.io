@@ -461,36 +461,33 @@ var nodeElements = svg.append("g")
     .attr("fill", getNodeColor)
     .call(dragDrop).on('mouseover',function(d){
 
-    tooltip.attr("x", 70)
-      .attr("y", 70)
+    tooltip.attr("x", 40)
+      .attr("y", 40)
       .html(`${d.type}:  ${d.label}`)
       .style('font-weight',"bold").style("fill", "black").style("font-size",'16px');
 
-    tooltip2.attr("x", 70)
-      .attr("y", 95)
+    tooltip2.attr("x", 40)
+      .attr("y", 65)
       .html(`${parseInt(d.quantity).toLocaleString()} de Cacao/Chocolate importadas. Medidas en KG`)
       .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px');
 
-    tooltip3.attr("x", 70)
-      .attr("y",120)
+    tooltip3.attr("x", 40)
+      .attr("y",90)
       .html(`Valor de ${parseInt(d.value).toLocaleString()} Millones de Pesos Colombianos (COP) aprox.`)
       .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px'); 
 
 
     }).on('mouseout',function(d){
 
-     tooltip.attr("x", 70)
-      .attr("y", 100)
+     tooltip
       .html(``)
       .style('font-weight',"bold").style("fill", "none").style("font-size",'16px');
 
-    tooltip2.attr("x", 70)
-      .attr("y", 125)
+    tooltip
       .html(``)
       .style('font-weight',"bold").style("fill", "none").style("font-size",'12px');
 
-    tooltip3.attr("x", 70)
-      .attr("y",150)
+    tooltip3
       .html(``)
       .style('font-weight',"bold").style("fill", "none").style("font-size",'12px'); 
 
