@@ -461,36 +461,36 @@ var nodeElements = svg.append("g")
     .attr("fill", getNodeColor)
     .call(dragDrop).on('mouseover',function(d){
 
-    tooltip.attr("x", width-1300)
-      .attr("y", height-625)
+    tooltip.attr("x", width/2.08333333333)
+      .attr("y", height/1.45454545455)
       .html(`${d.type}:  ${d.label}`)
       .style('font-weight',"bold").style("fill", "black").style("font-size",'16px');
 
-    tooltip2.attr("x", width-1300)
-      .attr("y", height-605)
+    tooltip2.attr("x", width/2.08333333333)
+      .attr("y", height/1.43369175627)
       .html(`${parseInt(d.quantity).toLocaleString()} de Cacao/Chocolate importadas. Medidas en KG`)
       .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px');
 
-    tooltip3.attr("x", width-1300)
-      .attr("y", height-585)
+    tooltip3.attr("x", width/2.08333333333)
+      .attr("y", height/1.43369175627)
       .html(`Valor de ${parseInt(d.value).toLocaleString()} Millones de Pesos Colombianos (COP) aprox.`)
       .style('font-weight',"bold").style("fill", "firebrick").style("font-size",'12px'); 
 
 
     }).on('mouseout',function(d){
 
-     tooltip.attr("x", width-1300)
-      .attr("y", height-625)
+     tooltip.attr("x", width/2.08333333333)
+      .attr("y", height/1.45454545455)
       .html(``)
       .style('font-weight',"bold").style("fill", "none").style("font-size",'16px');
 
-    tooltip2.attr("x", width-1300)
-      .attr("y", height-605)
+    tooltip2.attr("x", width/2.08333333333)
+      .attr("y", height/1.43369175627)
       .html(``)
       .style('font-weight',"bold").style("fill", "none").style("font-size",'12px');
 
-    tooltip3.attr("x", width-1300)
-      .attr("y", height-585)
+    tooltip3.attr("x", width/2.08333333333)
+      .attr("y", height/1.41342756184)
       .html(``)
       .style('font-weight',"bold").style("fill", "none").style("font-size",'12px'); 
 
