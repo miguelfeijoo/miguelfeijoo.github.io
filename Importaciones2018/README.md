@@ -1,6 +1,6 @@
 Proyecto desarrollado por: MIGUEL ALFONSO FEIJOO GARCÍA
 NOMBRE: "El CACAO ha sido desde el 2010 una materia prima de importación a Colombia por varios países a nivel global. Ciertos departamentos del Territorio Nacional han hecho parte de la actividad económica del CACAO. ¿En qué repercute esto?"
-FECHA DE ACTUALIZACIÓN:   28/10/2018
+FECHA DE ACTUALIZACIÓN:   30/10/2018
 
 Slides: https://docs.google.com/presentation/d/1Qxm0pwUUCmJB6GcPFoAaARL6wDBeyhRNpaFnjadbnWE/edit?usp=sharing
 
