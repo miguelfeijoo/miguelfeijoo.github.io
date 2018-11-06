@@ -146,9 +146,9 @@
 <div class="text-center general">
   <div class="row">
     <div class="text-center  col-md-offset-2 col-md-8">
-      <span class="titulo">There are 42 chances to win an Olympic Medal in Speed Skating!</span>
+      <span class="titulo">La Asistencia a las Plenarias del Senado parece no importar en nuestros Congresistas</span>
       <br/><span class="subtitulo">
-      Among the 15 disciplines at the winter olympics, Speed Skating is the widest sport while Ice Hockey is left behind.
+      Hay una alta relación de FALTAS en las Plenarias del Senado para lo que fue el inicio del año 2018 hasta la última posesión.
 
       </span>
       <br/>
@@ -166,16 +166,15 @@
     <hr/>  
       <span class="titulo2 texto2">Context</span>
       <p class="texto2">
-      The Winter Olympics were held this year in PyeongChang, South Korea and Norway was the absolute leader of the games. This time, the Nordic country was able to get a head start and it was notorious from the beginning with 14 gold medals in cross-country skiing. However, countries expected to get among the top like the USA did not make it. For example, in Figure Skating Nathan Chen and Mirai Nagasu set a new Olympic record but didn’t get a medal from it, on the other hand, its female hockey team won for the first time in 20 years to Canada (Calfas, 2018).
-<br/><br/>However, How are the sports classificated at the winter olympics, which are the most relevant and which country dominated each discipline?
+      La plenaria es la asamblea, junta, reunión, sesión general o conjunto de todos los componentes o miembros de una entidad u organismo colegiado (cámara, comisión, corporación, etc.). También denominada “cámara plena” o “cámara en pleno”, es la reunión o asamblea general de cada una de las Cámaras del Congreso (representantes y senadores) por separado. En la plenaria de cada cámara, o cámara plena, sus miembros ya no laboran en comisiones o en cuerpos separados, sino conjuntamente, en un solo cuerpo donde están reunidos la totalidad, la mitad más uno o la mayoría que exija la Constitución, la ley o el reglamento interno de estas. La plenaria o pleno del Congreso de la República y de cada una de sus cámaras, de Representantes y el Senado, es el órgano decisorio supremo de cada uno de dichos organismos, cuya voluntad expresa.
+<br/><br/> El pleno o la plenaria del Congreso y de cada Cámara cumple dos funciones importantes: representativa, de la voluntad popular que lo elige; y deliberante, en cuanto a los asuntos que conocen o tramitan.La Constitución colombiana destaca la importancia del pleno o la plenaria del Congreso y de las cámaras, porque la plenaria tiene atribuidas las facultades de estos órganos. Así, una de las facultades de la plenaria es tramitar en segundo debate los proyectos de ley o de Acto Legislativo que hayan sido aprobados en primer debate por las Comisiones Constitucionales Permanentes. La plenaria del Congreso de la República está constituida por 263 congresistas, o su mayoría absoluta; la plenario de la Cámara de Representantes, por 161 o su mayoría absoluta; y la plenaria o pleno del Senado de la República, por 102 o su mayoría absoluta.
 <br/>
       </p>
        <br/>
-      <span class="titulo2 texto2">Objectives</span>
+      <span class="titulo2 texto2">Principales Objetivos</span>
         <p class="texto2">
-        1. Give an overview of the Winter Olympics to someone interested but, not familiar with the games, by allowing him/her to Explore the classification of sports and disciplines.
-<br/>2. Identify which countries dominated each discipline.
-<br/>3. Identify which winter disciplines have the most medals in each category.
+       1. Se espera lograr en el usuario un nivel de criticidad respecto a la simplididad en asistencia por parte de los congresistas de la república.
+<br/>2. Identificar él ocmportamiento de asistencia por parte de la totalidad de senadores de la república a la plenarias del senado.
 
       </p>
     <hr/>
@@ -184,31 +183,27 @@
     <div class="texto">  
         <span class="titulo2">WHY</span>
         
-        <p><strong>Main Tasks</strong>
-        <p><strong>T1. Explore - Topology: (Overview of Winter Sports)</strong> Explore the classification of sports and disciplines at the Winter Olympics to give an overview.
-        <p><strong>Secondary Tasks</strong><br/>
-        <p><strong>T2. Browse - Features: (Winner Country)</strong> By knowing the location (e.g. Alpine Sports>Snowboarding>Gold) it is possible to find the country that dominated the discipline, in this case it was USA.
-        <p><strong>T3. Identify - Extremes: (Disciplines)</strong> Find the discipline that has the most medals in each category of winter sports.
-        <p><strong>Derivation Tasks</strong><br/>
-        <p><strong>T4. Derive - Topology:</strong> Derive a new dataset based on the general classification of winter sports and medal count per discipline.
+        <p><strong>Tareas Principales [FRAMWORK DE TAMARA]</strong>
+        <p><strong>1. Explore - Topology: </strong> Explorar la clasificación por parte de comportamiento de los senadores de la república en las plenarias del senado (asistencia).
+        <p><strong>Tareas Secundarias [FRAMEWORK TAMARA]</strong><br/>
+        <p><strong>2. Browse - Features:</strong> (Cantidades de Asistencias y Fallas por parte de los miembros del senado a la plenarias)
+        <p><strong>3. Identify - Extremes: </strong> Identificar el comportamiento promedio total e individual de asistencia por parte de los congresistas a las plenarias del Senado de la República. 
+        
 
         <p>
         <span class="titulo2">WHAT</span>
         
         <p>
-        Original information was available at the Guardian: https://www.theguardian.com/sport/ng-interactive/2018/feb/09/winter-olympics-latest-medal-table-for-pyeongchang-2018
-<br/>There was an accordion menu to choose the discipline and see the winners per category but not overall.
-<br/>The information available at the BBC website was processed manually to build a tree. The tree starts with the three types of winter sports, then, each sports splits into its different disciplines, later, each discipline splits into three categories: Gold, Silver and Bronze, to finally find the countries as leafs and answer who won more medals of each kind. The resulting dataset is available as JSON and has the following characteristics: 
-      <p><strong>Dataset Type:</strong> Tree.
-      <p><strong>Dataset Availability:</strong> Static.
+        La información presentada en a visualización fue tomada de Datos Abiertos Colombianos, particularmente sobre <a href="https://www.datos.gov.co/Funci-n-p-blica/Senado-Asistencia-Plenaria-desde-2017-Actual/nws7-tsn3/data" target="_blank">ASISTENCIA A PLENARIA SENADO 2017/2018</a>
+
+<br/>El procesamiento llevado a cabo partió en el parséo de la Fecha para obtener la totalidad en formato único 'd/m/a' y con ello la generación del JSON resultante con el que se trabajó. Se realizó dicho proceso rápidamente utilizando Pandas/Python. Dicho resultado tiene las siguientes características: 
+      <p><strong>Dataset Type:</strong> Árbol, relacionando PADRES e HIJOS.
+      <p><strong>Dataset Availability:</strong> Estático.
       <p><strong>Attributes: </strong>
       <p><ul>
-        <li>Attribute: Type of Sport. (Ice Sports, Nordic Sports, etc.) Type: Categorical </li>
-        <li>Attribute: Discipline. (Figure Skating, Ice Hockey) Type: Categorical </li>
-        <li>Attribute: Type of Medal. (Gold, Silver, Bronze) Type: Categorical </li>
-        <li>Attribute: Country. Type: Categorical </li>
-        <li>Attribute: Number of Medals. Type: Quantitative-Sequential </li>
-        
+        <li>Attribute: Asistencia. (SI, NO) Type: Categorical </li>
+        <li>Attribute: Nombre. (Nombre Congresista) Type: Categorical </li>
+        <li>Attribute: Anio. (2018) Type: Categorical </li>        
       </ul>
        </p>
           
@@ -219,9 +214,9 @@
       <p><strong>Channels: </strong>
       <p><ul>
         <li><strong>Color: </strong> 
-Attributes: Type of Sports / Disciplines Type: Categorical, unordered. (Encoding: Align, Arrange, Separate.)</li>
+Attributes: Tipo de Respuesta Asistencia (Encoding: Align, Arrange, Separate.)</li>
         <li><strong>Area 2D: </strong> 
-Attribute: Number of medals Type: Quantitative, sequential. (Encoding: Express)
+Attribute: Cantidad de Asistencias/Respuestas (Encoding: Express)
 </li>
         
       </ul>
@@ -237,9 +232,9 @@ Attribute: Number of medals Type: Quantitative, sequential. (Encoding: Express)
   <div class="text-center">
   <div class="row">
     <div class="text-center  col-md-12">
-      <span class="titulo">There are 42 chances to win an Olympic Medal in Speed Skating!</span>
+      <span class="titulo">De la TOTALIDAD de asistencia a plenarias esperadas en 5 meses, está muy cerca de las asistencias las FALLAS de Congresistas al menos 1 vez mensualmente!!!</span>
       <br/><br/><span class="subtitulo">
-      Among the 15 disciplines at the winter olympics, Speed Skating is the widest sport while Ice Hockey is left behind.
+      ¡Impresiona que hay congresistas que no registran asistencia en el mes completo!
 
       </span>
     </div>
@@ -247,9 +242,9 @@ Attribute: Number of medals Type: Quantitative, sequential. (Encoding: Express)
   </div>
   <br/>
   
-    <span class="titulo2">How to use it:</span>
-    <br/>1. Click in the category of your interest to see more details.
-    <br/>2. Click in the left column to go back.</p>
+    <span class="titulo2">Para utilizar la visualización, debes seguir los siguientes pasos:</span>
+    <br/>1. Haz click en los recuadros a la derecha, para obtener mayor detalle.
+    <br/>2. Para regresar, haz click en el recuadro izquierdo al detalle.</p>
     
 <script type="text/javascript">
   var margin = {top: 30, right: 50, bottom: 40, left:40};
@@ -433,33 +428,18 @@ Attribute: Number of medals Type: Quantitative, sequential. (Encoding: Express)
 
     <span class="titulo2 texto2">Insights:</span>
     <p >
-    The visualization presents us the following insights: 
+    A partir de la visualización, se presentan unos insights preliminares: 
     <ul>
-      <li class="texto2">The Winter Olympic sports are divided into three major categories: Ice, Alpine and Nordic Sports. The three types of sports are equally relevant since each one of them has a similar amount of medals: 122, 93 and 92 respectively.</li>
-      <li class="texto2">When zooming into Speed Skating, the sport with the most medals in the Ice Sports, we can find out that the Netherlands ruled the discipline getting the most Gold (7), Silver (4) and Bronze (5) medals. No wonder Ice skating is said to were born at that country.</li>
-      <li class="texto2">The three sports with the most medals in each of the winter sports categories are: Speed Skating - 42 medals - Category: Ice Sports; Alpine Skiing - 33 medals - Category: Alpine Sports; Cross-country Skiing - 38 Medals - Category: Nordic Sports.</li>
-      <li class="texto2">Surprisingly, in the Category Nordic Sports, Only one Nordic country won in one of the four sports. Norway was able to dominate at Ski jumping while Russia, Germany and France won in the other disciplines.</li>
+      <li class="texto2">Las asistencias a Plenaria por parte de los congresistas (SENADORES) está en riesgo, pues de la totalidad promedio esperada, están muy cercanos los valores de SI y NO por parte de la totalidad. Hay varios congresistas que han estado ausentes durante todas las plenarias por mes. </li>
+      <li class="texto2">Cuando se hace zoom, se puede observar que no hay una relación directa entre las fallas y asistencias en mayor proporción. Es decir, para Fallas, el mes que supera todas las expectativas es el de Marzo donde tan solo hubo falla de 9 senadores, a diferencia del mes siguiente, con 102 fallas. Esto se puede dar debido a selección o toma de decisiones para una nueva posesión en el siguiente periodo. </li>
+      <li class="texto2">Antes de la nueva posesión del 07 de Agosto del 2018, es claro cómo los congresistas en su mayoría sisten en fechas cercanas a la decisión de preseidente y vicepresidente para el siguiente periodo.</li>
+      
       
     </ul>
   </p>
 <br/>
     
-  <br/>
-  <div class="parallax2"></div>
-  <br/>
   
-  <div class="texto2">
-    <span class="titulo2">LICENSE:</span>
-    <p>
-    Copyright 2018 Camilo Espitia
-    <br/> <br/>
-    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-    <br/><br/>
-    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-    <br/><br/>
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-    </p>
-  </div>
   
 
   </div>
