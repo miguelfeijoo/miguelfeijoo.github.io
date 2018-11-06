@@ -248,8 +248,8 @@ Attribute: Cantidad de Asistencias/Respuestas (Encoding: Express)
     
 <script type="text/javascript">
   var margin = {top: 30, right: 50, bottom: 40, left:40};
-  var width = 932; //- margin.left - margin.right;
-  var height = 600; //- margin.top - margin.bottom;
+  var width = 932; 
+  var height = 600; 
   var div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
@@ -261,7 +261,6 @@ Attribute: Cantidad de Asistencias/Respuestas (Encoding: Express)
         .style('font', "14px sans-serif Anton")
     .attr('height', height);
     
-  //cargo los datos
   d3.json("p1.json").then(function(data) {
     console.log(data);  
     
@@ -276,7 +275,6 @@ Attribute: Cantidad de Asistencias/Respuestas (Encoding: Express)
     } 
       
     var color3 = d3.scaleOrdinal(d3.schemeCategory10);  
-    //var color = d3.scaleOrdinal().range(d3.quantize(d3.interpolateRainbow, 10));
     var color = d3.scaleOrdinal(d3.schemeCategory10); 
     
     var format = d3.format(",d");
@@ -293,42 +291,31 @@ Attribute: Cantidad de Asistencias/Respuestas (Encoding: Express)
     const rect = cell.append("rect")
       .attr("width", d => d.y1 - d.y0 - 1)
       .attr("height", d => rectHeight(d))
-      .attr("fill-opacity", 0.8) //opacidad de todos los rect.
+      .attr("fill-opacity", 0.8) 
       .attr("fill", d => {
-      if (!d.depth) return "#666666"; //sino tiene padre el color es gris
+      if (!d.depth) return "#666666"; 
       while (d.depth > 1) d = d.parent;
       return color3( d.data.name);
       })
       .style("cursor", "pointer")
-      .attr("class", d => d.data.name) //le coloca la clase al rectangulo!
+      .attr("class", d => d.data.name) 
       .on("click", clicked);
-      //puede llevar mousover
       
-      
-      
-//  const image= cell.append("image")
-  //  .attr("xlink:href", d => d.data.cover)
-  //  .attr("x", 2)
-    //.attr("width", d => d.y1 - d.y0 - 1)
-    //.attr("height", 600)
-  //.on("click", clicked);
-    //.on('dblclick', showInfo);
+
   
     const text = cell.append("text")
       .style("user-select", "none")
       .attr("pointer-events", "none")
       .attr("font-size", d => textHeight(d))
       .attr("font-family",'Anton')
-      //font-family: 'Anton', sans-serif;
       .attr("transform",  d => {
-      if (!d.depth) return "translate(100,600)rotate(270)"; //sino tiene padre gira
+      if (!d.depth) return "translate(100,600)rotate(270)"; gira
       
       })
       .attr("fill",  d => {
-      if (!d.depth) return "#fff"; //sino tiene padre el color es diferente
+      if (!d.depth) return "#fff"; 
       
       })
-      //font-size="12px"
       .attr("x", 4)
       .attr("y", d => textHeight(d))
       .attr("fill-opacity", d => +labelVisible(d));
@@ -344,12 +331,8 @@ Attribute: Cantidad de Asistencias/Respuestas (Encoding: Express)
         .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")}\n${format(d.value)}`);
     var hola =true;
     function clicked(p) {
-         
-    //inicio de guardar click
-    //var myWindow = window.open("", "MsgWindow", "width=200, height=100");
-    //myWindow.document.write(" -Acabo de clickear "+p.data.name);
+
     var clickeado=p.data.name;
-    //fin de guardar click
     
     focus = focus === p ? p = p.parent : p;
     root.each(d => d.target = {
@@ -362,17 +345,13 @@ Attribute: Cantidad de Asistencias/Respuestas (Encoding: Express)
       .attr("transform", d => `translate(${d.target.y0},${d.target.x0})`);
     rect.transition(t).attr("height", d => rectHeight(d.target));
     text.transition(t).attr("fill-opacity", d => +labelVisible(d.target));
-    //no funciona el cambio de tamanio en edge... 
-    //text.transition(t).attr("font-size", d => textHeight(d.target));
-    //text.transition(t).attr("y", d => textHeight(d.target));
+
     
     tspan.transition(t).attr("fill-opacity", d => labelVisible(d.target) * 0.7);
     
-    //inicio del if para 
     
-    //myWindow.document.write("Clickeo la depth "+p.depth);
     if (clickeado=="Ice Sports" || clickeado=="Alpine Sports" || clickeado=="Nordic Sports")
-    {     //myWindow.document.write(" -Entro "+clickeado);
+    {     
       if (hola)
       {
       //entra en zoom in      
@@ -382,21 +361,17 @@ Attribute: Cantidad de Asistencias/Respuestas (Encoding: Express)
         return color( d.data.code);         
         })
       hola = !hola;
-      //myWindow.document.write("if "+hola);
       }
       else
       {
-      //entra en zoom out
         rect.transition(t).attr("fill", d => {
         if (!d.depth) return "#666666";
         while (d.depth >1) d = d.parent;
         return color3( d.data.name);
       })
       hola = !hola;
-      //myWindow.document.write("else "+hola);
       }
     }
-    //fin del if
     }
     
     function rectHeight(d) {
@@ -418,10 +393,8 @@ Attribute: Cantidad de Asistencias/Respuestas (Encoding: Express)
     return d.y1 <= width && d.y0 >= 0 && d.x1 - d.x0 > 16;
     }   
       
-    //fin de la funcion
   });   
     
-    // 7. d3's line generator
 </script>
 <br/>
 <br/>
