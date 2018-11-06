@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <title>Winter Olympics Disciplines 2018</title>
+  <style type="text/css">
+    .general{     
+      font-family: 'Alegreya', serif;
+      font-size: 18px;      
+    }
+    .label{
+      font-size: 18px;
+      font-family: 'Alegreya', serif;
+    }
+    .label2{
+      font-size: 20px;
+      font-family: 'Alegreya', serif;
+    }
+    .legend text,
+    .axis text {
+      font-size: 13px;
+      fill: #333;
+    }
+    .axis path,
+    .axis line{
+      fill: none;
+      stroke-width: 1px;
+      stroke: #777;
+    }
+    .circle{
+      fill-opacity: 0.65;
+    }
+    .bubble{
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+    .bubble:hover text{
+      opacity: 1;
+    }
+    .bubble:hover circle{
+      fill-opacity: 1;
+    }
+    .legend rect{
+      fill-opacity: 0.75;
+    }
+    .legeng:hover rect{
+      fill-opacity:1;
+    }   
+    div.tooltip {
+      position: absolute;
+      text-align: center;
+      width: 180px;
+      height: 70px;
+      padding: 2px;
+      font: 12px sans-serif;
+      background: #0c0c0c;
+      color: white;
+      border: 0px;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+    
+    .buttonR {
+      font-size: 13px;
+      fill: #333; 
+      font-weight: bold;      
+    }
+    
+    h1 {
+      font-weight: bold;
+      color: #ff8239;
+      font-size: 26px;
+      font-family: 'Anton', sans-serif;
+    }
+    
+    .titulo {
+      font-weight: black;
+      font-family: 'Anton', sans-serif;
+      font-size: 46px;
+      color:  #ffffff;
+      background-color: #ff8239;
+    }
+    .subtitulo {
+      font-weight: black;
+      font-family: 'Anton', sans-serif;
+      font-size: 30px;
+      color:  #333333;
+      
+    }
+    .titulo2 {
+      font-weight: black;
+      font-family: 'Anton', sans-serif;
+      font-size: 30px;
+      color:  #ffffff;
+      background-color: #333333;
+    }
+    .texto {
+      -webkit-column-count: 3; /* Chrome, Safari, Opera */
+      -moz-column-count: ; /* Firefox */
+      column-count: 2;
+      -webkit-column-gap: 40px; /* Chrome, Safari, Opera */
+      -moz-column-gap: 40px; /* Firefox */
+      column-gap: 80px;
+      text-align: justify;
+      text-justify: inter-word;
+      
+    }
+    .texto2 {
+      text-align: justify;
+      text-justify: inter-word;     
+    }
+    .parallax2 {
+      /* The image used */
+      /* Set a specific height */
+      min-height: 200px; 
+      
+      /* Create the parallax scrolling effect */
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    .parallax {
+      /* The image used */
+      /* Set a specific height */
+      min-height: 150px; 
+      
+      /* Create the parallax scrolling effect */
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    
+  </style>
+  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet"> 
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<br/>
+<br/>
+<br/>
+<div class="text-center general">
+  <div class="row">
+    <div class="text-center  col-md-offset-2 col-md-8">
+      <span class="titulo">There are 42 chances to win an Olympic Medal in Speed Skating!</span>
+      <br/><span class="subtitulo">
+      Among the 15 disciplines at the winter olympics, Speed Skating is the widest sport while Ice Hockey is left behind.
+
+      </span>
+      <br/>
+      <p> Created By: Camilo Espitia - Student ID: 200812115 - Login: jc.espitia912</p>
+    
+    </div>
+    
+  </div>
+</div>
+  
+<div class="container general">
+  <div class="row">
+    <div class="col-md-offset-1 col-md-10" id="viz">
+      
+    <hr/>  
+      <span class="titulo2 texto2">Context</span>
+      <p class="texto2">
+      The Winter Olympics were held this year in PyeongChang, South Korea and Norway was the absolute leader of the games. This time, the Nordic country was able to get a head start and it was notorious from the beginning with 14 gold medals in cross-country skiing. However, countries expected to get among the top like the USA did not make it. For example, in Figure Skating Nathan Chen and Mirai Nagasu set a new Olympic record but didn’t get a medal from it, on the other hand, its female hockey team won for the first time in 20 years to Canada (Calfas, 2018).
+<br/><br/>However, How are the sports classificated at the winter olympics, which are the most relevant and which country dominated each discipline?
+<br/>
+      </p>
+       <br/>
+      <span class="titulo2 texto2">Objectives</span>
+        <p class="texto2">
+        1. Give an overview of the Winter Olympics to someone interested but, not familiar with the games, by allowing him/her to Explore the classification of sports and disciplines.
+<br/>2. Identify which countries dominated each discipline.
+<br/>3. Identify which winter disciplines have the most medals in each category.
+
+      </p>
+    <hr/>
+    <br/>
+    
+    <div class="texto">  
+        <span class="titulo2">WHY</span>
+        
+        <p><strong>Main Tasks</strong>
+        <p><strong>T1. Explore - Topology: (Overview of Winter Sports)</strong> Explore the classification of sports and disciplines at the Winter Olympics to give an overview.
+        <p><strong>Secondary Tasks</strong><br/>
+        <p><strong>T2. Browse - Features: (Winner Country)</strong> By knowing the location (e.g. Alpine Sports>Snowboarding>Gold) it is possible to find the country that dominated the discipline, in this case it was USA.
+        <p><strong>T3. Identify - Extremes: (Disciplines)</strong> Find the discipline that has the most medals in each category of winter sports.
+        <p><strong>Derivation Tasks</strong><br/>
+        <p><strong>T4. Derive - Topology:</strong> Derive a new dataset based on the general classification of winter sports and medal count per discipline.
+
+        <p>
+        <span class="titulo2">WHAT</span>
+        
+        <p>
+        Original information was available at the Guardian: https://www.theguardian.com/sport/ng-interactive/2018/feb/09/winter-olympics-latest-medal-table-for-pyeongchang-2018
+<br/>There was an accordion menu to choose the discipline and see the winners per category but not overall.
+<br/>The information available at the BBC website was processed manually to build a tree. The tree starts with the three types of winter sports, then, each sports splits into its different disciplines, later, each discipline splits into three categories: Gold, Silver and Bronze, to finally find the countries as leafs and answer who won more medals of each kind. The resulting dataset is available as JSON and has the following characteristics: 
+      <p><strong>Dataset Type:</strong> Tree.
+      <p><strong>Dataset Availability:</strong> Static.
+      <p><strong>Attributes: </strong>
+      <p><ul>
+        <li>Attribute: Type of Sport. (Ice Sports, Nordic Sports, etc.) Type: Categorical </li>
+        <li>Attribute: Discipline. (Figure Skating, Ice Hockey) Type: Categorical </li>
+        <li>Attribute: Type of Medal. (Gold, Silver, Bronze) Type: Categorical </li>
+        <li>Attribute: Country. Type: Categorical </li>
+        <li>Attribute: Number of Medals. Type: Quantitative-Sequential </li>
+        
+      </ul>
+       </p>
+          
+        <span class="titulo2">HOW</span>
+        <p><strong>Idiom:</strong> Icicle Treemap.  .
+        <p><strong>Marks:</strong> Shape (Rectangles).
+      
+      <p><strong>Channels: </strong>
+      <p><ul>
+        <li><strong>Color: </strong> 
+Attributes: Type of Sports / Disciplines Type: Categorical, unordered. (Encoding: Align, Arrange, Separate.)</li>
+        <li><strong>Area 2D: </strong> 
+Attribute: Number of medals Type: Quantitative, sequential. (Encoding: Express)
+</li>
+        
+      </ul>
+       </p>
+      <p><strong>Interaction:</strong> Select to Filter and zoom in and out.       
+      
+  </div>
+  
+  <br/>
+  <br/>
+  <div class="parallax"></div>
+  <br/>
+  <div class="text-center">
+  <div class="row">
+    <div class="text-center  col-md-12">
+      <span class="titulo">There are 42 chances to win an Olympic Medal in Speed Skating!</span>
+      <br/><br/><span class="subtitulo">
+      Among the 15 disciplines at the winter olympics, Speed Skating is the widest sport while Ice Hockey is left behind.
+
+      </span>
+    </div>
+  </div>
+  </div>
+  <br/>
+  
+    <span class="titulo2">How to use it:</span>
+    <br/>1. Click in the category of your interest to see more details.
+    <br/>2. Click in the left column to go back.</p>
+    
+<script type="text/javascript">
+  var margin = {top: 30, right: 50, bottom: 40, left:40};
+  var width = 932; //- margin.left - margin.right;
+  var height = 600; //- margin.top - margin.bottom;
+  var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+  
+  var svg = d3.select('#viz')
+    .append('svg')
+    .attr('width', width)
+    .style('overflow', "hidden")
+        .style('font', "14px sans-serif Anton")
+    .attr('height', height);
+    
+  //cargo los datos
+  d3.json("p1.json").then(function(data) {
+    console.log(data);  
+    
+    
+    var partition = data => {
+      const root = d3.hierarchy(data)
+        .sum(d => d.size)
+        .sort((a, b) => b.height - a.height || b.value - a.value);  
+      return d3.partition()
+        .size([height, (root.height + 1) * width / 3])
+      (root);
+    } 
+      
+    var color3 = d3.scaleOrdinal(d3.schemeSet2);  
+    //var color = d3.scaleOrdinal().range(d3.quantize(d3.interpolateRainbow, 10));
+    var color = d3.scaleOrdinal(d3.schemeSet2); 
+    
+    var format = d3.format(",d");
+    //inicio de la funcion
+    
+    const root = partition(data);
+    let focus = root;
+    const cell = svg
+      .selectAll("g")
+      .data(root.descendants())
+      .enter().append("g")
+        .attr("transform", d => `translate(${d.y0},${d.x0})`);
+    
+    const rect = cell.append("rect")
+      .attr("width", d => d.y1 - d.y0 - 1)
+      .attr("height", d => rectHeight(d))
+      .attr("fill-opacity", 0.8) //opacidad de todos los rect.
+      .attr("fill", d => {
+      if (!d.depth) return "#666666"; //sino tiene padre el color es gris
+      while (d.depth > 1) d = d.parent;
+      return color3( d.data.name);
+      })
+      .style("cursor", "pointer")
+      .attr("class", d => d.data.name) //le coloca la clase al rectangulo!
+      .on("click", clicked);
+      //puede llevar mousover
+      
+      
+      
+//  const image= cell.append("image")
+  //  .attr("xlink:href", d => d.data.cover)
+  //  .attr("x", 2)
+    //.attr("width", d => d.y1 - d.y0 - 1)
+    //.attr("height", 600)
+  //.on("click", clicked);
+    //.on('dblclick', showInfo);
+  
+    const text = cell.append("text")
+      .style("user-select", "none")
+      .attr("pointer-events", "none")
+      .attr("font-size", d => textHeight(d))
+      .attr("font-family",'Anton')
+      //font-family: 'Anton', sans-serif;
+      .attr("transform",  d => {
+      if (!d.depth) return "translate(100,600)rotate(270)"; //sino tiene padre gira
+      
+      })
+      .attr("fill",  d => {
+      if (!d.depth) return "#fff"; //sino tiene padre el color es diferente
+      
+      })
+      //font-size="12px"
+      .attr("x", 4)
+      .attr("y", d => textHeight(d))
+      .attr("fill-opacity", d => +labelVisible(d));
+      
+    text.append("tspan")
+      .text(d => d.data.name);
+    const tspan = text.append("tspan")
+      .attr("fill-opacity", d => labelVisible(d) * 0.7)
+      .text(d => ` ${format(d.value)}`);
+      
+     
+    cell.append("title")
+        .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")}\n${format(d.value)}`);
+    var hola =true;
+    function clicked(p) {
+         
+    //inicio de guardar click
+    //var myWindow = window.open("", "MsgWindow", "width=200, height=100");
+    //myWindow.document.write(" -Acabo de clickear "+p.data.name);
+    var clickeado=p.data.name;
+    //fin de guardar click
+    
+    focus = focus === p ? p = p.parent : p;
+    root.each(d => d.target = {
+      x0: (d.x0 - p.x0) / (p.x1 - p.x0) * height,
+      x1: (d.x1 - p.x0) / (p.x1 - p.x0) * height,
+      y0: d.y0 - p.y0,
+      y1: d.y1 - p.y0
+    });
+    const t = cell.transition().duration(750)
+      .attr("transform", d => `translate(${d.target.y0},${d.target.x0})`);
+    rect.transition(t).attr("height", d => rectHeight(d.target));
+    text.transition(t).attr("fill-opacity", d => +labelVisible(d.target));
+    //no funciona el cambio de tamanio en edge... 
+    //text.transition(t).attr("font-size", d => textHeight(d.target));
+    //text.transition(t).attr("y", d => textHeight(d.target));
+    
+    tspan.transition(t).attr("fill-opacity", d => labelVisible(d.target) * 0.7);
+    
+    //inicio del if para 
+    
+    //myWindow.document.write("Clickeo la depth "+p.depth);
+    if (clickeado=="Ice Sports" || clickeado=="Alpine Sports" || clickeado=="Nordic Sports")
+    {     //myWindow.document.write(" -Entro "+clickeado);
+      if (hola)
+      {
+      //entra en zoom in      
+        rect.transition(t).attr("fill", d => {
+        if (!d.depth) return "#666666";
+        while (d.depth >2) d = d.parent;
+        return color( d.data.code);         
+        })
+      hola = !hola;
+      //myWindow.document.write("if "+hola);
+      }
+      else
+      {
+      //entra en zoom out
+        rect.transition(t).attr("fill", d => {
+        if (!d.depth) return "#666666";
+        while (d.depth >1) d = d.parent;
+        return color3( d.data.name);
+      })
+      hola = !hola;
+      //myWindow.document.write("else "+hola);
+      }
+    }
+    //fin del if
+    }
+    
+    function rectHeight(d) {
+    return d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2);
+    }
+    
+    function textHeight(d) {
+    var tamanio= (d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2))/6;
+    if (tamanio<14)
+    {
+      return 14;
+    } else if (tamanio>60)
+    {
+      return 73;
+    }
+    return tamanio;
+    }
+    function labelVisible(d) {
+    return d.y1 <= width && d.y0 >= 0 && d.x1 - d.x0 > 16;
+    }   
+      
+    //fin de la funcion
+  });   
+    
+    // 7. d3's line generator
+</script>
+<br/>
+<br/>
+
+    <span class="titulo2 texto2">Insights:</span>
+    <p >
+    The visualization presents us the following insights: 
+    <ul>
+      <li class="texto2">The Winter Olympic sports are divided into three major categories: Ice, Alpine and Nordic Sports. The three types of sports are equally relevant since each one of them has a similar amount of medals: 122, 93 and 92 respectively.</li>
+      <li class="texto2">When zooming into Speed Skating, the sport with the most medals in the Ice Sports, we can find out that the Netherlands ruled the discipline getting the most Gold (7), Silver (4) and Bronze (5) medals. No wonder Ice skating is said to were born at that country.</li>
+      <li class="texto2">The three sports with the most medals in each of the winter sports categories are: Speed Skating - 42 medals - Category: Ice Sports; Alpine Skiing - 33 medals - Category: Alpine Sports; Cross-country Skiing - 38 Medals - Category: Nordic Sports.</li>
+      <li class="texto2">Surprisingly, in the Category Nordic Sports, Only one Nordic country won in one of the four sports. Norway was able to dominate at Ski jumping while Russia, Germany and France won in the other disciplines.</li>
+      
+    </ul>
+  </p>
+<br/>
+    
+  <br/>
+  <div class="parallax2"></div>
+  <br/>
+  
+  <div class="texto2">
+    <span class="titulo2">LICENSE:</span>
+    <p>
+    Copyright 2018 Camilo Espitia
+    <br/> <br/>
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+    <br/><br/>
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+    <br/><br/>
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    </p>
+  </div>
+  
+
+  </div>
+  </div>
+  </div>
+</body>
+</html>
