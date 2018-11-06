@@ -1,22 +1,22 @@
 Proyecto desarrollado por: MIGUEL ALFONSO FEIJOO GARCÍA
-NOMBRE: "El CACAO ha sido desde el 2010 una materia prima de importación a Colombia por varios países a nivel global. Ciertos departamentos del Territorio Nacional han hecho parte de la actividad económica del CACAO. ¿En qué repercute esto?"
-FECHA DE ACTUALIZACIÓN:   30/10/2018
+NOMBRE: "La Asistencia a las Plenarias del Senado parece no importar en nuestros Congresistas "
+FECHA DE ACTUALIZACIÓN:   06/11/2018
 
 Slides: https://docs.google.com/presentation/d/1RFTqgSmSNMpZ08bcLncRhyuAGWvKExLi14U5Bab6mwY/edit?usp=sharing
 
-El principal objetivo de este ejercicio es lograr en el usuario la localización de relaciones o caminos por importaciones de Cacao o Chocolate en Colombia desde el año 2010 hasta el pasado Abril del 2018. De esta forma, a partir de los datos obtenidos de Datos Abiertos Colombianos - Agricultura y Desarrollo Rural, respecto a las importaciones de Cacao, se plantea una red en la que los nodos sean representaciones de los departamentos y países (discriminados por color), y los enlaces representacioens de la actividad de importación de esta materia prima. De esta forma, la tarea global indentificada, de acuerdo al framework de Tamara Munzner es la de EXPLORE TOPOLOGY y LOCATE PATHS para la identificación de patrones de comportamiento de la actividad de importación entre países y departamentos del territorio nacional.
+Practicamente, se espera lograr en el usuario un nivel de criticidad respecto a la simplididad en asistencia por parte de los congresistas de la república.Adicionalmente se pretende lograr la identificación del comportamiento de asistencia por parte de la totalidad de senadores de la república a la plenarias del senado. De esta forma, la tarea global indentificada, de acuerdo al framework de Tamara Munzner es la de Explore - Topology: Explorar la clasificación por parte de comportamiento de los senadores de la república en las plenarias del senado (asistencia). Por otro lado, como tareas secundarias, según el mismo framework, se pretende Browse - Features: (Cantidades de Asistencias y Fallas por parte de los miembros del senado a la plenarias) y Identify - Extremes: Identificar el comportamiento promedio total e individual de asistencia por parte de los congresistas a las plenarias del Senado de la República.
 
 
-Para correrlo, ingresar a la URL:   https://miguelfeijoo.github.io/Importaciones2018/
+Para correrlo, ingresar a la URL:   https://miguelfeijoo.github.io/Senado2018/
 
-Una vez ingresado al link, se encuentra la red planteada como visualziación, en la que se puede interactuar respecto a las fuerzas planteadas (movimiento versus relación), obtención de información específica por Departamento o País y hciendo SCROLL-DOWN se puede encontrar el contexto, abstrcción y hallazgos preliminares, descritos en la documentación planteada. La visualización se presenta en la parte superior de la página. 
-
-
-Por otro lado, para el pre-procesamiento de la información, se llevó a cabo utilizando PANDAS con PYTHON. De allí se obtuvo la información respectiva que se utilizó como datasets en las visualizaciones. Particularmente, se llevó a cabo un preprocesamiento del archivo excel extraído de Datos Abiertos Colombianos (datos.gov.co) para así convertirlo en un JSON que relacione NODOS y LINKS.
+Una vez ingresado al link, se encuentra el árbol planteado como visualización, en la que se puede interactuar haciendo zoom and back, como lo desee el usuario.
 
 
+Por otro lado, para el pre-procesamiento de la información, se llevó a cabo utilizando PANDAS con PYTHON. De allí se obtuvo la información respectiva que se utilizó como datasets en las visualizaciones. Se armó allí el JSON planteado para trabajar a visualización, de forma que tuviera la estrctura PADRE e HIJOS.
 
-SCREENSHOT: https://raw.githubusercontent.com/miguelfeijoo/miguelfeijoo.github.io/master/Importaciones2018/ImportacionesCacao2018.jpg
+
+
+SCREENSHOT: https://raw.githubusercontent.com/miguelfeijoo/miguelfeijoo.github.io/master/Senado2018/Screenshot_ImagenSenado2018.JPG
 
 Video:
 https://www.youtube.com/watch?v=twZG_4TUhck
