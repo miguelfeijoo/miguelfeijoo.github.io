@@ -19,12 +19,11 @@
   catColumns.forEach((c) => nv.addCategoricalAttrib(c));
   seqColumns.forEach((c) => nv.addSequentialAttrib(c));
 
-  var color = d3.scaleOrdinal(d3.schemeSet3)
-  nv.addAttrib("cluster", color);
-
   // NAVIO Step 3. Load your data!
   d3.csv("https://raw.githubusercontent.com/john-guerra/navio/master/example_vastChallenge2017/Lekagul%20Sensor%20Data.csv", function (err, data) {
     if (err) throw err;
+
+    console.log(data)
 
     nv.data(data);
   });
