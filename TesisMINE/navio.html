@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+<head>
+  
+  <link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' >
+  <link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css' >
+  <script src="https://cdn.jsdelivr.net/npm/vega@4.3.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.20.0"></script>
+
+</head>
+<body>
+
+  <style>
+  #progress_bar {
+    margin: 10px 0;
+    padding: 3px;
+    border: 1px solid #000;
+    font-size: 14px;
+    clear: both;
+    opacity: 0;
+    -moz-transition: opacity 1s linear;
+    -o-transition: opacity 1s linear;
+    -webkit-transition: opacity 1s linear;
+  }
+  #progress_bar.loading {
+    opacity: 1.0;
+  }
+  #progress_bar .percent {
+    background-color: #99ccff;
+    height: auto;
+    width: 0;
+  }
+</style>
+
+
+<p><strong>Select a file of your interest to get to analyze its current attributes </strong>(Accepted Extensions: <i>.csv,.txt</i> )</p>
+<p></p>
+<input type="file" accept=".csv,.txt" id="files" name="file" />
+<button onclick="abortRead();">Cancel read</button>
+<div id="progress_bar"><div class="percent">0%</div></div>
+
+
+
+  <!-- Placeholder for the widget -->
+  <div id="navio"></div>
+
+
+  <!-- NAVIO Step 0: Load the libraries -->
+  <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/navio/dist/navio.min.js"></script>
+  
+<div id="text" align="left"></div>
+<p></p>
+<div id="list" align="center"></div>
+<p></p>
+<div id="list2" align="center"></div>
+<p></p>
+<p></p>
+
+<div id="vis" align='center'></div>
+
+
+
+
+
+<script>
+
+ var reader;
+  var progress = document.querySelector('.percent');
+  
+
+  function abortRead() {
+    reader.abort();
+  }
+
+  function errorHandler(evt) {
+    switch(evt.target.error.code) {
+      case evt.target.error.NOT_FOUND_ERR:
+        alert('File Not Found!');
+        break;
+      case evt.target.error.NOT_READABLE_ERR:
+        alert('File is not readable');
+        break;
+      case evt.target.error.ABORT_ERR:
+        break; // noop
+      default:
+        alert('An error occurred reading this file.');
+    };
+  }
+
+  function updateProgress(evt) {
+    // evt is an ProgressEvent.
+    if (evt.lengthComputable) {
+      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
+      // Increase the progress bar length.
+      if (percentLoaded < 100) {
+        progress.style.width = percentLoaded + '%';
+        progress.textContent = percentLoaded + '%';
+      }
+    }
+  }
+
+  function handleFileSelect(evt) {
+    // Reset progress indicator on new file selection.
+    progress.style.width = '0%';
+    progress.textContent = '0%';
+    var parse=[];
+    var dateparse=[];
+    var categoric=[];
+    
+
+    reader = new FileReader();
+    reader.onerror = errorHandler;
+    reader.onprogress = updateProgress;
+    reader.onabort = function(e) {
+      alert('File read cancelled');
+    };
+    reader.onloadstart = function(e) {
+      document.getElementById('progress_bar').className = 'loading';
+    };
+    reader.onload = function(e) {
+      // Ensure that the progress bar displays 100% at the end.
+      progress.style.width = '100%';
+      progress.textContent = '100%';
+      setTimeout("document.getElementById('progress_bar').className='';", 2000);
+    }
+
+    // Read in the image file as a binary string.
+    reader.readAsBinaryString(evt.target.files[0]);
+    var tmppath = URL.createObjectURL(evt.target.files[0]);
+  $("img").fadeIn("fast").attr('src',URL.createObjectURL(evt.target.files[0]));
+
+    console.log(tmppath)
+    
+    
+
+
+
+    d3.csv(tmppath, function (err, data) {
+  if (err) throw err;
+
+  var catColumns = [];
+  var seqColumns = [];
+
+  function json2table(json, classes) {
+  var cols = Object.keys(json[0]);
+  
+  var headerRow = '';
+  var bodyRows = '';
+  var columnas='';
+  var columns=[];
+  
+  
+  classes = classes || '';
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+  //console.log(cols)
+  cols.map(function(col) {
+    headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
+
+
+    columnas += '<option value="'+col+'">'
+
+
+
+
+  });
+
+  document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
+  document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+columnas
+  document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+columnas
+
+
+  console.log(columnas)
+
+
+
+  json.map(function(row) {
+    bodyRows += '<tr>';
+
+    cols.map(function(colName) {
+      bodyRows += '<td>' + row[colName] + '</td>';
+      columns.push(row[colName])
+      console.log(cols.length)
+    })
+
+
+
+    bodyRows += '</tr>';
+  });
+
+  for (i = 0; i < cols.length; i++){
+    if(/^[+-]?([0-9]*[.])?[0-9]+$/.test(columns[i]))
+    { 
+     parse.push(cols[i])
+    }
+
+    else if(/([0-9]{0,4})([0-9]{0,4})?(\/)([0-9]{0,4})([0-9]{0,4})?(\/)(\d{0,4})/.test(columns[i]))
+    {
+      dateparse.push(cols[i])
+    }    
+
+    else
+    {
+      categoric.push(cols[i])
+    }
+  }
+
+  var fmt = d3.timeParse("%Y-%m-%d %H:%M:%S");
+  function type(row) {
+    var split = row["car-id"].split("-");
+    row.Date = fmt(row.Date);
+    row.Hours = row.Date.getHours();
+    row.DayNight = row.hour < 6 || row.hour>18 ? "night": "day";
+    row.DayOfTheWeek = row.Date.getDay();
+    row.Minutes = row.Date.getMinutes();
+    row.Seconds = row.Date.getSeconds();
+    row.Year = row.Date.getFullYear();
+    row.month = row.Date.getMonth();
+    row.Day = row.Date.getDate();
+    return row;
+  }
+
+
+  dateparse.push('Hours','Minutes','Seconds','Month','Day')
+  categoric.push('Year','DayNight','DayOfTheWeek')
+
+
+    for (var i=0;i<dateparse.length;i++){
+       seqColumns.push(dateparse[i])
+    }
+
+  if(parse.includes('Year') && categoric.includes('Year')){
+
+    var value = 'Year'
+
+    parse=parse.filter(function(item) { 
+    return item !== value
+    })}
+
+  console.log("parse   "+parse)
+
+  seqColumns=parse;
+  catColumns=categoric;
+
+  
+
+  return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
+         headerRow +
+         '</tr></thead><tbody>' +
+         bodyRows +
+         '</tbody></table>';
+}
+
+
+
+/* How to use it */
+
+ 
+document.getElementById('tableGoesHere').innerHTML = json2table(data, 'table');
+
+  var nv = navio(d3.select("#navio"), 600);
+
+  // NAVIO Step 2. Add the Categorical and Sequential attributes you want to use
+  
+
+
+
+  catColumns.forEach((c) => nv.addCategoricalAttrib(c));
+  seqColumns.forEach((c) => nv.addSequentialAttrib(c));
+
+
+function vis(attr1,attr2,seqColumns,catColumns,visible){
+
+d3.select("#attr1").on("change", function(){
+      attr1 = this.value;
+      console.log("UNO    "+attr1)
+      console.log(seqColumns)
+      console.log(seqColumns.includes(attr1))
+
+       if(seqColumns.includes(attr1) && seqColumns.includes(attr2)){
+          var yourVlSpec = {
+              "data": {"values": visible},
+              "selection": {
+              "grid": {
+              "type": "interval", "bind": "scales"
+              }
+              },
+              "mark": "circle",
+              "encoding": {
+              "x": {
+              "field": attr1, "type": "quantitative",
+              },
+              "y": {
+              "field": attr2, "type": "quantitative",
+              }
+              }
+          }
+          vegaEmbed("#vis", yourVlSpec);
+        }
+        else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
+          var yourVlSpec = {
+              "data": {"values": visible},
+              "selection": {
+              "grid": {
+              "type": "interval", "bind": "scales"
+              }
+              },
+              "mark": "bar",
+              "encoding": {
+              "x": {
+              "field": attr1, "type": "ordinal",
+              },
+              "y": {
+              "field": attr2, "type": "quantitative",
+              }
+              }
+          }
+          vegaEmbed("#vis", yourVlSpec);
+        }
+        else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
+          var yourVlSpec = {
+              "data": {"values": visible},
+              "selection": {
+              "grid": {
+              "type": "interval", "bind": "scales"
+              }
+              },
+              "mark": "bar",
+              "encoding": {
+              "x": {
+              "field": attr2, "type": "ordinal",
+              },
+              "y": {
+              "field": attr1, "type": "quantitative",
+              }
+              }
+          }
+          vegaEmbed("#vis", yourVlSpec);
+        }
+ 
+d3.select("#attr2").on("change", function(){
+        attr2 = this.value;
+        console.log("DOS    "+attr2)
+        console.log(seqColumns.includes(attr2))
+
+       if(seqColumns.includes(attr1) && seqColumns.includes(attr2)){
+          var yourVlSpec = {
+              "data": {"values": visible},
+              "selection": {
+              "grid": {
+              "type": "interval", "bind": "scales"
+              }
+              },
+              "mark": "circle",
+              "encoding": {
+              "x": {
+              "field": attr1, "type": "quantitative",
+              },
+              "y": {
+              "field": attr2, "type": "quantitative",
+              }
+              }
+          }
+          vegaEmbed("#vis", yourVlSpec);
+        }
+        else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
+          var yourVlSpec = {
+              "data": {"values": visible},
+              "selection": {
+              "grid": {
+              "type": "interval", "bind": "scales"
+              }
+              },
+              "mark": "bar",
+              "encoding": {
+              "x": {
+              "field": attr1, "type": "ordinal",
+              },
+              "y": {
+              "field": attr2, "type": "quantitative",
+              }
+              }
+          }
+          vegaEmbed("#vis", yourVlSpec);
+        }
+        else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
+          var yourVlSpec = {
+              "data": {"values": visible},
+              "selection": {
+              "grid": {
+              "type": "interval", "bind": "scales"
+              }
+              },
+              "mark": "bar",
+              "encoding": {
+              "x": {
+              "field": attr2, "type": "ordinal",
+              },
+              "y": {
+              "field": attr1, "type": "quantitative",
+              }
+              }
+          }
+          vegaEmbed("#vis", yourVlSpec);
+        }
+
+
+
+
+        
+              
+
+})
+
+})
+
+
+}
+
+
+
+  // Add the data
+  nv.data(data);
+
+/*visible*/
+  var visible = [];
+  var visible = nv.getVisible();
+
+  vis(attr1,attr2,seqColumns,catColumns,visible)
+
+  nv.updateCallback(function(){
+    var visible = nv.getVisible();
+
+
+  vis(attr1,attr2,seqColumns,catColumns,visible)
+
+
+
+  })
+
+
+
+
+
+
+
+
+
+
+  // Set the initial visible elements, and setup a callback for when selecting new items
+
+   /* The function */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //document.getElementById('displayDiv').innerHTML = '<table id="data" class="display" style="width:100%"> <thead>  <tr> <th>'+ headers +' </th> </tr>  </thead>   <tbody>   </tbody>     </table>'  
+
+
+
+  })}
+
+  document.getElementById('files').addEventListener('change', handleFileSelect, false)
+
+
+</script>
+
+<!--<table id="data" class="display nowrap" style="width:100%"></table>-->
+<!--<table id="data" class="display nowrap" style="width:100%"><thead><tr><th>Date</th><th>Car-id</th><th>Car-type</th><th>Gate-name</th><th>Visible</th><th>__seqId</th><th>__i</th></tr></thead><tbody><tr><td>2015-05-01 00:43:28</td><td>20154301124328-262</td><td>4</td><td>entrance3</td><td>true</td><td>0</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:03:48</td><td>20154301124328-262</td><td>4</td><td>general-gate1</td><td>true</td><td>1</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:06:24</td><td>20154301124328-262</td><td>4</td><td>ranger-stop2</td><td>true</td><td>2</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:09:25</td><td>20154301124328-262</td><td>4</td><td>ranger-stop0</td><td>true</td><td>3</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:12:36</td><td>20154301124328-262</td><td>4</td><td>general-gate2</td><td>true</td><td>4</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:24:02</td><td>20154301124328-262</td><td>4</td><td>general-gate5</td><td>true</td><td>5</td><td>[object Object]</td></tr><tr><td>2015-05-01 00:43:28</td><td>20154301124328-262</td><td>4</td><td>entrance3</td><td>true</td><td>0</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:03:48</td><td>20154301124328-262</td><td>4</td><td>general-gate1</td><td>true</td><td>1</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:06:24</td><td>20154301124328-262</td><td>4</td><td>ranger-stop2</td><td>true</td><td>2</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:09:25</td><td>20154301124328-262</td><td>4</td><td>ranger-stop0</td><td>true</td><td>3</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:12:36</td><td>20154301124328-262</td><td>4</td><td>general-gate2</td><td>true</td><td>4</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:24:02</td><td>20154301124328-262</td><td>4</td><td>general-gate5</td><td>true</td><td>5</td><td>[object Object]</td></tr><tr><td>2015-05-01 00:43:28</td><td>20154301124328-262</td><td>4</td><td>entrance3</td><td>true</td><td>0</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:03:48</td><td>20154301124328-262</td><td>4</td><td>general-gate1</td><td>true</td><td>1</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:06:24</td><td>20154301124328-262</td><td>4</td><td>ranger-stop2</td><td>true</td><td>2</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:09:25</td><td>20154301124328-262</td><td>4</td><td>ranger-stop0</td><td>true</td><td>3</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:12:36</td><td>20154301124328-262</td><td>4</td><td>general-gate2</td><td>true</td><td>4</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:24:02</td><td>20154301124328-262</td><td>4</td><td>general-gate5</td><td>true</td><td>5</td><td>[object Object]</td></tr></tbody></table>-->
+
+
+
+<div id="tableGoesHere"></div>
+
+
+<script src='https://code.jquery.com/jquery-1.12.4.js'></script>
+<script src='https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.flash.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.html5.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.print.min.js'></script>
+
+
+<script>
+  $(document).ready(function() {
+    $('#data').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    } );
+} );
+</script>
+
+
+
+</body>
+
+
+
+
+
+
+</html>
+
