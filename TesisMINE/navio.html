@@ -4,6 +4,17 @@
   
   <link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' >
   <link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css' >
+
+  <script src='https://code.jquery.com/jquery-1.12.4.js'></script>
+  <script src='https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js'></script>
+  <script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
+  <script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.flash.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js'></script>
+  <script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.html5.min.js'></script>
+  <script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.print.min.js'></script>
+
   <script src="https://cdn.jsdelivr.net/npm/vega@4.3.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc8"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.20.0"></script>
@@ -103,6 +114,10 @@
   }
 
   function handleFileSelect(evt) {
+
+
+
+  
     // Reset progress indicator on new file selection.
     progress.style.width = '0%';
     progress.textContent = '0%';
@@ -139,12 +154,15 @@
 
 
     d3.csv(tmppath, function (err, data) {
+
+
   if (err) throw err;
 
   var catColumns = [];
   var seqColumns = [];
 
   function json2table(json, classes) {
+
   var cols = Object.keys(json[0]);
   
   var headerRow = '';
@@ -258,10 +276,65 @@
 
 
 
+
+document.getElementById('tableGoesHere').innerHTML = json2table(data, 'table');
+
 /* How to use it */
 
+function loadScript(src) {
+       var script = document.createElement("script");
+       script.type = "text/javascript";
+       document.getElementById("tableGoesHere").appendChild(script);
+       script.src = src;
+
+       console.log("SOURCEE   "+src)
+}
+function loadStyle(src) {
+       var script = document.createElement("link");
+       script.rel = 'stylesheet'
+       script.type = "text/css";
+       document.getElementById("tableGoesHere").appendChild(script);
+       script.href = src;
+}
+
+
+
+$(document).ready(function() {
+    $('#data').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    } );
+} );
+
+
+
+
+loadStyle('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css')
+loadStyle('https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css')
+
+//loadScript('https://code.jquery.com/jquery-3.3.1.js')
+loadScript('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js')
+loadScript('https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js')
+loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js')
+loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js')
+loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js')
+loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js')
+loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js')
+loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js')
+
+
+var script = document.createElement("script");
+//script.type = "text/javascript";
+//document.getElementById("tableGoesHere").appendChild(script);
+
+
+
+var script = document.createElement("script");
+script.text="var table; table.destroy(); $(document).ready(function() {$('#data').DataTable( {destroy: true,paging: true, searching: true, dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
+document.getElementById("tableGoesHere").appendChild(script);
  
-document.getElementById('tableGoesHere').innerHTML = json2table(data, 'table');
 
   var nv = navio(d3.select("#navio"), 600);
 
@@ -490,6 +563,8 @@ d3.select("#attr2").on("change", function(){
 <div id="tableGoesHere"></div>
 
 
+<!--
+
 <script src='https://code.jquery.com/jquery-1.12.4.js'></script>
 <script src='https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
@@ -498,7 +573,7 @@ d3.select("#attr2").on("change", function(){
 <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.html5.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.print.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.print.min.js'></script>-->
 
 
 <script>
