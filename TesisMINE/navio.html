@@ -325,14 +325,12 @@ loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js')
 loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js')
 
 
-var script = document.createElement("script");
-//script.type = "text/javascript";
-//document.getElementById("tableGoesHere").appendChild(script);
+
 
 
 
 var script = document.createElement("script");
-script.text="var table; table.destroy(); $(document).ready(function() {$('#data').DataTable( {destroy: true,paging: true, searching: true, dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
+script.text="var table; table.destroy(); $(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
 document.getElementById("tableGoesHere").appendChild(script);
  
 
@@ -349,6 +347,13 @@ document.getElementById("tableGoesHere").appendChild(script);
 
 function vis(attr1,attr2,seqColumns,catColumns,visible){
 
+function getMinY() {
+  return visible.reduce((min, p) => p.Year < min ? p.Year : min, visible[0].Year);
+}
+function getMaxY() {
+  return visible.reduce((max, p) => p.Year > max ? p.Year : max, visible[0].Year);
+}
+
 d3.select("#attr1").on("change", function(){
       attr1 = this.value;
       console.log("UNO    "+attr1)
@@ -356,62 +361,116 @@ d3.select("#attr1").on("change", function(){
       console.log(seqColumns.includes(attr1))
 
        if(seqColumns.includes(attr1) && seqColumns.includes(attr2)){
+
+          console.log("MIN   "+(parseInt(getMinY())-1).toString())
+          console.log("MAX    "+(parseInt(getMaxY())-1).toString())
           var yourVlSpec = {
-              "data": {"values": visible},
+              "data": {"values":visible},
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
+              },
+              "CylYr": {
+              "type": "single",
+              "fields": ["Year"],
+              "bind": {
+              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              },
+              "on": "click",
+              "resolve": "global",
+              "empty": "all"
               }
               },
               "mark": "circle",
               "encoding": {
-              "x": {
-              "field": attr1, "type": "quantitative",
+              "x": {"field": attr1, "type": "quantitative"},
+              "y": {"field": attr2, "type": "quantitative"},
+              "color": {
+              "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+              "value": "None"
               },
-              "y": {
-              "field": attr2, "type": "quantitative",
+              "size": {
+                  "condition": {
+                      "selection": "CylYr",
+                      "value": 100
+                  }
               }
-              }
+             }
           }
           vegaEmbed("#vis", yourVlSpec);
         }
         else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
-          var yourVlSpec = {
-              "data": {"values": visible},
+         var yourVlSpec = {
+              "data": {"values":visible},
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
+              },
+              "CylYr": {
+              "type": "single",
+              "fields": ["Year"],
+              "bind": {
+              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              },
+              "on": "click",
+              "resolve": "global",
+              "empty": "all"
               }
               },
               "mark": "bar",
               "encoding": {
-              "x": {
-              "field": attr1, "type": "ordinal",
+              "x": {"field": attr1, "type": "ordinal"},
+              "y": {"field": attr2, "type": "quantitative"},
+              "color": {
+              "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+              "value": "None"
               },
-              "y": {
-              "field": attr2, "type": "quantitative",
+              "size": {
+                  "condition": {
+                      "selection": "CylYr",
+                      "value": 100
+                  }
               }
-              }
+             }
           }
           vegaEmbed("#vis", yourVlSpec);
         }
         else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
           var yourVlSpec = {
-              "data": {"values": visible},
+              "data": {"values":visible},
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
+              },
+              "CylYr": {
+              "type": "single",
+              "fields": ["Year"],
+              "bind": {
+              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              },
+              "on": "click",
+              "resolve": "global",
+              "empty": "all"
               }
               },
               "mark": "bar",
               "encoding": {
-              "x": {
-              "field": attr2, "type": "ordinal",
+              "x": {"field": attr2, "type": "ordinal"},
+              "y": {"field": attr1, "type": "quantitative"},
+              "color": {
+              "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+              "value": "None"
               },
-              "y": {
-              "field": attr1, "type": "quantitative",
+              "size": {
+                  "condition": {
+                      "selection": "CylYr",
+                      "value": 100
+                  }
               }
-              }
+             }
           }
           vegaEmbed("#vis", yourVlSpec);
         }
@@ -422,62 +481,113 @@ d3.select("#attr2").on("change", function(){
         console.log(seqColumns.includes(attr2))
 
        if(seqColumns.includes(attr1) && seqColumns.includes(attr2)){
-          var yourVlSpec = {
-              "data": {"values": visible},
+         var yourVlSpec = {
+              "data": {"values":visible},
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
+              },
+              "CylYr": {
+              "type": "single",
+              "fields": ["Year"],
+              "bind": {
+              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              },
+              "on": "click",
+              "resolve": "global",
+              "empty": "all"
               }
               },
               "mark": "circle",
               "encoding": {
-              "x": {
-              "field": attr1, "type": "quantitative",
+              "x": {"field": attr1, "type": "quantitative"},
+              "y": {"field": attr2, "type": "quantitative"},
+              "color": {
+              "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+              "value": "None"
               },
-              "y": {
-              "field": attr2, "type": "quantitative",
+              "size": {
+                  "condition": {
+                      "selection": "CylYr",
+                      "value": 100
+                  }
               }
-              }
+             }
           }
           vegaEmbed("#vis", yourVlSpec);
         }
         else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
           var yourVlSpec = {
-              "data": {"values": visible},
+              "data": {"values":visible},
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
+              },
+              "CylYr": {
+              "type": "single",
+              "fields": ["Year"],
+              "bind": {
+              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              },
+              "on": "click",
+              "resolve": "global",
+              "empty": "all"
               }
               },
               "mark": "bar",
               "encoding": {
-              "x": {
-              "field": attr1, "type": "ordinal",
+              "x": {"field": attr1, "type": "ordinal"},
+              "y": {"field": attr2, "type": "quantitative"},
+              "color": {
+              "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+              "value": "None"
               },
-              "y": {
-              "field": attr2, "type": "quantitative",
+              "size": {
+                  "condition": {
+                      "selection": "CylYr",
+                      "value": 100
+                  }
               }
-              }
+             }
           }
           vegaEmbed("#vis", yourVlSpec);
         }
         else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
           var yourVlSpec = {
-              "data": {"values": visible},
+              "data": {"values":visible},
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
+              },
+              "CylYr": {
+              "type": "single",
+              "fields": ["Year"],
+              "bind": {
+              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              },
+              "on": "click",
+              "resolve": "global",
+              "empty": "all"
               }
               },
               "mark": "bar",
               "encoding": {
-              "x": {
-              "field": attr2, "type": "ordinal",
+              "x": {"field": attr2, "type": "ordinal"},
+              "y": {"field": attr1, "type": "quantitative"},
+              "color": {
+              "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+              "value": "None"
               },
-              "y": {
-              "field": attr1, "type": "quantitative",
+              "size": {
+                  "condition": {
+                      "selection": "CylYr",
+                      "value": 100
+                  }
               }
-              }
+             }
           }
           vegaEmbed("#vis", yourVlSpec);
         }
