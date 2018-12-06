@@ -54,13 +54,25 @@
 
 
   <!-- Placeholder for the widget -->
+  <h2>DISPLAY:<STRONG> WHAT</STRONG></h2>
   <div id="navio"></div>
+
+  <h2>DISPLAY:<STRONG> WHEN</STRONG></h2>
+  <div id="list3" align="center"></div>
+  <div id="temporal"></div>
+  <h2>DISPLAY:<STRONG> WHERE</STRONG></h2>
+  <div id="spatial"></div>
+
+
 
 
   <!-- NAVIO Step 0: Load the libraries -->
   <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
   <script type="text/javascript" src="https://unpkg.com/navio/dist/navio.min.js"></script>
+
+
+
   
 <div id="text" align="left"></div>
 <p></p>
@@ -71,8 +83,6 @@
 <p></p>
 
 <div id="vis" align='center'></div>
-
-
 
 
 
@@ -151,9 +161,131 @@
     
     
 
+var fmt1 = d3.timeParse("%m/%d/%Y %H:%M:%S %p");
+var fmt2 = d3.timeParse("%m/%d/%Y %H:%M:%S ");
+var fmt3 = d3.timeParse("%m/%d/%Y %H:%M");
+
+var fmt4 = d3.timeParse("%d/%m/%Y %H:%M:%S %p");
+var fmt5 = d3.timeParse("%d/%m/%Y %H:%M:%S ");
+var fmt6 = d3.timeParse("%d/%m/%Y %H:%M");
+
+var fmt7 = d3.timeParse("%Y/%m/%d %H:%M:%S %p");
+var fmt8 = d3.timeParse("%Y/%m/%d %H:%M:%S ");
+var fmt9 = d3.timeParse("%Y/%m/%d %H:%M");
 
 
-    d3.csv(tmppath, function (err, data) {
+    d3.csv(tmppath, function (d) {
+
+
+
+
+    if (d.hasOwnProperty("Latitud")){
+
+         d["Latitude"] = +d["Latitud"];
+        delete d["Latitud"];
+
+    }
+    else if(d.hasOwnProperty("latitud")){
+
+        d["Latitude"] = +d["latitud"];
+        delete d["latitud"];
+    }
+
+
+
+
+
+    if (d.hasOwnProperty("Longitud")){
+
+         d["Longitude"] = +d["Longitud"];
+        delete d["Longitud"];
+
+    }
+    else if(d.hasOwnProperty("longitud")){
+
+        d["Longitude"] = +d["longitud"];
+        delete d["longitud"];
+    }
+
+
+  
+    
+    if (d.hasOwnProperty("Fecha")){
+
+    d["Date"] = d["Fecha"];
+    delete d["Fecha"];
+
+    if (/[a]{1}\.( )?[m]{1}\./.test(d.Date)){
+    d.Date = d.Date.replace(/[a]{1}\.( )?[m]{1}\./, "AM");
+
+    console.log(d.Date)
+
+    }
+    else if (/[p]{1}\.( )?[m]{1}\./.test(d.Date)){
+    d.Date = d.Date.replace(/[p]{1}\.( )?[m]{1}\./, "PM");
+
+    console.log(d.Date)
+
+    } 
+
+
+  }
+  else if (d.hasOwnProperty("fecha")){
+
+    d["Date"] = d["fecha"];
+    delete d["fecha"];
+
+    if (/[a]{1}\.?( )[m]{1}\.\./.test(d.Date)){
+    d.Date = d.Date.replace(/[a]{1}\.?( )[m]{1}\./, "AM");
+
+    }
+    else if (/[p]{1}\.?( )[m]{1}\./.test(d.Date)){
+    d.Date = d.Date.replace(/[p]{1}\.?( )[m]{1}\./, "PM");
+
+    } 
+
+
+  }
+
+
+    // This function is applied to each row of the dataset
+    if(fmt1(d.Date)!=null){
+      d.Date = fmt1(d.Date);
+    }
+    else if (fmt2(d.Date)!=null){
+      d.Date = fmt2(d.Date);
+    }
+    else if (fmt3(d.Date)!=null){
+      d.Date = fmt3(d.Date);
+    }
+    else if (fmt4(d.Date)!=null){
+      d.Date = fmt4(d.Date);
+    }
+    else if (fmt5(d.Date)!=null){
+      d.Date = fmt5(d.Date);
+    }
+    else if (fmt6(d.Date)!=null){
+      d.Date = fmt6(d.Date);
+    }
+    else if (fmt7(d.Date)!=null){
+      d.Date = fmt7(d.Date);
+    }
+    else if (fmt8(d.Date)!=null){
+      d.Date = fmt8(d.Date);
+    }
+    else if (fmt9(d.Date)!=null){
+      d.Date = fmt9(d.Date);
+    }
+    d.Hours = d.Date.getHours();
+    d.DayNight = d.hour < 6 && d.hour>18 ? "night": "day";
+    d.DayOfTheWeek = d.Date.getDay();
+    d.Minutes = d.Date.getMinutes();
+    d.Seconds = d.Date.getSeconds();
+    d.Year = d.Date.getFullYear().toString();
+    d.Month = d.Date.getMonth();
+    d.Day = d.Date.getDate();
+    return d;
+  }, function (err, data) {
 
 
   if (err) throw err;
@@ -168,6 +300,7 @@
   var headerRow = '';
   var bodyRows = '';
   var columnas='';
+  var columnasSeq='';
   var columns=[];
   
   
@@ -177,23 +310,9 @@
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
   //console.log(cols)
-  cols.map(function(col) {
-    headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
-
-
-    columnas += '<option value="'+col+'">'
 
 
 
-
-  });
-
-  document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
-  document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+columnas
-  document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+columnas
-
-
-  console.log(columnas)
 
 
 
@@ -212,6 +331,9 @@
   });
 
   for (i = 0; i < cols.length; i++){
+
+
+
     if(/^[+-]?([0-9]*[.])?[0-9]+$/.test(columns[i]))
     { 
      parse.push(cols[i])
@@ -220,7 +342,12 @@
     else if(/([0-9]{0,4})([0-9]{0,4})?(\/)([0-9]{0,4})([0-9]{0,4})?(\/)(\d{0,4})/.test(columns[i]))
     {
       dateparse.push(cols[i])
-    }    
+    }  
+
+    else if(/[GMT-]{4}[0-9]{4}/.test(columns[i]))
+    {
+      dateparse.push(cols[i])
+    }  
 
     else
     {
@@ -228,29 +355,13 @@
     }
   }
 
-  var fmt = d3.timeParse("%Y-%m-%d %H:%M:%S");
-  function type(row) {
-    var split = row["car-id"].split("-");
-    row.Date = fmt(row.Date);
-    row.Hours = row.Date.getHours();
-    row.DayNight = row.hour < 6 || row.hour>18 ? "night": "day";
-    row.DayOfTheWeek = row.Date.getDay();
-    row.Minutes = row.Date.getMinutes();
-    row.Seconds = row.Date.getSeconds();
-    row.Year = row.Date.getFullYear();
-    row.month = row.Date.getMonth();
-    row.Day = row.Date.getDate();
-    return row;
-  }
+  
+
+  //dateparse.push('Hours','Minutes','Seconds','Month','Day')
+  //categoric.push('Year','DayNight','DayOfTheWeek')
 
 
-  dateparse.push('Hours','Minutes','Seconds','Month','Day')
-  categoric.push('Year','DayNight','DayOfTheWeek')
 
-
-    for (var i=0;i<dateparse.length;i++){
-       seqColumns.push(dateparse[i])
-    }
 
   if(parse.includes('Year') && categoric.includes('Year')){
 
@@ -260,12 +371,70 @@
     return item !== value
     })}
 
-  console.log("parse   "+parse)
 
   seqColumns=parse;
-  catColumns=categoric;
 
   
+
+
+
+
+  for (var i=0;i<dateparse.length;i++){
+       seqColumns.push(dateparse[i])
+       
+
+    }
+
+
+
+
+
+  catColumns=categoric;
+
+
+
+    cols.map(function(col) {
+    headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
+
+
+    columnas += '<option value="'+col+'">'
+
+
+
+
+    });
+
+
+    seqColumns.map(function(col) {
+
+
+    if (col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col== "Hours" || col=="Seconds"){
+
+        columnasSeq += ''
+
+    }
+    else{
+
+
+        columnasSeq += '<option value="'+col+'">'
+
+
+}
+
+    });
+
+    document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
+    document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+columnas
+    document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+columnas
+    document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+columnasSeq
+
+
+
+
+
+
+
+
 
   return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
          headerRow +
@@ -287,7 +456,7 @@ function loadScript(src) {
        document.getElementById("tableGoesHere").appendChild(script);
        script.src = src;
 
-       console.log("SOURCEE   "+src)
+      
 }
 function loadStyle(src) {
        var script = document.createElement("link");
@@ -345,8 +514,59 @@ document.getElementById("tableGoesHere").appendChild(script);
   seqColumns.forEach((c) => nv.addSequentialAttrib(c));
 
 
+d3.select("#attr3").on("change", function(){
+  var attrSeq = this.value;
+
+  console.log("selected value:     "+attrSeq)
+
+  var temporalvis = {
+  "data": {"values":visible},
+  "vconcat": [{
+    "width": 700,
+    "mark": "area",
+    "encoding": {
+      "x": {
+        "field": "Date",
+        "type": "temporal",
+        "scale": {"domain": {"selection": "brush"}},
+        "axis": {"title": ""}
+      },
+      "y": {"field": attrSeq,"type": "quantitative"}
+    }
+  }, {
+    "width": 700,
+    "height": 80,
+    "mark": "area",
+    "selection": {
+      "brush": {"type": "interval", "encodings": ["x"]}
+    },
+    "encoding": {
+      "x": {
+        "field": "Date",
+        "type": "temporal"
+      },
+      "y": {
+        "field": attrSeq,
+        "type": "quantitative",
+        "axis": {"tickCount": 3, "grid": false}
+      }
+    }
+  }]
+}
+  vegaEmbed("#temporal", temporalvis);
+});
+
+
+
+console.log("CAT    "+catColumns)
+
+console.log("SEQ    "+seqColumns)
+
 function vis(attr1,attr2,seqColumns,catColumns,visible){
 
+
+  console.log(visible.reduce((min, p) => p.Year < min ? p.Year : min, visible[0].Year))
+  console.log(visible.reduce((max, p) => p.Year > max ? p.Year : max, visible[0].Year))
 function getMinY() {
   return visible.reduce((min, p) => p.Year < min ? p.Year : min, visible[0].Year);
 }
@@ -354,19 +574,60 @@ function getMaxY() {
   return visible.reduce((max, p) => p.Year > max ? p.Year : max, visible[0].Year);
 }
 
+console.log(d3.min(visible,d => +d.Latitude))
+
+
+function spatial(yourVlSpec,visible){
+
+var spatialvis = {
+            "width": 1000,
+            "height":500,
+            "data": {"values":visible},
+            "transform": [{"filter": {"selection": "brush"}}],
+            "vconcat": [{
+              "selection": {
+                "brush": {
+                  "type": "interval",
+                  "on": "[mousedown, window:mouseup] > window:mousemove!",
+                  "encodings": ["x", "y"],
+                  "translate": "[mousedown, window:mouseup] > window:mousemove!",
+                  "zoom": "wheel!",
+                  "mark": {"fill": "#333", "stroke": "green"},
+                  "resolve": "global"
+                  }
+              },
+              "mark": "point",
+              "encoding": {
+                "x": {"field": "Longitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Longitude), d3.max(visible,d => +d.Longitude)]}},
+                "y": {"field": "Latitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Latitude), d3.max(visible,d => +d.Latitude)]}}
+              }
+            }, yourVlSpec]
+          }
+  vegaEmbed("#spatial", spatialvis);
+
+}
+
+/*
+
+console.log(visible.reduce((min, p) => p.Longitude < min ? p.Longitude : min, visible[0].Longitude))
+
+console.log(visible.reduce((max, p) => p.Latitude > max ? p.Latitude : max, visible[0].Latitude))
+console.log(visible.reduce((min, p) => p.Latitude < min ? p.Latitude : min, visible[0].Latitude))
+*/
+
 d3.select("#attr1").on("change", function(){
       attr1 = this.value;
-      console.log("UNO    "+attr1)
       console.log(seqColumns)
-      console.log(seqColumns.includes(attr1))
+      console.log(catColumns)
 
-       if(seqColumns.includes(attr1) && seqColumns.includes(attr2)){
+       if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
 
-          console.log("MIN   "+(parseInt(getMinY())-1).toString())
-          console.log("MAX    "+(parseInt(getMaxY())-1).toString())
           var yourVlSpec = {
+              "width": 1000,
+              "height":500,
+              "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
+              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -375,7 +636,7 @@ d3.select("#attr1").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -388,22 +649,28 @@ d3.select("#attr1").on("change", function(){
               "y": {"field": attr2, "type": "quantitative"},
               "color": {
               "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-              "value": "None"
+              "value": "#D8D8D8"
               },
               "size": {
                   "condition": {
                       "selection": "CylYr",
-                      "value": 100
+                      "value": 100,
+                      "fill":'None'
                   }
               }
              }
           }
-          vegaEmbed("#vis", yourVlSpec);
+          ////vegaEmbed("#vis", yourVlSpec);
+          spatial(yourVlSpec,visible)
+
         }
         else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
          var yourVlSpec = {
+              "width": 1000,
+              "height":500,
+              "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
+              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -412,7 +679,7 @@ d3.select("#attr1").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -425,22 +692,27 @@ d3.select("#attr1").on("change", function(){
               "y": {"field": attr2, "type": "quantitative"},
               "color": {
               "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-              "value": "None"
+              "value": "#D8D8D8"
               },
               "size": {
                   "condition": {
                       "selection": "CylYr",
-                      "value": 100
+                      "value": 100,
+                      "fill":'None'
                   }
               }
              }
           }
-          vegaEmbed("#vis", yourVlSpec);
+          //vegaEmbed("#vis", yourVlSpec);
+          spatial(yourVlSpec,visible)
         }
         else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
           var yourVlSpec = {
+              "width": 1000,
+              "height":500,
+              "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
+              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -449,7 +721,7 @@ d3.select("#attr1").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -462,28 +734,81 @@ d3.select("#attr1").on("change", function(){
               "y": {"field": attr1, "type": "quantitative"},
               "color": {
               "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-              "value": "None"
+              "value": "#D8D8D8"
               },
               "size": {
                   "condition": {
                       "selection": "CylYr",
-                      "value": 100
+                      "value": 100,
+                      "fill":'None'
                   }
               }
              }
           }
+          //vegaEmbed("#vis", yourVlSpec);
+          spatial(yourVlSpec,visible)
+        }
+        else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
+
+          console.log("ENTRÓ ACÁ")
+
+          var yourVlSpec = {
+              "width": 1000,
+              "height":500,
+              "autosize": {"type": "fit", "contains": "padding"},
+              "data": {"values":visible},
+              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "selection": {
+              "grid": {
+              "type": "interval", "bind": "scales"
+              }},
+              "mark": {"type":"point"},
+              "encoding": {
+              "x": {"field": attr1, "type": "temporal"},
+              "y": {"field": attr2, "type": "quantitative"}
+          }
+        }
           vegaEmbed("#vis", yourVlSpec);
+          //spatial(yourVlSpec,visible)
+
+
+        }
+        else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
+
+          console.log("ENTRÓ ACÁ")
+
+          var yourVlSpec = {
+              "width": 1000,
+              "height":500,
+              "autosize": {"type": "fit", "contains": "padding"},
+              "data": {"values":visible},
+              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "selection": {
+              "grid": {
+              "type": "interval", "bind": "scales"
+              }},
+              "mark": {"type":"point"},
+              "encoding": {
+              "x": {"field": attr2, "type": "temporal"},
+              "y": {"field": attr1, "type": "quantitative"}
+          }
+        }
+          //vegaEmbed("#vis", yourVlSpec);
+          spatial(yourVlSpec,visible)
+
+
         }
  
 d3.select("#attr2").on("change", function(){
         attr2 = this.value;
-        console.log("DOS    "+attr2)
-        console.log(seqColumns.includes(attr2))
 
-       if(seqColumns.includes(attr1) && seqColumns.includes(attr2)){
+       if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
          var yourVlSpec = {
+              "width": 1000,
+              "height":500,
+              "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
+              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -492,7 +817,7 @@ d3.select("#attr2").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -505,22 +830,29 @@ d3.select("#attr2").on("change", function(){
               "y": {"field": attr2, "type": "quantitative"},
               "color": {
               "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-              "value": "None"
+              "value": "#D8D8D8"
               },
               "size": {
                   "condition": {
                       "selection": "CylYr",
-                      "value": 100
+                      "value": 100,
+                      "fill":'None'
                   }
               }
              }
           }
-          vegaEmbed("#vis", yourVlSpec);
+          //vegaEmbed("#vis", yourVlSpec);
+          spatial(yourVlSpec,visible)
+
+
         }
         else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
           var yourVlSpec = {
+              "width": 1000,
+              "height":500,
+              "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
+              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -529,7 +861,7 @@ d3.select("#attr2").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -542,22 +874,27 @@ d3.select("#attr2").on("change", function(){
               "y": {"field": attr2, "type": "quantitative"},
               "color": {
               "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-              "value": "None"
+              "value": "#D8D8D8"
               },
               "size": {
                   "condition": {
                       "selection": "CylYr",
-                      "value": 100
+                      "value": 100,
+                      "fill":'None'
                   }
               }
              }
           }
-          vegaEmbed("#vis", yourVlSpec);
+          //vegaEmbed("#vis", yourVlSpec);
+          spatial(yourVlSpec,visible)
         }
         else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
           var yourVlSpec = {
+              "width": 1000,
+              "height":500,
+              "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
+              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -566,7 +903,7 @@ d3.select("#attr2").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": (parseInt(getMinY())-1).toString(), "max":(parseInt(getMaxY())-1).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -579,21 +916,67 @@ d3.select("#attr2").on("change", function(){
               "y": {"field": attr1, "type": "quantitative"},
               "color": {
               "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-              "value": "None"
+              "value": "#D8D8D8"
               },
               "size": {
                   "condition": {
                       "selection": "CylYr",
-                      "value": 100
+                      "value": 100,
+                      "fill":'None'
                   }
               }
              }
           }
-          vegaEmbed("#vis", yourVlSpec);
+          //vegaEmbed("#vis", yourVlSpec);
+          spatial(yourVlSpec,visible)
         }
+        else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
+
+          var yourVlSpec = {
+              "width": 1000,
+              "height":500,
+              "autosize": {"type": "fit", "contains": "padding"},
+              "data": {"values":visible},
+              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "selection": {
+              "grid": {
+              "type": "interval", "bind": "scales"
+              }},
+              "mark": {"type":"point"},
+              "encoding": {
+              "x": {"field": attr2, "type": "temporal"},
+              "y": {"field": attr1, "type": "quantitative"}
+                }
+          }
+        
+          //vegaEmbed("#vis", yourVlSpec);
+          spatial(yourVlSpec,visible)
 
 
+        }
+        else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
 
+          var yourVlSpec = {
+              "width": 1000,
+              "height":500,
+              "autosize": {"type": "fit", "contains": "padding"},
+              "data": {"values":visible},
+              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "selection": {
+              "grid": {
+              "type": "interval", "bind": "scales"
+              }},
+              "mark": {"type":"point"},
+              "encoding": {
+              "x": {"field": attr1, "type": "temporal"},
+              "y": {"field": attr2, "type": "quantitative"}
+              }
+        }
+          //vegaEmbed("#vis", yourVlSpec);
+          spatial(yourVlSpec,visible)
+
+
+        }
 
         
               
@@ -665,25 +1048,12 @@ d3.select("#attr2").on("change", function(){
 
 </script>
 
-<!--<table id="data" class="display nowrap" style="width:100%"></table>-->
-<!--<table id="data" class="display nowrap" style="width:100%"><thead><tr><th>Date</th><th>Car-id</th><th>Car-type</th><th>Gate-name</th><th>Visible</th><th>__seqId</th><th>__i</th></tr></thead><tbody><tr><td>2015-05-01 00:43:28</td><td>20154301124328-262</td><td>4</td><td>entrance3</td><td>true</td><td>0</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:03:48</td><td>20154301124328-262</td><td>4</td><td>general-gate1</td><td>true</td><td>1</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:06:24</td><td>20154301124328-262</td><td>4</td><td>ranger-stop2</td><td>true</td><td>2</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:09:25</td><td>20154301124328-262</td><td>4</td><td>ranger-stop0</td><td>true</td><td>3</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:12:36</td><td>20154301124328-262</td><td>4</td><td>general-gate2</td><td>true</td><td>4</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:24:02</td><td>20154301124328-262</td><td>4</td><td>general-gate5</td><td>true</td><td>5</td><td>[object Object]</td></tr><tr><td>2015-05-01 00:43:28</td><td>20154301124328-262</td><td>4</td><td>entrance3</td><td>true</td><td>0</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:03:48</td><td>20154301124328-262</td><td>4</td><td>general-gate1</td><td>true</td><td>1</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:06:24</td><td>20154301124328-262</td><td>4</td><td>ranger-stop2</td><td>true</td><td>2</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:09:25</td><td>20154301124328-262</td><td>4</td><td>ranger-stop0</td><td>true</td><td>3</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:12:36</td><td>20154301124328-262</td><td>4</td><td>general-gate2</td><td>true</td><td>4</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:24:02</td><td>20154301124328-262</td><td>4</td><td>general-gate5</td><td>true</td><td>5</td><td>[object Object]</td></tr><tr><td>2015-05-01 00:43:28</td><td>20154301124328-262</td><td>4</td><td>entrance3</td><td>true</td><td>0</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:03:48</td><td>20154301124328-262</td><td>4</td><td>general-gate1</td><td>true</td><td>1</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:06:24</td><td>20154301124328-262</td><td>4</td><td>ranger-stop2</td><td>true</td><td>2</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:09:25</td><td>20154301124328-262</td><td>4</td><td>ranger-stop0</td><td>true</td><td>3</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:12:36</td><td>20154301124328-262</td><td>4</td><td>general-gate2</td><td>true</td><td>4</td><td>[object Object]</td></tr><tr><td>2015-05-01 01:24:02</td><td>20154301124328-262</td><td>4</td><td>general-gate5</td><td>true</td><td>5</td><td>[object Object]</td></tr></tbody></table>-->
-
 
 
 <div id="tableGoesHere"></div>
 
 
-<!--
 
-<script src='https://code.jquery.com/jquery-1.12.4.js'></script>
-<script src='https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.flash.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.html5.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.print.min.js'></script>-->
 
 
 <script>
