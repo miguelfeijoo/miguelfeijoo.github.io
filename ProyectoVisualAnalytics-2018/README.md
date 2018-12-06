@@ -39,7 +39,7 @@ https://goo.gl/2LgCrM
 
 ## PAPER
 
-To get to know about this paper written towards this topic and the solution, with its detailed process, proposed enter the to the following link:
+To get to know about this paper written towards this topic and the solution, with its detailed process, proposed enter to the following link:
 
 https://bit.ly/2KZtStk
 
