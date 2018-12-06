@@ -57,11 +57,20 @@
   <h2>DISPLAY:<STRONG> WHAT</STRONG></h2>
   <div id="navio"></div>
 
+  <h2>DISPLAY:<STRONG> WHERE</STRONG></h2>
+  <div id="text" align="left"></div>
+  <p></p>
+  <div id="list" align="center"></div>
+  <p></p>
+  <div id="list2" align="center"></div>
+  <p></p>
+  <p></p>
+  <div id="spatial"></div>
+
   <h2>DISPLAY:<STRONG> WHEN</STRONG></h2>
   <div id="list3" align="center"></div>
   <div id="temporal"></div>
-  <h2>DISPLAY:<STRONG> WHERE</STRONG></h2>
-  <div id="spatial"></div>
+
 
 
 
@@ -74,15 +83,8 @@
 
 
   
-<div id="text" align="left"></div>
-<p></p>
-<div id="list" align="center"></div>
-<p></p>
-<div id="list2" align="center"></div>
-<p></p>
-<p></p>
 
-<div id="vis" align='center'></div>
+
 
 
 
@@ -514,10 +516,12 @@ document.getElementById("tableGoesHere").appendChild(script);
   seqColumns.forEach((c) => nv.addSequentialAttrib(c));
 
 
+function temporal(yourVlSpec,visible){
 d3.select("#attr3").on("change", function(){
   var attrSeq = this.value;
 
   console.log("selected value:     "+attrSeq)
+
 
   var temporalvis = {
   "data": {"values":visible},
@@ -538,7 +542,8 @@ d3.select("#attr3").on("change", function(){
     "height": 80,
     "mark": "area",
     "selection": {
-      "brush": {"type": "interval", "encodings": ["x"]}
+      "brush": {"type": "interval", "encodings": ["x"],"zoom": "wheel!",
+                  "mark": {"fill": "#333", "stroke": "green"}}
     },
     "encoding": {
       "x": {
@@ -551,10 +556,14 @@ d3.select("#attr3").on("change", function(){
         "axis": {"tickCount": 3, "grid": false}
       }
     }
-  }]
+  }, yourVlSpec]
 }
   vegaEmbed("#temporal", temporalvis);
+
 });
+}
+
+
 
 
 
@@ -581,7 +590,7 @@ function spatial(yourVlSpec,visible){
 
 var spatialvis = {
             "width": 1000,
-            "height":500,
+            "height": 300,
             "data": {"values":visible},
             "transform": [{"filter": {"selection": "brush"}}],
             "vconcat": [{
@@ -596,6 +605,7 @@ var spatialvis = {
                   "resolve": "global"
                   }
               },
+              "width": 700,
               "mark": "point",
               "encoding": {
                 "x": {"field": "Longitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Longitude), d3.max(visible,d => +d.Longitude)]}},
@@ -624,10 +634,10 @@ d3.select("#attr1").on("change", function(){
 
           var yourVlSpec = {
               "width": 1000,
-              "height":500,
+              "height": 300,
               "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -636,7 +646,7 @@ d3.select("#attr1").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -661,16 +671,18 @@ d3.select("#attr1").on("change", function(){
              }
           }
           ////vegaEmbed("#vis", yourVlSpec);
+          temporal(yourVlSpec,visible)
           spatial(yourVlSpec,visible)
+
 
         }
         else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
          var yourVlSpec = {
               "width": 1000,
-              "height":500,
+              "height": 300,
               "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -679,7 +691,7 @@ d3.select("#attr1").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -704,15 +716,16 @@ d3.select("#attr1").on("change", function(){
              }
           }
           //vegaEmbed("#vis", yourVlSpec);
+          temporal(yourVlSpec,visible)
           spatial(yourVlSpec,visible)
         }
         else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
           var yourVlSpec = {
               "width": 1000,
-              "height":500,
+              "height": 300,
               "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -721,7 +734,7 @@ d3.select("#attr1").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -746,6 +759,7 @@ d3.select("#attr1").on("change", function(){
              }
           }
           //vegaEmbed("#vis", yourVlSpec);
+          temporal(yourVlSpec,visible)
           spatial(yourVlSpec,visible)
         }
         else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
@@ -754,10 +768,10 @@ d3.select("#attr1").on("change", function(){
 
           var yourVlSpec = {
               "width": 1000,
-              "height":500,
+              "height": 300,
               "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -769,7 +783,8 @@ d3.select("#attr1").on("change", function(){
           }
         }
           vegaEmbed("#vis", yourVlSpec);
-          //spatial(yourVlSpec,visible)
+          temporal(yourVlSpec,visible)
+          spatial(yourVlSpec,visible)
 
 
         }
@@ -779,10 +794,10 @@ d3.select("#attr1").on("change", function(){
 
           var yourVlSpec = {
               "width": 1000,
-              "height":500,
+              "height": 300,
               "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -794,6 +809,7 @@ d3.select("#attr1").on("change", function(){
           }
         }
           //vegaEmbed("#vis", yourVlSpec);
+          temporal(yourVlSpec,visible)
           spatial(yourVlSpec,visible)
 
 
@@ -805,10 +821,10 @@ d3.select("#attr2").on("change", function(){
        if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
          var yourVlSpec = {
               "width": 1000,
-              "height":500,
+              "height": 300,
               "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -817,7 +833,7 @@ d3.select("#attr2").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -842,6 +858,7 @@ d3.select("#attr2").on("change", function(){
              }
           }
           //vegaEmbed("#vis", yourVlSpec);
+          temporal(yourVlSpec,visible)
           spatial(yourVlSpec,visible)
 
 
@@ -849,10 +866,10 @@ d3.select("#attr2").on("change", function(){
         else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
           var yourVlSpec = {
               "width": 1000,
-              "height":500,
+              "height": 300,
               "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -861,7 +878,7 @@ d3.select("#attr2").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -886,15 +903,16 @@ d3.select("#attr2").on("change", function(){
              }
           }
           //vegaEmbed("#vis", yourVlSpec);
+          temporal(yourVlSpec,visible)
           spatial(yourVlSpec,visible)
         }
         else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
           var yourVlSpec = {
               "width": 1000,
-              "height":500,
+              "height": 300,
               "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -903,7 +921,7 @@ d3.select("#attr2").on("change", function(){
               "type": "single",
               "fields": ["Year"],
               "bind": {
-              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year).toString(), "max":d3.max(visible,d=>+d.Year).toString(), "step": 1}
+              "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
               },
               "on": "click",
               "resolve": "global",
@@ -928,16 +946,17 @@ d3.select("#attr2").on("change", function(){
              }
           }
           //vegaEmbed("#vis", yourVlSpec);
+          temporal(yourVlSpec,visible)
           spatial(yourVlSpec,visible)
         }
         else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
 
           var yourVlSpec = {
               "width": 1000,
-              "height":500,
+              "height": 300,
               "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -950,6 +969,7 @@ d3.select("#attr2").on("change", function(){
           }
         
           //vegaEmbed("#vis", yourVlSpec);
+          temporal(yourVlSpec,visible)
           spatial(yourVlSpec,visible)
 
 
@@ -958,10 +978,10 @@ d3.select("#attr2").on("change", function(){
 
           var yourVlSpec = {
               "width": 1000,
-              "height":500,
+              "height": 300,
               "autosize": {"type": "fit", "contains": "padding"},
               "data": {"values":visible},
-              "transform": [{"calculate": "year(datum.Year)+0", "as": "Year"},{"filter": {"selection": "brush"}}],
+              "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
               "selection": {
               "grid": {
               "type": "interval", "bind": "scales"
@@ -973,6 +993,7 @@ d3.select("#attr2").on("change", function(){
               }
         }
           //vegaEmbed("#vis", yourVlSpec);
+          temporal(yourVlSpec,visible)
           spatial(yourVlSpec,visible)
 
 
