@@ -176,11 +176,27 @@ var fmt8 = d3.timeParse("%Y/%m/%d %H:%M:%S ");
 var fmt9 = d3.timeParse("%Y/%m/%d %H:%M");
 
 
+var fmt10 = d3.timeParse("%m-%d-%Y %H:%M:%S %p");
+var fmt11 = d3.timeParse("%m-%d-%Y %H:%M:%S ");
+var fmt12 = d3.timeParse("%m-%d-%Y %H:%M");
+
+var fmt13 = d3.timeParse("%d-%m-%Y %H:%M:%S %p");
+var fmt14 = d3.timeParse("%d-%m-%Y %H:%M:%S ");
+var fmt15 = d3.timeParse("%d-%m-%Y %H:%M");
+
+var fmt16 = d3.timeParse("%Y-%m-%d %H:%M:%S %p");
+var fmt17 = d3.timeParse("%Y-%m-%d %H:%M:%S ");
+var fmt18 = d3.timeParse("%Y-%m-%d %H:%M");
+
+
     d3.csv(tmppath, function (d) {
 
 
 
 
+
+
+    
     if (d.hasOwnProperty("Latitud")){
 
          d["Latitude"] = +d["Latitud"];
@@ -192,12 +208,7 @@ var fmt9 = d3.timeParse("%Y/%m/%d %H:%M");
         d["Latitude"] = +d["latitud"];
         delete d["latitud"];
     }
-
-
-
-
-
-    if (d.hasOwnProperty("Longitud")){
+    else if (d.hasOwnProperty("Longitud")){
 
          d["Longitude"] = +d["Longitud"];
         delete d["Longitud"];
@@ -208,9 +219,40 @@ var fmt9 = d3.timeParse("%Y/%m/%d %H:%M");
         d["Longitude"] = +d["longitud"];
         delete d["longitud"];
     }
+    else if (!d.hasOwnProperty("Latitude") && !d.hasOwnProperty("Longitude")){
+
+     var x=Object.keys(d)
+
+     for(var i=0;i<x.length;i++){
 
 
-  
+      //console.log(d[x[i]])
+      if (/(\()?(\-)?([0-9]){1,3}(\.){1}([0-9]){2,10}( )?(\,)?(\;)?(\-)?( )?(\-)?([0-9]){1,3}(\.){1}([0-9]){1,10}(\))?/.test(d[x[i]])){
+
+        d['Latitude']=+d[x[i]].split(',')[0].split('(')[1]
+        d['Longitude']=+d[x[i]].split(',')[1].split(')')[0]
+
+        delete d[x[i]];
+
+
+
+            
+      }
+
+
+
+
+
+     }
+
+
+
+
+    }
+
+
+
+ 
     
     if (d.hasOwnProperty("Fecha")){
 
@@ -277,6 +319,33 @@ var fmt9 = d3.timeParse("%Y/%m/%d %H:%M");
     }
     else if (fmt9(d.Date)!=null){
       d.Date = fmt9(d.Date);
+    }
+    else if (fmt10(d.Date)!=null){
+      d.Date = fmt10(d.Date);
+    }
+    else if (fmt11(d.Date)!=null){
+      d.Date = fmt11(d.Date);
+    }
+    else if (fmt12(d.Date)!=null){
+      d.Date = fmt12(d.Date);
+    }
+    else if (fmt13(d.Date)!=null){
+      d.Date = fmt13(d.Date);
+    }
+    else if (fmt14(d.Date)!=null){
+      d.Date = fmt14(d.Date);
+    }
+    else if (fmt15(d.Date)!=null){
+      d.Date = fmt15(d.Date);
+    }
+    else if (fmt16(d.Date)!=null){
+      d.Date = fmt16(d.Date);
+    }
+    else if (fmt17(d.Date)!=null){
+      d.Date = fmt17(d.Date);
+    }
+    else if (fmt18(d.Date)!=null){
+      d.Date = fmt18(d.Date);
     }
     d.Hours = d.Date.getHours();
     d.DayNight = d.hour < 6 && d.hour>18 ? "night": "day";
