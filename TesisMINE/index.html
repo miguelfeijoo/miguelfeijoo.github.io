@@ -21,10 +21,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc8"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.20.0"></script>
 
-<script type="text/javascript">
-	var current_data =[];
-</script>
-
+<script src="http://d3js.org/queue.v1.min.js"></script>
 
 <!-- NAVIO Step 0: Load the libraries -->
 <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
@@ -35,8 +32,8 @@
   <ul ng-controller="fileselectorController" class="fileselector">
 		<p><strong>Select a file of your interest to get to analyze its current attributes </strong>(Accepted Extensions: <i>.csv</i> )</p>
 		<p></p>
-		<input type="file" accept=".csv" id="files" name="file" />
-
+		<input ng-model='shared.current_data' type="file" accept=".csv" id="files" name="file" />
+		<div id="tableGoesHere"></div>				
 </template>
 
 <template type="text/html" id="userDetailTemplate">
@@ -93,17 +90,17 @@
 </style>
 
 <script type="text/javascript">
-angular.module('fileselector', [] )
-    .controller('fileselectorController', function( $scope, $timeout, container, state ) {
+var fileselectorApp = angular.module('fileselector', [] );
 
-    	console.log(current_data)
-
-		$(function()
+fileselectorApp.service('myService',function($timeout){
+	var getData = function(callback) {
+	  $timeout(function() {
+	  	$(function()
 		{
 			$('#files').change( function(event) {
 			var tmppath = URL.createObjectURL(event.target.files[0]);
 			console.log(tmppath)
-			
+
 
 			var fmt1 = d3.timeParse("%m/%d/%Y %H:%M:%S %p");
 			var fmt2 = d3.timeParse("%m/%d/%Y %H:%M:%S ");
@@ -243,30 +240,172 @@ angular.module('fileselector', [] )
 					d.Month = d.Date.getMonth();
 					d.Day = d.Date.getDate();
 					return d;
-					}, function (err, data) {
+					},  function (err, data) {	
 
-						current_data=data;
-
-						console.log(current_data)
+					 	var datos=data;
+	    				callback(datos);
 
 					});
-
 			});
+		
+		});		
+	  }, 2000);
+	};
+
+	return {
+	  getData: getData
+	};     
+});
+
+
+fileselectorApp.controller('fileselectorController', ['$scope','myService', function( $scope, myService) {
+
+		myService.getData(function(data) {
+			$scope.data = data;
+
+			var parse=[];
+    		var dateparse=[];
+    		var categoric=[];
+
+			var catColumns = [];
+			var seqColumns = [];
+			function json2table(json, classes) {
+			var cols = Object.keys(json[0]);
+
+			var headerRow = '';
+			var bodyRows = '';
+			var columnas='';
+			var columnasSeq='';
+			var columns=[];
+
+
+			classes = classes || '';
+			function capitalizeFirstLetter(string) {
+			return string.charAt(0).toUpperCase() + string.slice(1);
+			}
+			//console.log(cols)
+			json.map(function(row) {
+			bodyRows += '<tr>';
+			cols.map(function(colName) {
+			  bodyRows += '<td>' + row[colName] + '</td>';
+			  columns.push(row[colName])
+			  console.log(cols.length)
+			})
+			bodyRows += '</tr>';
+			});
+			for (i = 0; i < cols.length; i++){
+			if(/^[+-]?([0-9]*[.])?[0-9]+$/.test(columns[i]))
+			{ 
+			 parse.push(cols[i])
+			}
+			else if(/([0-9]{0,4})([0-9]{0,4})?(\/)([0-9]{0,4})([0-9]{0,4})?(\/)(\d{0,4})/.test(columns[i]))
+			{
+			  dateparse.push(cols[i])
+			}  
+			else if(/[GMT-]{4}[0-9]{4}/.test(columns[i]))
+			{
+			  dateparse.push(cols[i])
+			}  
+			else
+			{
+			  categoric.push(cols[i])
+			}
+			}
+
+			//dateparse.push('Hours','Minutes','Seconds','Month','Day')
+			//categoric.push('Year','DayNight','DayOfTheWeek')
+			if(parse.includes('Year') && categoric.includes('Year')){
+			var value = 'Year'
+			parse=parse.filter(function(item) { 
+			return item !== value
+			})}
+			seqColumns=parse;
+
+			for (var i=0;i<dateparse.length;i++){
+			   seqColumns.push(dateparse[i])
+			   
+			}
+			catColumns=categoric;
+			cols.map(function(col) {
+			headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
+			columnas += '<option value="'+col+'">'
+			});
+			seqColumns.map(function(col) {
+			if (col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col== "Hours" || col=="Seconds"){
+			    columnasSeq += ''
+			}
+			else{
+			    columnasSeq += '<option value="'+col+'">'
+			}
+			});
+			/*document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
+			document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+columnas
+			document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+columnas
+			document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+columnasSeq*/
+			return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
+			     headerRow +
+			     '</tr></thead><tbody>' +
+			     bodyRows +
+			     '</tbody></table>';
+			}
+			document.getElementById('tableGoesHere').innerHTML = json2table($scope.data, 'table');
+			/* How to use it */
+			function loadScript(src) {
+			   var script = document.createElement("script");
+			   script.type = "text/javascript";
+			   document.getElementById("tableGoesHere").appendChild(script);
+			   script.src = src;
+			  
+			}
+			function loadStyle(src) {
+			   var script = document.createElement("link");
+			   script.rel = 'stylesheet'
+			   script.type = "text/css";
+			   document.getElementById("tableGoesHere").appendChild(script);
+			   script.href = src;
+			}
+			$(document).ready(function() {
+			$('#data').DataTable( {
+			    dom: 'Bfrtip',
+			    buttons: [
+			        'copy', 'csv', 'excel', 'pdf', 'print'
+			    ]
+			} );
+			} );
+			loadStyle('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css')
+			loadStyle('https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css')
+			//loadScript('https://code.jquery.com/jquery-3.3.1.js')
+			loadScript('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js')
+			loadScript('https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js')
+			loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js')
+			loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js')
+			loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js')
+			loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js')
+			loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js')
+			loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js')
+			var script = document.createElement("script");
+			script.text="var table; table.destroy(); $(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
+			document.getElementById("tableGoesHere").appendChild(script);
 
 
 
-		});
+			console.log($scope.data)
+		});		
+			
+		
 
-    });
+    }]);
+
 
 angular.module('userdetails', [] )
-    .controller('userdetailsController', function( $scope, container, state ) {
-       
-
-    		console.log(current_data)
+	.controller('userdetailsController', function( $scope, container, state ) { 
 
 
-    });
+  	 				
+    })
+
+
+
 
 
 var AngularModuleComponent = function( container, state ) {
