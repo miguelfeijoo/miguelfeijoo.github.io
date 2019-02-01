@@ -36,11 +36,9 @@
 		<div id="tableGoesHere"></div>				
 </template>
 
-<template type="text/html" id="userDetailTemplate">
-    <div ng-controller="userdetailsController" class="userdetails">
-      <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/152047/{{user.img}}" width="100" height="100" />
-      <h2>{{user.name}}</h2>
-      <p>{{user.street}}</p>
+<template type="text/html" id="navioTemplate">
+    <div ng-controller="navioController" class="navio">
+     
     </div>
 </template>
 
@@ -258,6 +256,9 @@ fileselectorApp.service('myService',function($timeout){
 });
 
 
+
+
+
 fileselectorApp.controller('fileselectorController', ['$scope','myService', function( $scope, myService) {
 
 		myService.getData(function(data) {
@@ -342,7 +343,7 @@ fileselectorApp.controller('fileselectorController', ['$scope','myService', func
 			document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+columnas
 			document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+columnas
 			document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+columnasSeq*/
-			return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
+			return '<table id="data" class="display nowrap" width="100%">'+'<thead><tr>' +
 			     headerRow +
 			     '</tr></thead><tbody>' +
 			     bodyRows +
@@ -350,11 +351,16 @@ fileselectorApp.controller('fileselectorController', ['$scope','myService', func
 			}
 			document.getElementById('tableGoesHere').innerHTML = json2table($scope.data, 'table');
 			$(document).ready(function() {
-    			$('#data').DataTable( {       				
-        			"scrollY": 200,
-        			scrollx: true
-   				 } );
+    			$('#data').DataTable( {  
+    				'destroy': true,     				
+        			"scrollY": 300,
+        			"scrollX": true
+        		} );
 			} );
+
+
+	
+
 			/* How to use it */
 			function loadScript(src) {
 			   var script = document.createElement("script");
@@ -372,12 +378,16 @@ fileselectorApp.controller('fileselectorController', ['$scope','myService', func
 			}
 			$(document).ready(function() {
 			$('#data').DataTable( {
-			    dom: 'Bfrtip',
+				destroy: true,
+			    dom: 'lBfrtip',
 			    buttons: [
 			        'copy', 'csv', 'excel', 'pdf', 'print'
-			    ]
+			    ],
+			    "scrollY": 300,
+        		"scrollX": true
 			} );
 			} );
+
 			loadStyle('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css')
 			loadStyle('https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css')
 			//loadScript('https://code.jquery.com/jquery-3.3.1.js')
@@ -390,7 +400,7 @@ fileselectorApp.controller('fileselectorController', ['$scope','myService', func
 			loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js')
 			loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js')
 			var script = document.createElement("script");
-			script.text="var table; table.destroy(); $(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'Bfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
+			script.text="$(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'lBfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
 			document.getElementById("tableGoesHere").appendChild(script);
 
 
@@ -403,17 +413,17 @@ fileselectorApp.controller('fileselectorController', ['$scope','myService', func
     }]);
 
 
-angular.module('userdetails', [] )
-	.controller('userdetailsController', function( $scope, container, state ) { 
+var navioApp=angular.module('navio', ['fileselector'] );
 
+navioApp.controller('navioController', ['$scope','myService', function( $scope, myService ) { 
 
+		myService.getData(function(data) {
+			$scope.data = data;
+			console.log("==============================================")
+			console.log($scope.data)
 
-  	 				
-    })
-
-
-
-
+		})
+}])
 
 var AngularModuleComponent = function( container, state ) {
     var html = $( '#' + state.templateId ).html(),
@@ -444,11 +454,11 @@ var myLayout = new GoldenLayout({
             }
         },{
             type: 'component',
-            title: 'Selected User',
+            title: 'WHAT - Widget: Navio',
             componentName: 'angularModule',
             componentState: {
-                module: 'userdetails',
-                templateId: 'userDetailTemplate'
+                module: 'navio',
+                templateId: 'navioTemplate'
             }
         }]
     }]
