@@ -2,13 +2,13 @@
 <script type="text/javascript" src="//golden-layout.com/assets/js/goldenlayout.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
 <link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-base.css" />
-<link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-dark-theme.css" />
+<link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-light-theme.css" />
 
 <link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' >
 <link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css' >
 
 <script src='https://code.jquery.com/jquery-1.12.4.js'></script>
-<script src='https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.flash.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'></script>
@@ -48,7 +48,7 @@
 <style type="text/css">
 	.fileselector *,
 	.userdetails{
-	    color: #fff;
+	    color: #000;
 	    font: 12px Arial, sans-serif;
 	}
 	.fileselector{
@@ -349,6 +349,12 @@ fileselectorApp.controller('fileselectorController', ['$scope','myService', func
 			     '</tbody></table>';
 			}
 			document.getElementById('tableGoesHere').innerHTML = json2table($scope.data, 'table');
+			$(document).ready(function() {
+    			$('#data').DataTable( {       				
+        			"scrollY": 200,
+        			scrollx: true
+   				 } );
+			} );
 			/* How to use it */
 			function loadScript(src) {
 			   var script = document.createElement("script");
@@ -399,6 +405,7 @@ fileselectorApp.controller('fileselectorController', ['$scope','myService', func
 
 angular.module('userdetails', [] )
 	.controller('userdetailsController', function( $scope, container, state ) { 
+
 
 
   	 				
