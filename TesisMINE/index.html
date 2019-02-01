@@ -38,7 +38,7 @@
 
 <template type="text/html" id="navioTemplate">
     <div ng-controller="navioController" class="navio">
-     
+    	<div id="navio"></div>
     </div>
 </template>
 
@@ -252,12 +252,9 @@ fileselectorApp.service('myService',function($timeout){
 
 	return {
 	  getData: getData
+
 	};     
 });
-
-
-
-
 
 fileselectorApp.controller('fileselectorController', ['$scope','myService', function( $scope, myService) {
 
@@ -421,6 +418,11 @@ navioApp.controller('navioController', ['$scope','myService', function( $scope, 
 			$scope.data = data;
 			console.log("==============================================")
 			console.log($scope.data)
+
+			var nv = navio(d3.select("#navio"), 600);
+			catColumns.forEach((c) => nv.addCategoricalAttrib(c));
+  			seqColumns.forEach((c) => nv.addSequentialAttrib(c));
+
 
 		})
 }])
