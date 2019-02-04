@@ -250,8 +250,34 @@ fileselectorApp.service('myService',function($timeout){
 	  }, 2000);
 	};
 
+	var seqColumns={};
+	var catColumns={};
+
+	function storeSeqColumns(arr){
+		seqColumns.value=arr
+	}
+
+	function getSeqColumns(){
+		
+		return seqColumns.value;
+	}
+
+
+	function storeCatColumns(arr){
+		catColumns.value = arr
+	}
+
+	function getCatColumns(){
+		
+		return catColumns.value;
+	}
+
 	return {
-	  getData: getData
+	  getData: getData,
+	  storeSeqColumns: storeSeqColumns,
+	  getSeqColumns: getSeqColumns,
+	  storeCatColumns: storeCatColumns,
+	  getCatColumns: getCatColumns
 	};     
 });
 
@@ -320,18 +346,18 @@ fileselectorApp.controller('fileselectorController', ['$scope','myService', func
 			parse=parse.filter(function(item) { 
 			return item !== value
 			})}
-			seqColumns=parse;
+			myService.storeSeqColumns(parse);  
 
 			for (var i=0;i<dateparse.length;i++){
-			   seqColumns.push(dateparse[i])
+			   myService.getSeqColumns().push(dateparse[i])
 			   
 			}
-			catColumns=categoric;
+			myService.storeCatColumns(categoric);
 			cols.map(function(col) {
 			headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
 			columnas += '<option value="'+col+'">'
 			});
-			seqColumns.map(function(col) {
+			myService.getSeqColumns().map(function(col) {
 			if (col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col== "Hours" || col=="Seconds"){
 			    columnasSeq += ''
 			}
@@ -406,8 +432,16 @@ fileselectorApp.controller('fileselectorController', ['$scope','myService', func
 
 
 			console.log($scope.data)
-		});		
-			
+
+			$scope.seqColumns= myService.getSeqColumns()
+			$scope.catColumns= myService.getCatColumns()
+
+
+			console.log($scope.seqColumns)
+			console.log($scope.catColumns)
+
+
+		});	
 		
 
     }]);
@@ -417,11 +451,26 @@ var navioApp=angular.module('navio', ['fileselector'] );
 
 navioApp.controller('navioController', ['$scope','myService', function( $scope, myService ) { 
 
+		
+	
+
+
 		myService.getData(function(data) {
 			$scope.data = data;
+			
+
 			console.log("==============================================")
 			console.log($scope.data)
 
+
+			//---->    REVISAR
+			.getCatColumns(function(cat){
+				console.log("aaaaaaaaaaaaaaaaaa")
+				console.log(cat)
+			})
+	
+
+			
 		})
 }])
 
