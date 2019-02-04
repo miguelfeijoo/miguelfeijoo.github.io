@@ -38,7 +38,7 @@
 
 <template type="text/html" id="navioTemplate">
     <div ng-controller="navioController" class="navio">
-     
+    	<div id="navio"></div>
     </div>
 </template>
 
@@ -273,17 +273,18 @@ fileselectorApp.service('myService',function($timeout){
 	}
 
 	return {
+<<<<<<< HEAD
 	  getData: getData,
 	  storeSeqColumns: storeSeqColumns,
 	  getSeqColumns: getSeqColumns,
 	  storeCatColumns: storeCatColumns,
 	  getCatColumns: getCatColumns
+=======
+	  getData: getData
+
+>>>>>>> a6808ff5676866e456ccb5ee7896eab1c17e3ec0
 	};     
 });
-
-
-
-
 
 fileselectorApp.controller('fileselectorController', ['$scope','myService', function( $scope, myService) {
 
@@ -462,6 +463,7 @@ navioApp.controller('navioController', ['$scope','myService', function( $scope, 
 			console.log("==============================================")
 			console.log($scope.data)
 
+<<<<<<< HEAD
 
 			//---->    REVISAR
 			.getCatColumns(function(cat){
@@ -471,6 +473,13 @@ navioApp.controller('navioController', ['$scope','myService', function( $scope, 
 	
 
 			
+=======
+			var nv = navio(d3.select("#navio"), 600);
+			catColumns.forEach((c) => nv.addCategoricalAttrib(c));
+  			seqColumns.forEach((c) => nv.addSequentialAttrib(c));
+
+
+>>>>>>> a6808ff5676866e456ccb5ee7896eab1c17e3ec0
 		})
 }])
 
