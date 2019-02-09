@@ -479,7 +479,7 @@ fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"conta
 					container.layoutManager.eventHub.emit( 'seqColumns', $scope.seqColumnsFinal );
 					container.layoutManager.eventHub.emit( 'catColumns', $scope.catColumnsFinal );
 
-				},10000)
+				},5000)
 			})
 		})
 	})			
@@ -487,7 +487,7 @@ fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"conta
 }])
 
 navioApp.controller('navioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
-	
+
 	container.layoutManager.eventHub.on( 'datos', function( data ){
 			container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
 				container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
@@ -510,12 +510,30 @@ navioApp.controller('navioController', ["$scope",'$timeout',"container","state",
 
 				
 				visible = nv.getVisible();	
+				container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
+				
 
-				container.layoutManager.eventHub.emit( 'datosvisibles', visible );					
+				/*container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
+						container.layoutManager.eventHub.on( 'change-attr2', function( attr2 ){
+							container.layoutManager.eventHub.on( 'vis', function( vis ){
+								vis(attr1,attr2,seqColumns,catColumns,visible)
+							})
+						})
+					})*/
+				
 
 				nv.updateCallback(function(){
 					visible = nv.getVisible();
 					container.layoutManager.eventHub.emit( 'datosvisibles', visible );
+
+					container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
+						container.layoutManager.eventHub.on( 'change-attr2', function( attr2 ){
+							container.layoutManager.eventHub.on( 'vis', function( vis ){
+								vis(attr1,attr2,seqColumns,catColumns,visible)
+							})
+						})
+					})
+
 
 				})
 
@@ -527,139 +545,331 @@ navioApp.controller('navioController', ["$scope",'$timeout',"container","state",
 
 
 spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
+
 	
+	
+	container.layoutManager.eventHub.on( 'columnas_list', function( cols ){			
+		container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
+			container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
+				container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){			
+					document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
+					document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+cols
+					document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+cols
 
-	container.layoutManager.eventHub.on( 'columnas_list', function( data ){
-		container.layoutManager.eventHub.on( 'columnasSeq_list', function( col ){
-			console.log(data)
-			console.log(col)
-			document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
-			document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+data
-			document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+col
+					
+
+					function drawViz(seqColumns,catColumns,attr1,attr2,visible)
+					{
+						console.log("se llamo el metodo")
+
+						if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
+							var yourVlSpec = {
+								"width": 1000,
+								"height": 300,
+								"autosize": {"type": "fit", "contains": "padding"},
+								"data": {"values":visible},
+								"transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+								"selection": {
+								"grid": {
+								"type": "interval", "bind": "scales"
+							},
+								"CylYr": {
+								"type": "single",
+								"fields": ["Year"],
+								"bind": {
+								"Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+							},
+								"on": "click",
+								"resolve": "global",
+								"empty": "all"
+							}
+							},
+								"mark": "circle",
+								"encoding": {
+								"x": {"field": attr1, "type": "quantitative"},
+								"y": {"field": attr2, "type": "quantitative"},
+								"color": {
+								"condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+								"value": "#D8D8D8"
+								},
+								"size": {
+									"condition": {
+									  "selection": "CylYr",
+									  "value": 100,
+									  "fill":'None'
+									}
+								}
+							}
+						}
+						spatial(yourVlSpec,visible)
+						}
+
+						else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
+						 var yourVlSpec = {
+						      "width": 1000,
+						      "height": 300,
+						      "autosize": {"type": "fit", "contains": "padding"},
+						      "data": {"values":visible},
+						      "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+						      "selection": {
+						      "grid": {
+						      "type": "interval", "bind": "scales"
+						      },
+						      "CylYr": {
+						      "type": "single",
+						      "fields": ["Year"],
+						      "bind": {
+						      "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+						      },
+						      "on": "click",
+						      "resolve": "global",
+						      "empty": "all"
+						      }
+						      },
+						      "mark": "bar",
+						      "encoding": {
+						      "x": {"field": attr1, "type": "ordinal"},
+						      "y": {"field": attr2, "type": "quantitative"},
+						      "color": {
+						      "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+						      "value": "#D8D8D8"
+						      },
+						      "size": {
+						          "condition": {
+						              "selection": "CylYr",
+						              "value": 100,
+						              "fill":'None'
+						          	}
+						      	}
+						     }
+						  }
+						  spatial(yourVlSpec,visible)
+						}
+						else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
+						  var yourVlSpec = {
+						      "width": 1000,
+						      "height": 300,
+						      "autosize": {"type": "fit", "contains": "padding"},
+						      "data": {"values":visible},
+						      "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+						      "selection": {
+						      "grid": {
+						      "type": "interval", "bind": "scales"
+						      },
+						      "CylYr": {
+						      "type": "single",
+						      "fields": ["Year"],
+						      "bind": {
+						      "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+						      },
+						      "on": "click",
+						      "resolve": "global",
+						      "empty": "all"
+						      }
+						      },
+						      "mark": "bar",
+						      "encoding": {
+						      "x": {"field": attr2, "type": "ordinal"},
+						      "y": {"field": attr1, "type": "quantitative"},
+						      "color": {
+						      "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+						      "value": "#D8D8D8"
+						      },
+						      "size": {
+						          "condition": {
+						              "selection": "CylYr",
+						              "value": 100,
+						              "fill":'None'
+						          }
+						      }
+						     }
+						  }
+						  spatial(yourVlSpec,visible)
+						}
+						else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
+
+						  console.log("ENTRÓ ACÁ")
+
+						  var yourVlSpec = {
+						      "width": 1000,
+						      "height": 300,
+						      "autosize": {"type": "fit", "contains": "padding"},
+						      "data": {"values":visible},
+						      "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+						      "selection": {
+						      "grid": {
+						      "type": "interval", "bind": "scales"
+						      }},
+						      "mark": {"type":"point"},
+						      "encoding": {
+						      "x": {"field": attr1, "type": "temporal"},
+						      "y": {"field": attr2, "type": "quantitative"}
+						  }
+						}
+						  spatial(yourVlSpec,visible)
+						}
+						else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
+
+						  var yourVlSpec = {
+						      "width": 1000,
+						      "height": 300,
+						      "autosize": {"type": "fit", "contains": "padding"},
+						      "data": {"values":visible},
+						      "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+						      "selection": {
+						      "grid": {
+						      "type": "interval", "bind": "scales"
+						      }},
+						      "mark": {"type":"point"},
+						      "encoding": {
+						      "x": {"field": attr2, "type": "temporal"},
+						      "y": {"field": attr1, "type": "quantitative"}
+						  }
+						}
+						  spatial(yourVlSpec,visible)
+						}
+
+					}
+
+
+					var spatial=function(yourVlSpec,visible)
+					{
+							var spatialvis = {
+							            "width": 1000,
+							            "height": 300,
+							            "data": {"values":visible},
+							            "transform": [{"filter": {"selection": "brush"}}],
+							            "vconcat": [{
+							              "selection": {
+							                "brush": {
+							                  "type": "interval",
+							                  "on": "[mousedown, window:mouseup] > window:mousemove!",
+							                  "encodings": ["x", "y"],
+							                  "translate": "[mousedown, window:mouseup] > window:mousemove!",
+							                  "zoom": "wheel!",
+							                  "mark": {"fill": "#333", "stroke": "green"},
+							                  "resolve": "global"
+							                  }
+							              },
+							              "width": 700,
+							              "mark": "point",
+							              "encoding": {
+							                "x": {"field": "Longitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Longitude), d3.max(visible,d => +d.Longitude)]}},
+							                "y": {"field": "Latitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Latitude), d3.max(visible,d => +d.Latitude)]}}
+							              }
+							            }, yourVlSpec]
+							          }
+							vegaEmbed("#spatial", spatialvis);
+					}
+
+
+					var vis = function(attr1,attr2,seqColumns,catColumns,visible){
+						
+						d3.select("#attr1").on("change", function(){
+							attr1 = this.value;
+							container.layoutManager.eventHub.emit( 'change-attr1', attr1 );	
+						  	console.log(attr1)
+
+							drawViz(seqColumns,catColumns,attr1,attr2,visible)	
+							
+						})
+
+						d3.select("#attr2").on("change", function(){
+						  	attr2 = this.value;
+						  	container.layoutManager.eventHub.emit( 'change-attr2', attr2 );		
+
+						  	console.log(attr2)
+
+						  	drawViz(seqColumns,catColumns,attr1,attr2,visible)
+						})				
+
+					}
+					container.layoutManager.eventHub.emit( 'vis', vis(attr1,attr2,seqColumns,catColumns,datos) );
+				})
+			})
 		})
-	})	
-
-
-	container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
-				container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
-					container.layoutManager.eventHub.on( 'datosvisibles', function( data ){
-															
-									function getMinY() {
-									  return data.reduce((min, p) => p.Year < min ? p.Year : min, data[0].Year);
-									}
-									function getMaxY() {
-									  return data.reduce((max, p) => p.Year > max ? p.Year : max, data[0].Year);
-									}
-
-									function spatial(yourVlSpec,visible){
-
-									var spatialvis = {
-									            "width": 1000,
-									            "height": 300,
-									            "data": {"values":visible},
-									            "transform": [{"filter": {"selection": "brush"}}],
-									            "vconcat": [{
-									              "selection": {
-									                "brush": {
-									                  "type": "interval",
-									                  "on": "[mousedown, window:mouseup] > window:mousemove!",
-									                  "encodings": ["x", "y"],
-									                  "translate": "[mousedown, window:mouseup] > window:mousemove!",
-									                  "zoom": "wheel!",
-									                  "mark": {"fill": "#333", "stroke": "green"},
-									                  "resolve": "global"
-									                  }
-									              },
-									              "width": 700,
-									              "mark": "point",
-									              "encoding": {
-									                "x": {"field": "Longitude","type": "quantitative","scale": {"domain": [d3.min(data,d => +d.Longitude), d3.max(data,d => +d.Longitude)]}},
-									                "y": {"field": "Latitude","type": "quantitative","scale": {"domain": [d3.min(data,d => +d.Latitude), d3.max(data,d => +d.Latitude)]}}
-									              }
-									            }, yourVlSpec]
-									          }
-									  vegaEmbed("#spatial", spatialvis);
-									}
-					});
-					});
-				});
-			
-
+	})		
 }])
+
+
+						    
+
+		
+
+
 
 
 
 temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 
-	
+/*
 	container.layoutManager.eventHub.on( 'columnasSeq_list', function( columnasSeq_list ){
 		document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+columnasSeq_list
 
+		console.log("Done 1")
+
 	})
 
-	container.layoutManager.eventHub.on( 'datosvisibles', function( data ){
-				container.layoutManager.eventHub.on( 'seqcolumnas', function( seqColumns ){
-					container.layoutManager.eventHub.on( 'catcolumnas', function( catColumns ){
-									
+	container.layoutManager.eventHub.on( 'datosvisibles', function( data ){	
+					function getMinY() {
+					  return data.reduce((min, p) => p.Year < min ? p.Year : min, data[0].Year);
+					}
+					function getMaxY() {
+					  return data.reduce((max, p) => p.Year > max ? p.Year : max, data[0].Year);
+					}
 
-									function getMinY() {
-									  return data.reduce((min, p) => p.Year < min ? p.Year : min, data[0].Year);
-									}
-									function getMaxY() {
-									  return data.reduce((max, p) => p.Year > max ? p.Year : max, data[0].Year);
-									}
+					function //temporal(yourVlSpec,visible){
+						console.log("entro aca")
+					d3.select("#attr3").on("change", function(){
+					  var attrSeq = this.value;
+					  console.log(attrSeq)
 
-									function temporal(yourVlSpec,visible){
-									d3.select("#attr3").on("change", function(){
-									  var attrSeq = this.value;
+					  container.layoutManager.eventHub.emit( 'change-attrseq', attrSeq );
 
-									  console.log("selected value:     "+attrSeq)
+					  
 
 
-									  var temporalvis = {
-									  "data": {"values":data},
-									  "vconcat": [{
-									    "width": 700,
-									    "mark": "area",
-									    "encoding": {
-									      "x": {
-									        "field": "Date",
-									        "type": "temporal",
-									        "scale": {"domain": {"selection": "brush"}},
-									        "axis": {"title": ""}
-									      },
-									      "y": {"field": attrSeq,"type": "quantitative"}
-									    }
-									  }, {
-									    "width": 700,
-									    "height": 80,
-									    "mark": "area",
-									    "selection": {
-									      "brush": {"type": "interval", "encodings": ["x"],"zoom": "wheel!",
-									                  "mark": {"fill": "#333", "stroke": "green"}}
-									    },
-									    "encoding": {
-									      "x": {
-									        "field": "Date",
-									        "type": "temporal"
-									      },
-									      "y": {
-									        "field": attrSeq,
-									        "type": "quantitative",
-									        "axis": {"tickCount": 3, "grid": false}
-									      }
-									    }
-									  }, yourVlSpec]
-									}
-									  vegaEmbed("#temporal", temporalvis);
+					  var temporalvis = {
+					  "data": {"values":data},
+					  "vconcat": [{
+					    "width": 700,
+					    "mark": "area",
+					    "encoding": {
+					      "x": {
+					        "field": "Date",
+					        "type": "temporal",
+					        "scale": {"domain": {"selection": "brush"}},
+					        "axis": {"title": ""}
+					      },
+					      "y": {"field": attrSeq,"type": "quantitative"}
+					    }
+					  }, {
+					    "width": 700,
+					    "height": 80,
+					    "mark": "area",
+					    "selection": {
+					      "brush": {"type": "interval", "encodings": ["x"],"zoom": "wheel!",
+					                  "mark": {"fill": "#333", "stroke": "green"}}
+					    },
+					    "encoding": {
+					      "x": {
+					        "field": "Date",
+					        "type": "temporal"
+					      },
+					      "y": {
+					        "field": attrSeq,
+					        "type": "quantitative",
+					        "axis": {"tickCount": 3, "grid": false}
+					      }
+					    }
+					  }, yourVlSpec]
+					}
+					  vegaEmbed("#temporal", temporalvis);
 
-									});
-								}						
+					});
+				}						
 				
-			});
-		});
-	});
-
+			}); */
 }])
 
 
