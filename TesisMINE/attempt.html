@@ -65,19 +65,19 @@
     </div>
 </template>	
 
-
-
-
+<style type="text/css">
+body .lm_content{
+  overflow: scroll;
+}
+</style>
 
 
 <script type="text/javascript">
 
-//var app = angular.module('app', ['fileselector','navio'] );
 var fileselectorApp = angular.module('fileselector', ['test-service'] );
 var navioApp = angular.module('navio', ['test-service'] );
 var spatioApp = angular.module('spatialviz', ['test-service'] );
 var temporalApp = angular.module('temporalviz', ['test-service'] );
-
 
 
 angular.module('test-service', []).service('TestService', function($rootScope, $window){
@@ -285,7 +285,6 @@ angular.module('test-service', []).service('TestService', function($rootScope, $
 
 })
 
-
 fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"container","state","TestService",function($scope,$timeout,container,state, TestService) {
 
 	$scope.dat=null;
@@ -452,37 +451,37 @@ fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"conta
 		$scope.datos=$scope.dat
 		$scope.seqColumns=$scope.seq
 		$scope.catColumns=$scope.cat
+
+		container.layoutManager.eventHub.emit( 'datosiniciales', $scope.datos );
+		container.layoutManager.eventHub.emit( 'seqiniciales', $scope.seqColumns );
+		container.layoutManager.eventHub.emit( 'catiniciales', $scope.catColumns );
+
 	}
 
+	container.layoutManager.eventHub.on( 'datosiniciales', function( datosiniciales ){
+		container.layoutManager.eventHub.on( 'seqiniciales', function( seqiniciales ){
+			container.layoutManager.eventHub.on( 'catiniciales', function( catiniciales ){
 
-	$scope.$watch('$scope.datos',function(){
-		$scope.$watch('$scope.seqColumns',function(){
-			$scope.$watch('$scope.catColumns',function(){
-				$timeout(function () {
+		$scope.data=jQuery.extend(true, [], datosiniciales);
+		$scope.dataFinal=TestService.changeData($scope.data)
+		$scope.dataFinal=TestService.get();
 
-					$scope.data=jQuery.extend(true, [], $scope.datos);
-					$scope.dataFinal=TestService.changeData($scope.data)
-					$scope.dataFinal=TestService.get();
-
-					$scope.seqCols=jQuery.extend(true, [], $scope.seqColumns);
-					$scope.seqColumnsFinal=TestService.changeSeqColumns($scope.seqCols)
-					$scope.seqColumnsFinal=TestService.getSeqColumns();
+		$scope.seqCols=jQuery.extend(true, [], seqiniciales);
+		$scope.seqColumnsFinal=TestService.changeSeqColumns($scope.seqCols)
+		$scope.seqColumnsFinal=TestService.getSeqColumns();
 
 
-					$scope.catCols=jQuery.extend(true, [], $scope.catColumns);
-					$scope.catColumnsFinal=TestService.changeCatColumns($scope.catCols)
-					$scope.catColumnsFinal=TestService.getCatColumns();
+		$scope.catCols=jQuery.extend(true, [], catiniciales);
+		$scope.catColumnsFinal=TestService.changeCatColumns($scope.catCols)
+		$scope.catColumnsFinal=TestService.getCatColumns();
 
+		container.layoutManager.eventHub.emit( 'datos', $scope.dataFinal );
+		container.layoutManager.eventHub.emit( 'seqColumns', $scope.seqColumnsFinal );
+		container.layoutManager.eventHub.emit( 'catColumns', $scope.catColumnsFinal );
 
-
-					container.layoutManager.eventHub.emit( 'datos', $scope.dataFinal );
-					container.layoutManager.eventHub.emit( 'seqColumns', $scope.seqColumnsFinal );
-					container.layoutManager.eventHub.emit( 'catColumns', $scope.catColumnsFinal );
-
-				},5000)
+				})
 			})
-		})
-	})			
+		})			
 
 }])
 
@@ -556,8 +555,6 @@ spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state
 					document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+cols
 					document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+cols
 
-					
-
 					function drawViz(seqColumns,catColumns,attr1,attr2,visible)
 					{
 						console.log("se llamo el metodo")
@@ -601,7 +598,9 @@ spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state
 								}
 							}
 						}
+						container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
 						spatial(yourVlSpec,visible)
+						
 						}
 
 						else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
@@ -643,7 +642,9 @@ spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state
 						      	}
 						     }
 						  }
+						  container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
 						  spatial(yourVlSpec,visible)
+						
 						}
 						else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
 						  var yourVlSpec = {
@@ -684,7 +685,9 @@ spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state
 						      }
 						     }
 						  }
+						  container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
 						  spatial(yourVlSpec,visible)
+						
 						}
 						else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
 
@@ -706,7 +709,9 @@ spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state
 						      "y": {"field": attr2, "type": "quantitative"}
 						  }
 						}
-						  spatial(yourVlSpec,visible)
+						container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+						spatial(yourVlSpec,visible)
+						
 						}
 						else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
 
@@ -726,11 +731,12 @@ spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state
 						      "y": {"field": attr1, "type": "quantitative"}
 						  }
 						}
-						  spatial(yourVlSpec,visible)
+						container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+						spatial(yourVlSpec,visible)
+						
 						}
 
 					}
-
 
 					var spatial=function(yourVlSpec,visible)
 					{
@@ -762,7 +768,6 @@ spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state
 							vegaEmbed("#spatial", spatialvis);
 					}
 
-
 					var vis = function(attr1,attr2,seqColumns,catColumns,visible){
 						
 						d3.select("#attr1").on("change", function(){
@@ -791,46 +796,21 @@ spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state
 	})		
 }])
 
-
-						    
-
-		
-
-
-
-
-
 temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 
-/*
-	container.layoutManager.eventHub.on( 'columnasSeq_list', function( columnasSeq_list ){
-		document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+columnasSeq_list
-
-		console.log("Done 1")
-
-	})
-
-	container.layoutManager.eventHub.on( 'datosvisibles', function( data ){	
-					function getMinY() {
-					  return data.reduce((min, p) => p.Year < min ? p.Year : min, data[0].Year);
-					}
-					function getMaxY() {
-					  return data.reduce((max, p) => p.Year > max ? p.Year : max, data[0].Year);
-					}
-
-					function //temporal(yourVlSpec,visible){
-						console.log("entro aca")
+	container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
+		container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
+			container.layoutManager.eventHub.on( 'yourVlSpec', function(yourVlSpec){
+				document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
+				var temporal=function(yourVlSpec,visible){
 					d3.select("#attr3").on("change", function(){
 					  var attrSeq = this.value;
-					  console.log(attrSeq)
+					  console.log("cambioo   attr3 :"+attrSeq)
 
-					  container.layoutManager.eventHub.emit( 'change-attrseq', attrSeq );
-
-					  
-
+					  console.log("selected value:     "+attrSeq)
 
 					  var temporalvis = {
-					  "data": {"values":data},
+					  "data": {"values":visible},
 					  "vconcat": [{
 					    "width": 700,
 					    "mark": "area",
@@ -865,14 +845,18 @@ temporalApp.controller('temporalController', ["$scope",'$timeout',"container","s
 					  }, yourVlSpec]
 					}
 					  vegaEmbed("#temporal", temporalvis);
-
 					});
-				}						
-				
-			}); */
+				}
+
+
+
+
+				temporal(yourVlSpec,datos)
+			});
+		});
+	});
+
 }])
-
-
 
 var app1El = document.getElementById('fileselector');
 var app2El = document.getElementById('navio');
