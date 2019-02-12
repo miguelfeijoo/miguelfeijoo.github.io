@@ -2,343 +2,111 @@
 <script type="text/javascript" src="//golden-layout.com/assets/js/goldenlayout.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
 <link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-base.css" />
-<link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-light-theme.css" />
+<link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-dark-theme.css" />
 
-<link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' >
-<link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css' >
+<template type="text/html" id="userlistTemplate">
+  <ul ng-controller="userlistController" class="userlist">
+    <li ng-repeat="user in users" 
+        ng-click="select( user )"
+        ng-class="{selected:user.isSelected}">
+      {{user.name}}
+    </li>
+  </ul>
+</template>
 
-<script src='https://code.jquery.com/jquery-1.12.4.js'></script>
-<script src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.flash.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.html5.min.js'></script>
-<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.print.min.js'></script>
-
-<script src="https://cdn.jsdelivr.net/npm/vega@4.3.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc8"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-embed@3.20.0"></script>
-
-<script src="http://d3js.org/queue.v1.min.js"></script>
-
-<!-- NAVIO Step 0: Load the libraries -->
-<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-<script type="text/javascript" src="https://unpkg.com/navio/dist/navio.min.js"></script>
-
-<html ng-app='app'>
-<template type="text/html" id="fileselectorTemplate">
-  <div id='selector' ng-controller="fileselectorController" class="fileselector">
-		<p><strong>Select a file of your interest to get to analyze its current attributes </strong>(Accepted Extensions: <i>.csv</i> )</p>
-		<p></p>
-		<input ng-model='shared.current_data' type="file" accept=".csv" id="files" name="file" />
-		<div id="tableGoesHere"></div>				
-</template>	
-
-
-
-<template type="text/html" id="navioTemplate">
-    <div ng-model='shared.current_data2' id='navio_widget' ng-controller="navioController" class="navio">
-    	<div id="navio"></div>
+    <template type="text/html" id="userDetailTemplate">
+    <div ng-controller="userdetailsController" class="userdetails">
+      <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/152047/{{user.img}}" width="100" height="100" />
+      <h2>{{user.name}}</h2>
+      <p>{{user.street}}</p>
     </div>
-</template>	
-</html>
-
-
+</template>
 
 
 <style type="text/css">
-	.fileselector *,
-	.userdetails{
-	    color: #000;
-	    font: 12px Arial, sans-serif;
-	}
-	.fileselector{
-	    margin: 0;
-	    padding: 0;
-	}
-	template{
-	  display:none;
-	}
-	.fileselector li{
-	    padding: 10px;
-	    border-bottom: 1px solid #555;
-	    cursor: pointer;
-	    list-style-type: none;
-	}
-
-	.fileselector li:hover{
-	    background: #666;
-	}
-
-	.fileselector li.selected{
-	    background: orange;
-	    font-weight: bold;
-	}
-
-	.userdetails{
-	    padding: 10px;
-	    overflow: hidden;
-	}
-
-	.userdetails img{
-	    float: left;
-	    margin-right: 10px;
-	}
-
-	.userdetails h2{
-	    margin-top: 0;
+	.userlist *,
+.userdetails{
+    color: #fff;
+    font: 12px Arial, sans-serif;
 }
+.userlist{
+    margin: 0;
+    padding: 0;
+}
+template{
+  display:none;
+}
+.userlist li{
+    padding: 10px;
+    border-bottom: 1px solid #555;
+    cursor: pointer;
+    list-style-type: none;
+}
+
+.userlist li:hover{
+    background: #666;
+}
+
+.userlist li.selected{
+    background: orange;
+    font-weight: bold;
+}
+
+.userdetails{
+    padding: 10px;
+    overflow: hidden;
+}
+
+.userdetails img{
+    float: left;
+    margin-right: 10px;
+}
+
+.userdetails h2{
+    margin-top: 0;
+}	
 </style>
 
+
+
 <script type="text/javascript">
+	angular.module('userlist', [] )
+    .controller('userlistController', function( $scope, $timeout, container, state ) {
 
-	
-var app = angular.module('app', ['fileselector','navio'] );
-var fileselectorApp = angular.module('fileselector', ['test-service'] );
-var navioApp = angular.module('navio', ['test-service'] );
+        var selectedUser = {};
 
+        $scope.users = [
+            { name: 'Jackson Turner', street: '217 Tawny End', img: 'men_1.jpg' },
+            { name: 'Megan Perry', street: '77 Burning Ramp', img: 'women_1.jpg' },
+            { name: 'Ryan Harris', street: '12 Hazy Apple Route', img: 'men_2.jpg' },
+            { name: 'Jennifer Edwards', street: '33 Maple Drive', img: 'women_2.jpg' },
+            { name: 'Noah Jenkins', street: '423 Indian Pond Cape', img: 'men_3.jpg' }
+        ];
 
-angular.module('test-service', []).service('TestService', function($rootScope, $window){
-
-var datos= null;
-var seq= null;
-
-
-  $window.rootScopes = $window.rootScopes || [];
-    $window.rootScopes.push($rootScope);
-
-   if (!!$window.sharedService){
-      return $window.sharedService;
-    }
-    
-    $window.sharedService = {      
-      get: function(){
-        return datos;
-      },
-      getData: function(callback) {
-	  	$(function()
-		{
-			$('#files').change( function(event) {
-			var tmppath = URL.createObjectURL(event.target.files[0]);
-			console.log(tmppath)
-
-
-			var fmt1 = d3.timeParse("%m/%d/%Y %H:%M:%S %p");
-			var fmt2 = d3.timeParse("%m/%d/%Y %H:%M:%S ");
-			var fmt3 = d3.timeParse("%m/%d/%Y %H:%M");
-			var fmt4 = d3.timeParse("%d/%m/%Y %H:%M:%S %p");
-			var fmt5 = d3.timeParse("%d/%m/%Y %H:%M:%S ");
-			var fmt6 = d3.timeParse("%d/%m/%Y %H:%M");
-			var fmt7 = d3.timeParse("%Y/%m/%d %H:%M:%S %p");
-			var fmt8 = d3.timeParse("%Y/%m/%d %H:%M:%S ");
-			var fmt9 = d3.timeParse("%Y/%m/%d %H:%M");
-			var fmt10 = d3.timeParse("%m-%d-%Y %H:%M:%S %p");
-			var fmt11 = d3.timeParse("%m-%d-%Y %H:%M:%S ");
-			var fmt12 = d3.timeParse("%m-%d-%Y %H:%M");
-			var fmt13 = d3.timeParse("%d-%m-%Y %H:%M:%S %p");
-			var fmt14 = d3.timeParse("%d-%m-%Y %H:%M:%S ");
-			var fmt15 = d3.timeParse("%d-%m-%Y %H:%M");
-			var fmt16 = d3.timeParse("%Y-%m-%d %H:%M:%S %p");
-			var fmt17 = d3.timeParse("%Y-%m-%d %H:%M:%S ");
-			var fmt18 = d3.timeParse("%Y-%m-%d %H:%M");
-
-
-			d3.csv(tmppath, function (d) { 
-					if (d.hasOwnProperty("Latitud")){
-					     d["Latitude"] = +d["Latitud"];
-					    delete d["Latitud"];
-					}
-					else if(d.hasOwnProperty("latitud")){
-					    d["Latitude"] = +d["latitud"];
-					    delete d["latitud"];
-					}
-					else if (d.hasOwnProperty("Longitud")){
-					     d["Longitude"] = +d["Longitud"];
-					    delete d["Longitud"];
-					}
-					else if(d.hasOwnProperty("longitud")){
-					    d["Longitude"] = +d["longitud"];
-					    delete d["longitud"];
-					}
-					else if (!d.hasOwnProperty("Latitude") && !d.hasOwnProperty("Longitude")){
-					 var x=Object.keys(d)
-					 for(var i=0;i<x.length;i++){
-					  //console.log(d[x[i]])
-					  if (/(\()?(\-)?([0-9]){1,3}(\.){1}([0-9]){2,10}( )?(\,)?(\;)?(\-)?( )?(\-)?([0-9]){1,3}(\.){1}([0-9]){1,10}(\))?/.test(d[x[i]])){
-					    d['Latitude']=+d[x[i]].split(',')[0].split('(')[1]
-					    d['Longitude']=+d[x[i]].split(',')[1].split(')')[0]
-					    delete d[x[i]];					        
-					  }
-					 }
-					}
-
-					if (d.hasOwnProperty("Fecha")){
-					d["Date"] = d["Fecha"];
-					delete d["Fecha"];
-					if (/[a]{1}\.( )?[m]{1}\./.test(d.Date)){
-					d.Date = d.Date.replace(/[a]{1}\.( )?[m]{1}\./, "AM");
-					seqColumnsconsole.log(d.Date)
-					}
-					else if (/[p]{1}\.( )?[m]{1}\./.test(d.Date)){
-					d.Date = d.Date.replace(/[p]{1}\.( )?[m]{1}\./, "PM");
-					console.log(d.Date)
-					} 
-					}
-					else if (d.hasOwnProperty("fecha")){
-					d["Date"] = d["fecha"];
-					delete d["fecha"];
-					if (/[a]{1}\.?( )[m]{1}\.\./.test(d.Date)){
-					d.Date = d.Date.replace(/[a]{1}\.?( )[m]{1}\./, "AM");
-					}
-					else if (/[p]{1}\.?( )[m]{1}\./.test(d.Date)){
-					d.Date = d.Date.replace(/[p]{1}\.?( )[m]{1}\./, "PM");
-					} 
-					}
-
-					// This function is applied to each row of the dataset
-					if(fmt1(d.Date)!=null){
-					  d.Date = fmt1(d.Date);
-					}
-					else if (fmt2(d.Date)!=null){
-					  d.Date = fmt2(d.Date);
-					}
-					else if (fmt3(d.Date)!=null){
-					  d.Date = fmt3(d.Date);
-					}
-					else if (fmt4(d.Date)!=null){
-					  d.Date = fmt4(d.Date);
-					}
-					else if (fmt5(d.Date)!=null){
-					  d.Date = fmt5(d.Date);
-					}
-					else if (fmt6(d.Date)!=null){
-					  d.Date = fmt6(d.Date);
-					}
-					else if (fmt7(d.Date)!=null){
-					  d.Date = fmt7(d.Date);
-					}
-					else if (fmt8(d.Date)!=null){
-					  d.Date = fmt8(d.Date);
-					}
-					else if (fmt9(d.Date)!=null){
-					  d.Date = fmt9(d.Date);
-					}
-					else if (fmt10(d.Date)!=null){
-					  d.Date = fmt10(d.Date);
-					}
-					else if (fmt11(d.Date)!=null){
-					  d.Date = fmt11(d.Date);
-					}
-					else if (fmt12(d.Date)!=null){
-					  d.Date = fmt12(d.Date);
-					}
-					else if (fmt13(d.Date)!=null){
-					  d.Date = fmt13(d.Date);
-					}
-					else if (fmt14(d.Date)!=null){
-					  d.Date = fmt14(d.Date);
-					}
-					else if (fmt15(d.Date)!=null){
-					  d.Date = fmt15(d.Date);
-					}
-					else if (fmt16(d.Date)!=null){
-					  d.Date = fmt16(d.Date);
-					}
-					else if (fmt17(d.Date)!=null){
-					  d.Date = fmt17(d.Date);
-					}
-					else if (fmt18(d.Date)!=null){
-					  d.Date = fmt18(d.Date);
-					}
-					d.Hours = d.Date.getHours();
-					d.DayNight = d.hour < 6 && d.hour>18 ? "night": "day";
-					d.DayOfTheWeek = d.Date.getDay();
-					d.Minutes = d.Date.getMinutes();
-					d.Seconds = d.Date.getSeconds();
-					d.Year = d.Date.getFullYear().toString();
-					d.Month = d.Date.getMonth();
-					d.Day = d.Date.getDate();
-					return d;
-
-					},  function (err, data) {	
-					 	dat=data;
-					 	callback(dat);
-					});			
-			});				
-		});	
-	}, changeData: function(newArr){
-        datos = newArr;
-        angular.forEach($window.rootScopes, function(scope) {
-          if(!scope.$$phase) {
-              scope.$apply();
-          }
+        $timeout(function(){
+            $scope.select( $scope.users[ state.selectedUserIndex ] );
         });
-        return datos;
-      },getSeqColumns: function(){
-        return seq;
-      }, changeSeqColumns: function(newArr){
-        seq = newArr;
-        angular.forEach($window.rootScopes, function(scope) {
-          if(!scope.$$phase) {
-              scope.$apply();
-          }
+
+        $scope.select = function( user ) {
+            selectedUser.isSelected = false;
+            user.isSelected = true;
+            selectedUser = user;
+            container.extendState({ selectedUserIndex: $scope.users.indexOf( user ) });
+            container.layoutManager.eventHub.emit( 'userSelected', user );
+        };
+    });
+
+angular.module('userdetails', [] )
+    .controller('userdetailsController', function( $scope, container, state ) {
+        $scope.user = state.user || null;
+
+        container.layoutManager.eventHub.on( 'userSelected', function( user ){
+            $scope.user = user;
+            container.extendState({ user: user });
+            $scope.$apply();
         });
-        return seq;
-      }
+    });
 
-    }
-
-    return $window.sharedService;
-
-})
-
-
-fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"TestService",function($scope,$timeout,TestService) {
-
-	$scope.dat=null;
-	$scope.datos=null;
-	$scope.dataFinal=null;
-
-	TestService.getData(function(d){
-		$scope.dat =d;
-		otherfunction();
-	})
-
-	function otherfunction(){
-		$scope.datos=$scope.dat
-		//TestService.changeData($scope.datos)
-		console.log(TestService.changeData($scope.datos))
-		console.log($scope.datos)
-	}
-
-	$scope.$watch('$scope.datos',function(){
-			$timeout(function () {
-				$scope.data=jQuery.extend(true, [], $scope.datos);
-				$scope.dataFinal=TestService.changeData($scope.data)
-				$scope.dataFinal=TestService.get();
-			},5000);
-		})	
-
-}])
-
-navioApp.controller('navioController', ["$scope",'$timeout',"TestService",function( $scope,$timeout,TestService ) { 
-	$scope.$watch('datos',function(){
-			$timeout(function () {
-				$scope.dataFinal=TestService.get();
-				console.log($scope.dataFinal)				
-			},10000);
-		})
-}])
-
-
-var app1El = document.getElementById('fileselector');
-var app2El = document.getElementById('navio');
-
-angular.bootstrap(app1El, ['fileselector', 'test-service']);
-angular.bootstrap(app2El, ['navio', 'test-service']);
 
 var AngularModuleComponent = function( container, state ) {
     var html = $( '#' + state.templateId ).html(),
@@ -359,21 +127,21 @@ var myLayout = new GoldenLayout({
         type: 'row',
         content: [{
             width: 20,
-            title: 'File Picker',
+            title: 'Registered Users',
             type: 'component',
             componentName: 'angularModule',
             componentState: {
-                module: 'fileselector',
-                templateId: 'fileselectorTemplate',
+                module: 'userlist',
+                templateId: 'userlistTemplate',
                 selectedUserIndex: 2
             }
         },{
             type: 'component',
-            title: 'WHAT - Widget: Navio',
+            title: 'Selected User',
             componentName: 'angularModule',
             componentState: {
-                module: 'navio',
-                templateId: 'navioTemplate'
+                module: 'userdetails',
+                templateId: 'userDetailTemplate'
             }
         }]
     }]
