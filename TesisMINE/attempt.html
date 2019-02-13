@@ -29,6 +29,8 @@
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/navio/dist/navio.min.js"></script>
 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.0.1/ol.js"></script>
+
 <template type="text/html" id="fileselectorTemplate">
   <div id='selector' ng-controller="fileselectorController" class="fileselector">
 		<p><strong>Select a file of your interest to get to analyze its current attributes </strong>(Accepted Extensions: <i>.csv</i> )</p>
@@ -71,10 +73,17 @@
 	</div>
 </template>
 
+<template type="text/html" id="mapTemplate">
+	<div id='mapid' ng-controller="mapController" class="map">
+		<div id="map"></div>
+	</div>
+</template>
+
 <style type="text/css">
 	body .lm_content{
 	  overflow: scroll;
-	}
+	}	
+	#map { overflow: scroll}
 </style>
 
 
@@ -84,6 +93,7 @@
 	var spatioApp = angular.module('spatialviz', ['test-service'] );
 	var temporalApp = angular.module('temporalviz', ['test-service'] );
 	var boxplotApp = angular.module('boxplot', ['test-service'] );
+	var mapApp = angular.module('map', ['test-service'] );
 
 
 	angular.module('test-service', []).service('TestService', function($rootScope, $window){
@@ -845,6 +855,17 @@
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
 
+				var latitudes = [];
+				var longitudes=[];
+				datos.map(function(d){
+					latitudes.push(parseFloat(d.Latitude))
+					longitudes.push(parseFloat(d.Longitude))
+				})
+
+				console.log(latitudes)
+				console.log(longitudes)
+
+
 				document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols
 
 				function onlyUnique(value, index, self) { 
@@ -870,7 +891,7 @@
 
 					var new_colors=[];
 					if(colors.length>years_temp_array.length){
-						new_colors=colors.slice(0,years_temp_array.length)
+						new_colors=colors.slice(0,years_temp_array.length+1)
 					}				
 
 					for(var i=0;i<years_temp_array.length;i++){	
@@ -917,11 +938,128 @@
 		})
 	}])
 
+	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {
+
+			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
+
+				var colors = ['#006400','#FF00FF','#1E90FF','#000000','#FFFF00','#2F4F4F','#FFFF00','#20B2AA',,'#8B4513','#FFFF00','#FF8C00','#868686'];
+
+				var years =[];
+				var lista=[];
+				
+				datos.map(function(d){
+					years.push(d.Year)
+					years=years.filter(function(item, pos){
+ 						return years.indexOf(item)== pos; 
+					});
+				})
+
+				if(colors.length>years.length){
+						new_colors=colors.slice(0,years.length+1)
+				}
+
+				for(var k=0;k<years.length;k++){	
+
+					console.log(new_colors)
+					if (i!=0){				
+							new_colors.pop()
+					}
+
+					console.log(new_colors)
+
+					for(var color=0;color<new_colors.length;color++){						
+						var latitudes = [];
+						var longitudes=[];
+
+						var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){						
+							latitudes.push(parseFloat(d.Latitude))
+							longitudes.push(parseFloat(d.Longitude))
+						})		
+
+						console.log("YEAR:     "+years[k])
+						console.log(latitudes)	
+						console.log(longitudes)
+						
+						for(var i=0;i<datos_filter.length;i++){
+							console.log("aaa")
+							var coord = [longitudes[i],latitudes[i]];
+							lista.push({
+								  type: 'Feature',
+								  properties: {
+								    'marker-color': new_colors[color],
+								    'marker-size': 'medium'
+								  },
+								  geometry: {
+								    type: 'Point',
+								    coordinates: coord
+								  }
+							})
+
+							
+						}	
+					}
+			}
+
+
+						
+						var geojsonObject = {
+						type: 'FeatureCollection',
+						crs: { type: 'name', properties: { name: 'EPSG:4326' }},
+						features: lista};
+
+						var features = new ol.format.GeoJSON().readFeatures(geojsonObject, {
+							featureProjection: 'EPSG:3857'
+						});
+
+						var max_latitudes=Math.max.apply(Math,latitudes)
+						var min_latitudes=Math.min.apply(Math,latitudes)
+						var max_longitudes=Math.max.apply(Math,longitudes)
+						var min_longitudes=Math.min.apply(Math,longitudes)
+
+						var prom_latitudes= (max_latitudes+min_latitudes)/2;
+						var prom_longitudes=(max_longitudes+min_longitudes)/2;
+
+						var vectorSource = new ol.source.Vector({ features: features });
+						var vectorLayer = new ol.layer.Vector({
+							source: vectorSource,
+							style: function (feature, resolution) {
+								console.log(feature.getProperties(), feature.get('marker-color'));
+								return [new ol.style.Style({
+								  image: new ol.style.Circle({
+								    radius: 5,
+								    fill: new ol.style.Fill({ color: feature.get('marker-color') })
+								  })
+								})];
+							}
+						});
+
+						var map = new ol.Map({
+							target: 'map',
+							layers: [
+								new ol.layer.Tile({ source: new ol.source.OSM() }),
+								vectorLayer
+							],
+							view: new ol.View({			
+								center: ol.proj.fromLonLat([prom_longitudes,prom_latitudes]),
+								zoom: 11
+							})
+						});						
+					//}
+				})	
+			window.onresize = function()
+			{
+				setTimeout(function(){ map.updateSize()}, 400);
+			}
+	}])
+
+
+
 	var app1El = document.getElementById('fileselector');
 	var app2El = document.getElementById('navio');
 	var app3El = document.getElementById('spatialviz');
 	var app4El = document.getElementById('temporalviz');
 	var app5El = document.getElementById('boxplot');
+	var app6El = document.getElementById('map');
 
 
 	angular.bootstrap(app1El, ['fileselector', 'test-service']);
@@ -929,6 +1067,7 @@
 	angular.bootstrap(app3El, ['spatialviz', 'test-service']);
 	angular.bootstrap(app4El, ['temporalviz', 'test-service']);
 	angular.bootstrap(app5El, ['boxplot', 'test-service']);
+	angular.bootstrap(app6El, ['map', 'test-service']);
 
 	var AngularModuleComponent = function( container, state ) {
 	    var html = $( '#' + state.templateId ).html(),
@@ -963,6 +1102,14 @@
 	            }
 	        },{
 	            type: 'component',
+	            title: 'Geo-Referentiation',
+	            componentName: 'angularModule',
+	            componentState: {
+	                module: 'map',
+	                templateId: 'mapTemplate'
+	            }
+	        },{
+	            type: 'component',
 	            title: 'WHAT - Widget: Navio',
 	            componentName: 'angularModule',
 	            componentState: {
@@ -987,7 +1134,7 @@
 	         }
 	       },{
 	            type: 'component',
-	            title: 'GENERAL STATISTICS',
+	            title: 'General Statistics',
 	            componentName: 'angularModule',
 	            componentState: {
 	                module: 'boxplot',
