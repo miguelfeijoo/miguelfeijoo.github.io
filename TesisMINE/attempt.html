@@ -249,13 +249,53 @@
 						else if (fmt18(d.Date)!=null){
 						  d.Date = fmt18(d.Date);
 						}
+						
+
+						var weekday = new Array(7);
+						weekday[0] =  "Sunday";
+						weekday[1] = "Monday";
+						weekday[2] = "Tuesday";
+						weekday[3] = "Wednesday";
+						weekday[4] = "Thursday";
+						weekday[5] = "Friday";
+						weekday[6] = "Saturday";
+
+
+						var month = new Array(12);
+						month[0] = "January";
+						month[1] = "February";
+						month[2] = "March";
+						month[3] = "April";
+						month[4] = "May";
+						month[5] = "June";
+						month[6] = "July";
+						month[7] = "August";
+						month[8] = "September";
+						month[9] = "October";
+						month[10] = "November";
+						month[11] = "December";
+
+
+						function weekMonth(date) {						    
+						    var prefixes = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
+						    return prefixes[Math.floor(date.getDate() / 7)];
+						}
+
+						function isWeekDay(date){
+							if(date.getDay()!=0 || date.getDay()!=6){
+								return true
+							}
+						}
+
 						d.Hours = d.Date.getHours();
-						d.DayNight = d.hour < 6 && d.hour>18 ? "night": "day";
-						d.DayOfTheWeek = d.Date.getDay();
 						d.Minutes = d.Date.getMinutes();
 						d.Seconds = d.Date.getSeconds();
+						d.DayNight = d.Hours < 6 || d.Hours>18 ? "night": "day";
+						d.WeekOfTheMonth = weekMonth(d.Date)
+						d.DayOfTheWeek = weekday[d.Date.getDay()];	
+						d.isWeekDay= isWeekDay(d.Date)					
 						d.Year = d.Date.getFullYear().toString();
-						d.Month = d.Date.getMonth();
+						d.Month = month[d.Date.getMonth()];
 						d.Day = d.Date.getDate();
 						return d;
 
@@ -342,7 +382,7 @@
 			    cols.map(function(colName) {
 			      bodyRows += '<td>' + row[colName] + '</td>';
 			      columns.push(row[colName])
-			      console.log(cols.length)
+			      //console.log(cols.length)
 			    })
 				bodyRows += '</tr>';
 			});
@@ -770,7 +810,7 @@
 							d3.select("#attr1").on("change", function(){
 								attr1 = this.value;
 								container.layoutManager.eventHub.emit( 'change-attr1', attr1 );	
-							  	console.log(attr1)
+							  	//console.log(attr1)
 
 								drawViz(seqColumns,catColumns,attr1,attr2,visible)	
 								
@@ -780,7 +820,7 @@
 							  	attr2 = this.value;
 							  	container.layoutManager.eventHub.emit( 'change-attr2', attr2 );		
 
-							  	console.log(attr2)
+							  	//console.log(attr2)
 
 							  	drawViz(seqColumns,catColumns,attr1,attr2,visible)
 							})				
@@ -802,9 +842,9 @@
 					var temporal=function(yourVlSpec,visible){
 						d3.select("#attr3").on("change", function(){
 						  var attrSeq = this.value;
-						  console.log("cambioo   attr3 :"+attrSeq)
+						  //console.log("cambioo   attr3 :"+attrSeq)
 
-						  console.log("selected value:     "+attrSeq)
+						 // console.log("selected value:     "+attrSeq)
 
 						  var temporalvis = {
 						  "data": {"values":visible},
@@ -855,17 +895,7 @@
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
 
-				var latitudes = [];
-				var longitudes=[];
-				datos.map(function(d){
-					latitudes.push(parseFloat(d.Latitude))
-					longitudes.push(parseFloat(d.Longitude))
-				})
-
-				console.log(latitudes)
-				console.log(longitudes)
-
-
+			
 				document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols
 
 				function onlyUnique(value, index, self) { 
@@ -877,10 +907,17 @@
 						years_temp.push(parseInt(d.Date.getFullYear()))				
 					})
 
+				var months_temp=[]
+					var months = datos.map(function(d){
+						months_temp.push(parseInt(d.Date.getMonth()))				
+					})
+
 				var years_temp_array = years_temp.filter(onlyUnique)
-				console.log(years_temp_array)
+
+				var months_temp_array = months_temp.filter(onlyUnique)
 
 				d3.select("#attr4").on("change", function(){
+
 					var attr4 = this.value;
 					console.log("Selected Value Attr4: "+attr4)		
 
@@ -938,10 +975,15 @@
 		})
 	}])
 
-	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {
+	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
+								console.log(datos)	
 
+
+setInterval(function(){	
+
+				
 				var colors = ['#006400','#FF00FF','#1E90FF','#000000','#FFFF00','#2F4F4F','#FFFF00','#20B2AA',,'#8B4513','#FFFF00','#FF8C00','#868686'];
 
 				var years =[];
@@ -954,39 +996,40 @@
 					});
 				})
 
+
 				if(colors.length>years.length){
 						new_colors=colors.slice(0,years.length+1)
 				}
 
 				for(var k=0;k<years.length;k++){	
 
-					console.log(new_colors)
-					if (i!=0){				
-							new_colors.pop()
+					if (k!=0){				
+							new_colors.shift()
 					}
 
-					console.log(new_colors)
-
-					for(var color=0;color<new_colors.length;color++){						
+					//for(var color=0;color<new_colors.length;color++){						
 						var latitudes = [];
 						var longitudes=[];
 
-						var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){						
-							latitudes.push(parseFloat(d.Latitude))
-							longitudes.push(parseFloat(d.Longitude))
-						})		
+						var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){	
 
-						console.log("YEAR:     "+years[k])
-						console.log(latitudes)	
-						console.log(longitudes)
-						
+							if(d.Latitude!="" && d.Longitude!=""){					
+								latitudes.push(parseFloat(d.Latitude))
+								longitudes.push(parseFloat(d.Longitude))
+							}
+						})	
+
+						//console.log(latitudes)	
+						//console.log(longitudes)	
+
+				
 						for(var i=0;i<datos_filter.length;i++){
-							console.log("aaa")
+							
 							var coord = [longitudes[i],latitudes[i]];
 							lista.push({
 								  type: 'Feature',
 								  properties: {
-								    'marker-color': new_colors[color],
+								    'marker-color': new_colors[k],
 								    'marker-size': 'medium'
 								  },
 								  geometry: {
@@ -994,14 +1037,13 @@
 								    coordinates: coord
 								  }
 							})
+						}		
+				}
 
-							
-						}	
-					}
-			}
+				console.log(lista.length)
 
 
-						
+
 						var geojsonObject = {
 						type: 'FeatureCollection',
 						crs: { type: 'name', properties: { name: 'EPSG:4326' }},
@@ -1010,6 +1052,7 @@
 						var features = new ol.format.GeoJSON().readFeatures(geojsonObject, {
 							featureProjection: 'EPSG:3857'
 						});
+
 
 						var max_latitudes=Math.max.apply(Math,latitudes)
 						var min_latitudes=Math.min.apply(Math,latitudes)
@@ -1021,9 +1064,10 @@
 
 						var vectorSource = new ol.source.Vector({ features: features });
 						var vectorLayer = new ol.layer.Vector({
+							updateWhileInteracting: true,
 							source: vectorSource,
 							style: function (feature, resolution) {
-								console.log(feature.getProperties(), feature.get('marker-color'));
+								//console.log(feature.getProperties(), feature.get('marker-color'));
 								return [new ol.style.Style({
 								  image: new ol.style.Circle({
 								    radius: 5,
@@ -1043,8 +1087,9 @@
 								center: ol.proj.fromLonLat([prom_longitudes,prom_latitudes]),
 								zoom: 11
 							})
-						});						
-					//}
+						});	
+},5000);
+
 				})	
 			window.onresize = function()
 			{
@@ -1083,7 +1128,7 @@
 
 
 
-	        console.log(state.module)
+	       // console.log(state.module)
 
 	    angular.bootstrap( element[ 0 ], [ state.module ] );
 	};
@@ -1118,14 +1163,6 @@
 	            }
 	        },{
 	            type: 'component',
-	            title: 'General Statistics',
-	            componentName: 'angularModule',
-	            componentState: {
-	                module: 'boxplot',
-	                templateId: 'boxplotTemplate'
-	         }
-	       },{
-	            type: 'component',
 	            title: 'WHERE',
 	            componentName: 'angularModule',
 	            componentState: {
@@ -1139,6 +1176,14 @@
 	            componentState: {
 	                module: 'temporalviz',
 	                templateId: 'temporalTemplate'
+	         }
+	       },{
+	            type: 'component',
+	            title: 'General Statistics',
+	            componentName: 'angularModule',
+	            componentState: {
+	                module: 'boxplot',
+	                templateId: 'boxplotTemplate'
 	         }
 	       }]
 	   }]
