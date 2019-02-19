@@ -24,18 +24,29 @@
 <script src="http://d3js.org/queue.v1.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
+<script src="xlsx.full.min.js"></script>
+
 <!-- NAVIO Step 0: Load the libraries -->
 <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/navio/dist/navio.min.js"></script>
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.0.1/ol.js"></script>
+<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.0.1/ol.js"></script>-->
+
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/>
+
+ <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+   integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+   crossorigin=""></script>
+
 
 <template type="text/html" id="fileselectorTemplate">
   <div id='selector' ng-controller="fileselectorController" class="fileselector">
-		<p><strong>Select a file of your interest to get to analyze its current attributes </strong>(Accepted Extensions: <i>.csv</i> )</p>
+		<p><strong>Select a file of your interest to get to analyze its current attributes </strong>(Accepted Extensions: <i>.csv, .xlsx</i> )</p>
 		<p></p>
-		<input ng-model='shared.current_data' type="file" accept=".csv" id="files" name="file" />
+		<input ng-model='shared.current_data' type="file" accept=".csv,.xlsx" id="files" name="file" />
 
 		<div id="tableGoesHere"></div>				
 </template>	
@@ -74,8 +85,7 @@
 </template>
 
 <template type="text/html" id="mapTemplate">
-	<div id='mapid' ng-controller="mapController" class="map">
-		<div id="map"></div>
+	<div id='mapid' ng-controller="mapController" class="map">	
 	</div>
 </template>
 
@@ -83,7 +93,7 @@
 	body .lm_content{
 	  overflow: scroll;
 	}	
-	#map { overflow: scroll}
+	#mapid { margin: 0px; height: 100%; width: 100% }
 </style>
 
 
@@ -118,6 +128,7 @@
 		  	$(function()
 			{
 				$('#files').change( function(event) {
+				console.log(event.target.files[0].name)
 				var tmppath = URL.createObjectURL(event.target.files[0]);
 				console.log(tmppath)
 
@@ -141,170 +152,233 @@
 				var fmt17 = d3.timeParse("%Y-%m-%d %H:%M:%S ");
 				var fmt18 = d3.timeParse("%Y-%m-%d %H:%M");
 
-
-				d3.csv(tmppath, function (d) { 
-						if (d.hasOwnProperty("Latitud")){
-						     d["Latitude"] = +d["Latitud"];
-						    delete d["Latitud"];
-						}
-						else if(d.hasOwnProperty("latitud")){
-						    d["Latitude"] = +d["latitud"];
-						    delete d["latitud"];
-						}
-						else if (d.hasOwnProperty("Longitud")){
-						     d["Longitude"] = +d["Longitud"];
-						    delete d["Longitud"];
-						}
-						else if(d.hasOwnProperty("longitud")){
-						    d["Longitude"] = +d["longitud"];
-						    delete d["longitud"];
-						}
-						else if (!d.hasOwnProperty("Latitude") && !d.hasOwnProperty("Longitude")){
-						 var x=Object.keys(d)
-						 for(var i=0;i<x.length;i++){
-						  //console.log(d[x[i]])
-						  if (/(\()?(\-)?([0-9]){1,3}(\.){1}([0-9]){2,10}( )?(\,)?(\;)?(\-)?( )?(\-)?([0-9]){1,3}(\.){1}([0-9]){1,10}(\))?/.test(d[x[i]])){
-						    d['Latitude']=+d[x[i]].split(',')[0].split('(')[1]
-						    d['Longitude']=+d[x[i]].split(',')[1].split(')')[0]
-						    delete d[x[i]];					        
-						  }
-						 }
-						}
-
-						if (d.hasOwnProperty("Fecha")){
-						d["Date"] = d["Fecha"];
-						delete d["Fecha"];
-						if (/[a]{1}\.( )?[m]{1}\./.test(d.Date)){
-						d.Date = d.Date.replace(/[a]{1}\.( )?[m]{1}\./, "AM");
-						seqColumnsconsole.log(d.Date)
-						}
-						else if (/[p]{1}\.( )?[m]{1}\./.test(d.Date)){
-						d.Date = d.Date.replace(/[p]{1}\.( )?[m]{1}\./, "PM");
-						console.log(d.Date)
-						} 
-						}
-						else if (d.hasOwnProperty("fecha")){
-						d["Date"] = d["fecha"];
-						delete d["fecha"];
-						if (/[a]{1}\.?( )[m]{1}\.\./.test(d.Date)){
-						d.Date = d.Date.replace(/[a]{1}\.?( )[m]{1}\./, "AM");
-						}
-						else if (/[p]{1}\.?( )[m]{1}\./.test(d.Date)){
-						d.Date = d.Date.replace(/[p]{1}\.?( )[m]{1}\./, "PM");
-						} 
-						}
-
-						// This function is applied to each row of the dataset
-						if(fmt1(d.Date)!=null){
-						  d.Date = fmt1(d.Date);
-						}
-						else if (fmt2(d.Date)!=null){
-						  d.Date = fmt2(d.Date);
-						}
-						else if (fmt3(d.Date)!=null){
-						  d.Date = fmt3(d.Date);
-						}
-						else if (fmt4(d.Date)!=null){
-						  d.Date = fmt4(d.Date);
-						}
-						else if (fmt5(d.Date)!=null){
-						  d.Date = fmt5(d.Date);
-						}
-						else if (fmt6(d.Date)!=null){
-						  d.Date = fmt6(d.Date);
-						}
-						else if (fmt7(d.Date)!=null){
-						  d.Date = fmt7(d.Date);
-						}
-						else if (fmt8(d.Date)!=null){
-						  d.Date = fmt8(d.Date);
-						}
-						else if (fmt9(d.Date)!=null){
-						  d.Date = fmt9(d.Date);
-						}
-						else if (fmt10(d.Date)!=null){
-						  d.Date = fmt10(d.Date);
-						}
-						else if (fmt11(d.Date)!=null){
-						  d.Date = fmt11(d.Date);
-						}
-						else if (fmt12(d.Date)!=null){
-						  d.Date = fmt12(d.Date);
-						}
-						else if (fmt13(d.Date)!=null){
-						  d.Date = fmt13(d.Date);
-						}
-						else if (fmt14(d.Date)!=null){
-						  d.Date = fmt14(d.Date);
-						}
-						else if (fmt15(d.Date)!=null){
-						  d.Date = fmt15(d.Date);
-						}
-						else if (fmt16(d.Date)!=null){
-						  d.Date = fmt16(d.Date);
-						}
-						else if (fmt17(d.Date)!=null){
-						  d.Date = fmt17(d.Date);
-						}
-						else if (fmt18(d.Date)!=null){
-						  d.Date = fmt18(d.Date);
-						}
-						
-
-						var weekday = new Array(7);
-						weekday[0] =  "Sunday";
-						weekday[1] = "Monday";
-						weekday[2] = "Tuesday";
-						weekday[3] = "Wednesday";
-						weekday[4] = "Thursday";
-						weekday[5] = "Friday";
-						weekday[6] = "Saturday";
-
-
-						var month = new Array(12);
-						month[0] = "January";
-						month[1] = "February";
-						month[2] = "March";
-						month[3] = "April";
-						month[4] = "May";
-						month[5] = "June";
-						month[6] = "July";
-						month[7] = "August";
-						month[8] = "September";
-						month[9] = "October";
-						month[10] = "November";
-						month[11] = "December";
-
-
-						function weekMonth(date) {						    
-						    var prefixes = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
-						    return prefixes[Math.floor(date.getDate() / 7)];
-						}
-
-						function isWeekDay(date){
-							if(date.getDay()!=0 || date.getDay()!=6){
-								return true
+				function parsing(d){					
+							if (d.hasOwnProperty("Latitud")){
+							     d["Latitude"] = +d["Latitud"];
+							    delete d["Latitud"];
 							}
-						}
+							if(d.hasOwnProperty("latitud")){
+							    d["Latitude"] = +d["latitud"];
+							    delete d["latitud"];
+							}
+							if(d.hasOwnProperty("X")){
+							    d["Latitude"] = +d["X"];
+							    delete d["X"];
+							}
+							if(d.hasOwnProperty("x")){
+							    d["Latitude"] = +d["x"];
+							    delete d["x"];
+							}
+							if (d.hasOwnProperty("Longitud")){
+							     d["Longitude"] = +d["Longitud"];
+							    delete d["Longitud"];
+							}
+							if(d.hasOwnProperty("longitud")){
+							    d["Longitude"] = +d["longitud"];
+							    delete d["longitud"];
+							}
+							if(d.hasOwnProperty("Y")){
+							    d["Longitude"] = +d["Y"];
+							    delete d["Y"];
+							}
+							if(d.hasOwnProperty("y")){
+							    d["Longitude"] = +d["y"];
+							    delete d["y"];
+							}
+							if (!d.hasOwnProperty("Latitude") && !d.hasOwnProperty("Longitude")){
+							 var x=Object.keys(d)
+							 for(var i=0;i<x.length;i++){
+							  //console.log(d[x[i]])
+							  if (/(\()?(\-)?([0-9]){1,3}(\.){1}([0-9]){2,10}( )?(\,)?(\;)?(\-)?( )?(\-)?([0-9]){1,3}(\.){1}([0-9]){1,10}(\))?/.test(d[x[i]])){
+							    d['Latitude']=+d[x[i]].split(',')[0].split('(')[1]
+							    d['Longitude']=+d[x[i]].split(',')[1].split(')')[0]
+							    delete d[x[i]];					        
+							  }
+							 }
+							}
 
-						d.Hours = d.Date.getHours();
-						d.Minutes = d.Date.getMinutes();
-						d.Seconds = d.Date.getSeconds();
-						d.DayNight = d.Hours < 6 || d.Hours>18 ? "night": "day";
-						d.WeekOfTheMonth = weekMonth(d.Date)
-						d.DayOfTheWeek = weekday[d.Date.getDay()];	
-						d.isWeekDay= isWeekDay(d.Date)					
-						d.Year = d.Date.getFullYear().toString();
-						d.Month = month[d.Date.getMonth()];
-						d.Day = d.Date.getDate();
-						return d;
+							if (d.hasOwnProperty("Fecha")){
+							d["Date"] = d["Fecha"];
+							delete d["Fecha"];
+							if (/[a]{1}\.( )?[m]{1}\./.test(d.Date)){
+							d.Date = d.Date.replace(/[a]{1}\.( )?[m]{1}\./, "AM");
+							seqColumnsconsole.log(d.Date)
+							}
+							else if (/[p]{1}\.( )?[m]{1}\./.test(d.Date)){
+							d.Date = d.Date.replace(/[p]{1}\.( )?[m]{1}\./, "PM");
+							console.log(d.Date)
+							} 
+							}
+							else if (d.hasOwnProperty("fecha")){
+							d["Date"] = d["fecha"];
+							delete d["fecha"];
+							if (/[a]{1}\.?( )[m]{1}\.\./.test(d.Date)){
+							d.Date = d.Date.replace(/[a]{1}\.?( )[m]{1}\./, "AM");
+							}
+							else if (/[p]{1}\.?( )[m]{1}\./.test(d.Date)){
+							d.Date = d.Date.replace(/[p]{1}\.?( )[m]{1}\./, "PM");
+							} 
+							}
 
-						},  function (err, data) {	
-						 	dat=data;
-						 	callback(dat);
-						});			
+							// This function is applied to each row of the dataset
+							if(fmt1(d.Date)!=null){
+							  d.Date = fmt1(d.Date);
+							}
+							else if (fmt2(d.Date)!=null){
+							  d.Date = fmt2(d.Date);
+							}
+							else if (fmt3(d.Date)!=null){
+							  d.Date = fmt3(d.Date);
+							}
+							else if (fmt4(d.Date)!=null){
+							  d.Date = fmt4(d.Date);
+							}
+							else if (fmt5(d.Date)!=null){
+							  d.Date = fmt5(d.Date);
+							}
+							else if (fmt6(d.Date)!=null){
+							  d.Date = fmt6(d.Date);
+							}
+							else if (fmt7(d.Date)!=null){
+							  d.Date = fmt7(d.Date);
+							}
+							else if (fmt8(d.Date)!=null){
+							  d.Date = fmt8(d.Date);
+							}
+							else if (fmt9(d.Date)!=null){
+							  d.Date = fmt9(d.Date);
+							}
+							else if (fmt10(d.Date)!=null){
+							  d.Date = fmt10(d.Date);
+							}
+							else if (fmt11(d.Date)!=null){
+							  d.Date = fmt11(d.Date);
+							}
+							else if (fmt12(d.Date)!=null){
+							  d.Date = fmt12(d.Date);
+							}
+							else if (fmt13(d.Date)!=null){
+							  d.Date = fmt13(d.Date);
+							}
+							else if (fmt14(d.Date)!=null){
+							  d.Date = fmt14(d.Date);
+							}
+							else if (fmt15(d.Date)!=null){
+							  d.Date = fmt15(d.Date);
+							}
+							else if (fmt16(d.Date)!=null){
+							  d.Date = fmt16(d.Date);
+							}
+							else if (fmt17(d.Date)!=null){
+							  d.Date = fmt17(d.Date);
+							}
+							else if (fmt18(d.Date)!=null){
+							  d.Date = fmt18(d.Date);
+							}
+							
+
+							var weekday = new Array(7);
+							weekday[0] =  "Sunday";
+							weekday[1] = "Monday";
+							weekday[2] = "Tuesday";
+							weekday[3] = "Wednesday";
+							weekday[4] = "Thursday";
+							weekday[5] = "Friday";
+							weekday[6] = "Saturday";
+
+
+							var month = new Array(12);
+							month[0] = "January";
+							month[1] = "February";
+							month[2] = "March";
+							month[3] = "April";
+							month[4] = "May";
+							month[5] = "June";
+							month[6] = "July";
+							month[7] = "August";
+							month[8] = "September";
+							month[9] = "October";
+							month[10] = "November";
+							month[11] = "December";
+
+
+							function weekMonth(date) {						    
+							    var prefixes = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
+							    return prefixes[Math.floor(date.getDate() / 7)];
+							}
+
+							function isWeekDay(date){
+								if(date.getDay()!=0 || date.getDay()!=6){
+									return true
+								}
+							}
+
+							if (d.hasOwnProperty("Date")){
+								d.Hours = d.Date.getHours();
+								d.Minutes = d.Date.getMinutes();
+								d.Seconds = d.Date.getSeconds();
+								d.DayNight = d.Hours < 6 || d.Hours>18 ? "night": "day";
+								d.WeekOfTheMonth = weekMonth(d.Date)
+								d.DayOfTheWeek = weekday[d.Date.getDay()];	
+								d.isWeekDay= isWeekDay(d.Date)					
+								d.Year = d.Date.getFullYear().toString();
+								d.Month = month[d.Date.getMonth()];
+								d.Day = d.Date.getDate();
+							}
+
+							return d;
+				}
+
+				if(event.target.files[0].name.includes(".xlsx")){
+
+					/* set up XMLHttpRequest */
+					var url = tmppath;
+					var oReq = new XMLHttpRequest();
+					oReq.open("GET", url, true);
+					oReq.responseType = "arraybuffer";
+
+					oReq.onload = function(e) {
+					  var arraybuffer = oReq.response;
+
+					  /* convert data to binary string */
+					  var data = new Uint8Array(arraybuffer);
+					  var arr = new Array();
+					  for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+					  var bstr = arr.join("");
+
+					  /* Call XLSX */
+					  var workbook = XLSX.read(bstr, {type:"binary"});
+
+					  /* DO SOMETHING WITH workbook HERE */
+					  var first_sheet_name = workbook.SheetNames[0];
+					  /* Get worksheet */
+					  var worksheet = workbook.Sheets[first_sheet_name];
+
+					  var dats= XLSX.utils.sheet_to_json(worksheet,{raw:true});
+
+					  var dats_callback=[];					  
+					  for(var i=0;i<dats.length;i++){	
+					  	dats_callback.push(parsing(dats[i]))
+					  }
+
+					  callback(dats_callback);
+					}
+
+					oReq.send();
+				}
+				else if(event.target.files[0].name.includes(".csv")){
+					console.log("va a leer")
+					d3.csv(tmppath, function (d) { 
+							parsing(d)
+							return d;
+
+							},  function (err, data) {	
+							 	dat=data;								 					 	
+							 	callback(dat);
+							})
+					};			
 				});				
-			});	
+				});	
 		}, changeData: function(newArr){
 	        datos = newArr;
 	        angular.forEach($window.rootScopes, function(scope) {
@@ -355,6 +429,9 @@
 		$scope.catColumnsFinal= state.catColumnsFinal || null;
 
 		TestService.getData(function(d){
+
+			console.log(d)
+
 			$scope.dat =d;
 
 			var parse=[];
@@ -579,9 +656,7 @@
 	}])
 
 
-	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
-
-		
+	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
 		
 		container.layoutManager.eventHub.on( 'columnas_list', function( cols ){			
 			container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
@@ -596,7 +671,8 @@
 						{
 							console.log("se llamo el metodo")
 
-							if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
+							if(datos[0].hasOwnProperty('Year')){
+								if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
 								var yourVlSpec = {
 									"width": 1000,
 									"height": 300,
@@ -620,8 +696,8 @@
 								},
 									"mark": "circle",
 									"encoding": {
-									"x": {"field": attr1, "type": "quantitative"},
-									"y": {"field": attr2, "type": "quantitative"},
+									"x": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
+									"y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}},
 									"color": {
 									"condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
 									"value": "#D8D8D8"
@@ -634,145 +710,266 @@
 										}
 									}
 								}
-							}
-							container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
-							spatial(yourVlSpec,visible)
-							
-							}
+								}
+								container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
+								spatial(yourVlSpec,visible)
 
-							else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
-							 var yourVlSpec = {
-							      "width": 1000,
-							      "height": 300,
-							      "autosize": {"type": "fit", "contains": "padding"},
-							      "data": {"values":visible},
-							      "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
-							      "selection": {
-							      "grid": {
-							      "type": "interval", "bind": "scales"
-							      },
-							      "CylYr": {
-							      "type": "single",
-							      "fields": ["Year"],
-							      "bind": {
-							      "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
-							      },
-							      "on": "click",
-							      "resolve": "global",
-							      "empty": "all"
-							      }
-							      },
-							      "mark": "bar",
-							      "encoding": {
-							      "x": {"field": attr1, "type": "ordinal"},
-							      "y": {"field": attr2, "type": "quantitative"},
-							      "color": {
-							      "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-							      "value": "#D8D8D8"
-							      },
-							      "size": {
-							          "condition": {
-							              "selection": "CylYr",
-							              "value": 100,
-							              "fill":'None'
-							          	}
-							      	}
-							     }
-							  }
-							  container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-							  spatial(yourVlSpec,visible)
-							
-							}
-							else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
-							  var yourVlSpec = {
-							      "width": 1000,
-							      "height": 300,
-							      "autosize": {"type": "fit", "contains": "padding"},
-							      "data": {"values":visible},
-							      "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
-							      "selection": {
-							      "grid": {
-							      "type": "interval", "bind": "scales"
-							      },
-							      "CylYr": {
-							      "type": "single",
-							      "fields": ["Year"],
-							      "bind": {
-							      "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
-							      },
-							      "on": "click",
-							      "resolve": "global",
-							      "empty": "all"
-							      }
-							      },
-							      "mark": "bar",
-							      "encoding": {
-							      "x": {"field": attr2, "type": "ordinal"},
-							      "y": {"field": attr1, "type": "quantitative"},
-							      "color": {
-							      "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-							      "value": "#D8D8D8"
-							      },
-							      "size": {
-							          "condition": {
-							              "selection": "CylYr",
-							              "value": 100,
-							              "fill":'None'
-							          }
-							      }
-							     }
-							  }
-							  container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-							  spatial(yourVlSpec,visible)
-							
-							}
-							else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
+								}
+								else if(catColumns.includes(attr1) && catColumns.includes(attr2)){
+								setTimeout(function(){
+									alert("You selected TWO categorical attributes.\nSelect a variable combination, as follows:\nCATEGORICAL/SEQUENTIAL or SEQUENTIAL/SEQUENTIAL")
+								},200)
+								}							
+								else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
+								var yourVlSpec = {
+								  "width": 1000,
+								  "height": 300,
+								  "autosize": {"type": "fit", "contains": "padding"},
+								  "data": {"values":visible},
+								  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+								  "selection": {
+								  "grid": {
+								  "type": "interval", "bind": "scales"
+								  },
+								  "CylYr": {
+								  "type": "single",
+								  "fields": ["Year"],
+								  "bind": {
+								  "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+								  },
+								  "on": "click",
+								  "resolve": "global",
+								  "empty": "all"
+								  }
+								  },
+								  "mark": "bar",
+								  "encoding": {
+								  "x": {"field": attr1, "type": "ordinal"},
+								  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}},
+								  "color": {
+								  "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+								  "value": "#D8D8D8"
+								  },
+								  "size": {
+								      "condition": {
+								          "selection": "CylYr",
+								          "value": 100,
+								          "fill":'None'
+								      	}
+								  	}
+								 }
+								}
+								container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+								spatial(yourVlSpec,visible)
 
-							  console.log("ENTRÓ ACÁ")
+								}
+								else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
+								var yourVlSpec = {
+								  "width": 1000,
+								  "height": 300,
+								  "autosize": {"type": "fit", "contains": "padding"},
+								  "data": {"values":visible},
+								  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+								  "selection": {
+								  "grid": {
+								  "type": "interval", "bind": "scales"
+								  },
+								  "CylYr": {
+								  "type": "single",
+								  "fields": ["Year"],
+								  "bind": {
+								  "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+								  },
+								  "on": "click",
+								  "resolve": "global",
+								  "empty": "all"
+								  }
+								  },
+								  "mark": "bar",
+								  "encoding": {
+								  "x": {"field": attr2, "type": "ordinal"},
+								  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
+								  "color": {
+								  "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+								  "value": "#D8D8D8"
+								  },
+								  "size": {
+								      "condition": {
+								          "selection": "CylYr",
+								          "value": 100,
+								          "fill":'None'
+								      }
+								  }
+								 }
+								}
+								container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+								spatial(yourVlSpec,visible)
 
-							  var yourVlSpec = {
-							      "width": 1000,
-							      "height": 300,
-							      "autosize": {"type": "fit", "contains": "padding"},
-							      "data": {"values":visible},
-							      "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
-							      "selection": {
-							      "grid": {
-							      "type": "interval", "bind": "scales"
-							      }},
-							      "mark": {"type":"point"},
-							      "encoding": {
-							      "x": {"field": attr1, "type": "temporal"},
-							      "y": {"field": attr2, "type": "quantitative"}
-							  }
-							}
-							container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-							spatial(yourVlSpec,visible)
-							
-							}
-							else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
+								}
+								else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
 
-							  var yourVlSpec = {
-							      "width": 1000,
-							      "height": 300,
-							      "autosize": {"type": "fit", "contains": "padding"},
-							      "data": {"values":visible},
-							      "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
-							      "selection": {
-							      "grid": {
-							      "type": "interval", "bind": "scales"
-							      }},
-							      "mark": {"type":"point"},
-							      "encoding": {
-							      "x": {"field": attr2, "type": "temporal"},
-							      "y": {"field": attr1, "type": "quantitative"}
-							  }
-							}
-							container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-							spatial(yourVlSpec,visible)
-							
-							}
+								console.log("ENTRÓ ACÁ")
 
+								var yourVlSpec = {
+								  "width": 1000,
+								  "height": 300,
+								  "autosize": {"type": "fit", "contains": "padding"},
+								  "data": {"values":visible},
+								  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+								  "selection": {
+								  "grid": {
+								  "type": "interval", "bind": "scales"
+								  }},
+								  "mark": {"type":"point"},
+								  "encoding": {
+								  "x": {"field": attr1, "type": "temporal"},
+								  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
+								}
+								}
+								container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+								spatial(yourVlSpec,visible)
+
+								}
+								else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
+
+								var yourVlSpec = {
+								  "width": 1000,
+								  "height": 300,
+								  "autosize": {"type": "fit", "contains": "padding"},
+								  "data": {"values":visible},
+								  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+								  "selection": {
+								  "grid": {
+								  "type": "interval", "bind": "scales"
+								  }},
+								  "mark": {"type":"point"},
+								  "encoding": {
+								  "x": {"field": attr2, "type": "temporal"},
+								  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}
+								}
+								}
+								container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+								spatial(yourVlSpec,visible)
+
+								}
+							}
+							else{
+
+								if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
+								var yourVlSpec = {
+									"width": 1000,
+									"height": 300,
+									"autosize": {"type": "fit", "contains": "padding"},
+									"data": {"values":visible},
+									"transform": [{"filter": {"selection": "brush"}}],
+									"selection": {
+									"grid": {
+									"type": "interval", "bind": "scales"
+								}},
+									"mark": "circle",
+									"encoding": {
+									"x": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
+									"y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
+								}
+								}
+								container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
+								spatial(yourVlSpec,visible)
+
+								}
+								else if(catColumns.includes(attr1) && catColumns.includes(attr2)){
+								setTimeout(function(){
+									alert("You selected TWO categorical attributes.\nSelect a variable combination, as follows:\nCATEGORICAL/SEQUENTIAL or SEQUENTIAL/SEQUENTIAL")
+								},200)
+								}							
+								else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
+								var yourVlSpec = {
+								  "width": 1000,
+								  "height": 300,
+								  "autosize": {"type": "fit", "contains": "padding"},
+								  "data": {"values":visible},
+								  "transform": [{"filter": {"selection": "brush"}}],
+								  "selection": {
+								  "grid": {
+								  "type": "interval", "bind": "scales"
+								  }},
+								  "mark": "bar",
+								  "encoding": {
+								  "x": {"field": attr1, "type": "ordinal"},
+								  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}							  
+								 }
+								}
+								container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+								spatial(yourVlSpec,visible)
+
+								}
+								else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
+								var yourVlSpec = {
+								  "width": 1000,
+								  "height": 300,
+								  "autosize": {"type": "fit", "contains": "padding"},
+								  "data": {"values":visible},
+								  "transform": [{"filter": {"selection": "brush"}}],
+								  "selection": {
+								  "grid": {
+								  "type": "interval", "bind": "scales"
+								  }},
+								  "mark": "bar",
+								  "encoding": {
+								  "x": {"field": attr2, "type": "ordinal"},
+								  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}								  
+								 }
+								}
+								container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+								spatial(yourVlSpec,visible)
+
+								}
+								else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
+
+								console.log("ENTRÓ ACÁ")
+
+								var yourVlSpec = {
+								  "width": 1000,
+								  "height": 300,
+								  "autosize": {"type": "fit", "contains": "padding"},
+								  "data": {"values":visible},
+								  "transform": [{"filter": {"selection": "brush"}}],
+								  "selection": {
+								  "grid": {
+								  "type": "interval", "bind": "scales"
+								  }},
+								  "mark": {"type":"point"},
+								  "encoding": {
+								  "x": {"field": attr1, "type": "temporal"},
+								  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
+								}
+								}
+								container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+								spatial(yourVlSpec,visible)
+
+								}
+								else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
+
+								var yourVlSpec = {
+								  "width": 1000,
+								  "height": 300,
+								  "autosize": {"type": "fit", "contains": "padding"},
+								  "data": {"values":visible},
+								  "transform": [{"filter": {"selection": "brush"}}],
+								  "selection": {
+								  "grid": {
+								  "type": "interval", "bind": "scales"
+								  }},
+								  "mark": {"type":"point"},
+								  "encoding": {
+								  "x": {"field": attr2, "type": "temporal"},
+								  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}
+								}
+								}
+								container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+								spatial(yourVlSpec,visible)
+
+								}
+							}
 						}
 
 						var spatial=function(yourVlSpec,visible)
@@ -838,53 +1035,59 @@
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
 				container.layoutManager.eventHub.on( 'yourVlSpec', function(yourVlSpec){
-					document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
-					var temporal=function(yourVlSpec,visible){
-						d3.select("#attr3").on("change", function(){
-						  var attrSeq = this.value;
-						  //console.log("cambioo   attr3 :"+attrSeq)
 
-						 // console.log("selected value:     "+attrSeq)
+					if(datos[0].hasOwnProperty("Date")){
+						document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols					
+						var temporal=function(yourVlSpec,visible){
+							d3.select("#attr3").on("change", function(){
+							  var attrSeq = this.value;
+							  //console.log("cambioo   attr3 :"+attrSeq)
 
-						  var temporalvis = {
-						  "data": {"values":visible},
-						  "vconcat": [{
-						    "width": 700,
-						    "mark": "area",
-						    "encoding": {
-						      "x": {
-						        "field": "Date",
-						        "type": "temporal",
-						        "scale": {"domain": {"selection": "brush"}},
-						        "axis": {"title": ""}
-						      },
-						      "y": {"field": attrSeq,"type": "quantitative"}
-						    }
-						  }, {
-						    "width": 700,
-						    "height": 80,
-						    "mark": "area",
-						    "selection": {
-						      "brush": {"type": "interval", "encodings": ["x"],"zoom": "wheel!",
-						                  "mark": {"fill": "#333", "stroke": "green"}}
-						    },
-						    "encoding": {
-						      "x": {
-						        "field": "Date",
-						        "type": "temporal"
-						      },
-						      "y": {
-						        "field": attrSeq,
-						        "type": "quantitative",
-						        "axis": {"tickCount": 3, "grid": false}
-						      }
-						    }
-						  }, yourVlSpec]
+							 // console.log("selected value:     "+attrSeq)
+
+							  var temporalvis = {
+							  "data": {"values":visible},
+							  "vconcat": [{
+							    "width": 700,
+							    "mark": "area",
+							    "encoding": {
+							      "x": {
+							        "field": "Date",
+							        "type": "temporal",
+							        "scale": {"domain": {"selection": "brush"}},
+							        "axis": {"title": ""}
+							      },
+							      "y": {"field": attrSeq,"type": "quantitative"}
+							    }
+							  }, {
+							    "width": 700,
+							    "height": 80,
+							    "mark": "area",
+							    "selection": {
+							      "brush": {"type": "interval", "encodings": ["x"],"zoom": "wheel!",
+							                  "mark": {"fill": "#333", "stroke": "green"}}
+							    },
+							    "encoding": {
+							      "x": {
+							        "field": "Date",
+							        "type": "temporal"
+							      },
+							      "y": {
+							        "field": attrSeq,
+							        "type": "quantitative",
+							        "axis": {"tickCount": 3, "grid": false}
+							      }
+							    }
+							  }, yourVlSpec]
+							}
+							  vegaEmbed("#temporal", temporalvis);
+							});
 						}
-						  vegaEmbed("#temporal", temporalvis);
-						});
+						temporal(yourVlSpec,datos)
 					}
-					temporal(yourVlSpec,datos)
+					else{
+						document.getElementById("list3").innerHTML = '<strong> THERE ARE NOT TEMPORAL ATTRIBUTES THAT PERMITS ANY TEMPORAL ANALYSIS </strong>'
+					}
 				});
 			});
 		});
@@ -893,98 +1096,181 @@
 	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {
 
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
-			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
+			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){		
 
-			
-				document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols
+				if(datos[0].hasOwnProperty("Date")){
+					document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols
 
-				function onlyUnique(value, index, self) { 
-				    return self.indexOf(value) === index;
-				}
-
-				var years_temp=[]
-					var years = datos.map(function(d){
-						years_temp.push(parseInt(d.Date.getFullYear()))				
-					})
-
-				var months_temp=[]
-					var months = datos.map(function(d){
-						months_temp.push(parseInt(d.Date.getMonth()))				
-					})
-
-				var years_temp_array = years_temp.filter(onlyUnique)
-
-				var months_temp_array = months_temp.filter(onlyUnique)
-
-				d3.select("#attr4").on("change", function(){
-
-					var attr4 = this.value;
-					console.log("Selected Value Attr4: "+attr4)		
-
-
-					var data=[]
-
-					var colors = ['rgb(93, 164, 214, 0.5)', 'rgb(255, 144, 14, 0.5)', 'rgb(44, 160, 101, 0.5)', 'rgb(255, 65, 54, 0.5)', 'rgb(207, 114, 255, 0.5)', 'rgb(127, 96, 0, 0.5)', 'rgb(255, 140, 184, 0.5)', 'rgb(79, 90, 117, 0.5)', 'rgb(222, 223, 0, 0.5)','rgb(0,128,128)','rgb(214,12,140)','rgb(128, 0, 0)','rgb(255,255,0)','rgb(128,128,0)','rgb(0,255,255)','rgb(0,0,255)','rgb(255,0,255)','rgb(107,174,214)','rgb(128,0,128)'];
-
-					var new_colors=[];
-					if(colors.length>years_temp_array.length){
-						new_colors=colors.slice(0,years_temp_array.length+1)
-					}				
-
-					for(var i=0;i<years_temp_array.length;i++){	
-					
-						if (i!=0){				
-							new_colors.pop()
-						}
-
-						var temp_array_int=[]
-						datos.filter(d=>parseInt(d.Date.getFullYear())==years_temp_array[i]).map(function(d){
-							temp_array_int.push(parseInt(d[attr4]))
-						})
-
-						console.log(temp_array_int)
-
-						for(var j=0;j<new_colors.length;j++){
-
-							data[i]={
-							  y: temp_array_int,
-							  type: 'box',
-							  name: "Year:  "+years_temp_array[i],
-							  marker: {
-							    color: new_colors[j],
-							    outliercolor: 'rgb(219, 64, 82, 0.6)',
-							    line: {
-							      outliercolor: 'rgb(219, 64, 82, 1.0)',
-							      outlierwidth: 2
-							    }
-
-							  },
-							  boxpoints: 'all'
-							};
-						}
-						
+					function onlyUnique(value, index, self) { 
+					    return self.indexOf(value) === index;
 					}
 
-					var layout = {
-					  title: 'Representation: Box Plot'
-					};
+					var years_temp=[]
+						var years = datos.map(function(d){
+							years_temp.push(parseInt(d.Date.getFullYear()))				
+						})
 
-					Plotly.newPlot('boxplot', data, layout);
-				})
+					var months_temp=[]
+						var months = datos.map(function(d){
+							months_temp.push(parseInt(d.Date.getMonth()))				
+						})
+
+					var years_temp_array = years_temp.filter(onlyUnique)
+
+					var months_temp_array = months_temp.filter(onlyUnique)
+
+					d3.select("#attr4").on("change", function(){
+
+						var attr4 = this.value;
+						console.log("Selected Value Attr4: "+attr4)		
+
+
+						var data=[]
+
+						var colors = ['rgb(93, 164, 214, 0.5)', 'rgb(255, 144, 14, 0.5)', 'rgb(44, 160, 101, 0.5)', 'rgb(255, 65, 54, 0.5)', 'rgb(207, 114, 255, 0.5)', 'rgb(127, 96, 0, 0.5)', 'rgb(255, 140, 184, 0.5)', 'rgb(79, 90, 117, 0.5)', 'rgb(222, 223, 0, 0.5)','rgb(0,128,128)','rgb(214,12,140)','rgb(128, 0, 0)','rgb(255,255,0)','rgb(128,128,0)','rgb(0,255,255)','rgb(0,0,255)','rgb(255,0,255)','rgb(107,174,214)','rgb(128,0,128)'];
+
+						var new_colors=[];
+						if(colors.length>years_temp_array.length){
+							new_colors=colors.slice(0,years_temp_array.length+1)
+						}				
+
+						for(var i=0;i<years_temp_array.length;i++){	
+						
+							if (i!=0){				
+								new_colors.pop()
+							}
+
+							var temp_array_int=[]
+							datos.filter(d=>parseInt(d.Date.getFullYear())==years_temp_array[i]).map(function(d){
+								temp_array_int.push(parseInt(d[attr4]))
+							})
+
+							console.log(temp_array_int)
+
+							for(var j=0;j<new_colors.length;j++){
+
+								data[i]={
+								  y: temp_array_int,
+								  type: 'box',
+								  name: "Year:  "+years_temp_array[i],
+								  marker: {
+								    color: new_colors[j],
+								    outliercolor: 'rgb(219, 64, 82, 0.6)',
+								    line: {
+								      outliercolor: 'rgb(219, 64, 82, 1.0)',
+								      outlierwidth: 2
+								    }
+
+								  },
+								  boxpoints: 'all'
+								};
+							}
+							
+						}
+
+						var layout = {
+						  title: 'Representation: Box Plot'
+						};
+
+						Plotly.newPlot('boxplot', data, layout);
+					})
+				}
+				else{
+					document.getElementById("list4").innerHTML = '<strong> THERE ARE NOT ANY TEMPORAL ATTRIBUTES THAT PERMITS THE PRELIMINARY STATISTICAL ANALYSIS </strong>'
+				}
 			})
 		})
 	}])
 
 	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 
-			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
-								console.log(datos)	
+			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){	
 
-
-setInterval(function(){	
-
+					document.getElementById('mapid').innerHTML = "< div id='map' style='width: 100%; height: 100%;'>";
 				
-				var colors = ['#006400','#FF00FF','#1E90FF','#000000','#FFFF00','#2F4F4F','#FFFF00','#20B2AA',,'#8B4513','#FFFF00','#FF8C00','#868686'];
+					var mymap = L.map('mapid').setView([51.505, -0.09], 13);	
+
+					L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+						maxZoom: 18,
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+							'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+							'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+						id: 'mapbox.streets'
+					}).addTo(mymap);
+
+					var years =[];
+					var lista=[];	
+
+					datos.map(function(d){
+						years.push(d.Year)
+						years=years.filter(function(item, pos){
+							return years.indexOf(item)== pos; 
+						});
+					})						
+
+					for(var k=0;k<years.length;k++){						
+
+						var latitudes = [];
+						var longitudes=[];
+
+						var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){	
+
+							if(d.Latitude!="" && d.Longitude!=""){					
+								latitudes.push(parseFloat(d.Latitude))
+								longitudes.push(parseFloat(d.Longitude))
+							}
+						})	
+
+						for(var i=0;i<datos_filter.length;i++){
+							
+							var coord = [latitudes[i],longitudes[i]];
+							lista.push(coord)
+						}		
+					}
+
+					console.log(lista)
+
+					
+					for(var i=0;i<lista.length;i++){
+
+						L.marker(lista[i]).addTo(mymap)
+						.bindPopup("The coordinates of the current point are: [ "+lista[i]+" ]").openPopup();							
+					}
+					setInterval(function(){ mymap.invalidateSize()}, 400);
+
+
+						
+
+						/*L.circle([51.508, -0.11], 500, {
+							color: 'red',
+							fillColor: '#f03',
+							fillOpacity: 0.5
+						}).addTo(mymap).bindPopup("I am a circle.");
+
+						L.polygon([
+							[51.509, -0.08],
+							[51.503, -0.06],
+							[51.51, -0.047]
+						]).addTo(mymap).bindPopup("I am a polygon.");
+
+
+						var popup = L.popup();
+
+						function onMapClick(e) {
+							popup
+								.setLatLng(e.latlng)
+								.setContent("You clicked the map at " + e.latlng.toString())
+								.openOn(mymap);
+						}
+
+						mymap.on('click', onMapClick);*/			
+
+						
+
+
+			})		
+
+				/*var colors = ['#006400','#FF00FF','#1E90FF','#000000','#FFFF00','#2F4F4F','#FFFF00','#20B2AA','#8B4513','#FFFF00','#FF8C00','#868686'];
 
 				var years =[];
 				var lista=[];
@@ -995,7 +1281,6 @@ setInterval(function(){
  						return years.indexOf(item)== pos; 
 					});
 				})
-
 
 				if(colors.length>years.length){
 						new_colors=colors.slice(0,years.length+1)
@@ -1077,6 +1362,8 @@ setInterval(function(){
 							}
 						});
 
+
+
 						var map = new ol.Map({
 							target: 'map',
 							layers: [
@@ -1088,13 +1375,13 @@ setInterval(function(){
 								zoom: 11
 							})
 						});	
-},5000);
+
 
 				})	
 			window.onresize = function()
 			{
 				setTimeout(function(){ map.updateSize()}, 400);
-			}
+			}*/
 	}])
 
 
