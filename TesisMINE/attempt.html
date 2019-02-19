@@ -1184,204 +1184,80 @@
 
 	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 
-			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){	
-
-					document.getElementById('mapid').innerHTML = "< div id='map' style='width: 100%; height: 100%;'>";
-				
-					var mymap = L.map('mapid').setView([51.505, -0.09], 13);	
-
-					L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-						maxZoom: 18,
-						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-							'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-							'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-						id: 'mapbox.streets'
-					}).addTo(mymap);
-
-					var years =[];
-					var lista=[];	
-
-					datos.map(function(d){
-						years.push(d.Year)
-						years=years.filter(function(item, pos){
-							return years.indexOf(item)== pos; 
-						});
-					})						
-
-					for(var k=0;k<years.length;k++){						
-
-						var latitudes = [];
-						var longitudes=[];
-
-						var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){	
-
-							if(d.Latitude!="" && d.Longitude!=""){					
-								latitudes.push(parseFloat(d.Latitude))
-								longitudes.push(parseFloat(d.Longitude))
-							}
-						})	
-
-						for(var i=0;i<datos_filter.length;i++){
+			var mymap=null;	
+			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){					
 							
-							var coord = [latitudes[i],longitudes[i]];
-							lista.push(coord)
-						}		
-					}
+					function drawMap(datos, mymap){
+						L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+							maxZoom: 18,
+							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+								'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+								'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+							id: 'mapbox.streets'
+						}).addTo(mymap);
 
-					console.log(lista)
+						var years =[];
+						var lista=[];	
 
-					
-					for(var i=0;i<lista.length;i++){
+						datos.map(function(d){
+							years.push(d.Year)
+							years=years.filter(function(item, pos){
+								return years.indexOf(item)== pos; 
+							});
+						})						
 
-						L.marker(lista[i]).addTo(mymap)
-						.bindPopup("The coordinates of the current point are: [ "+lista[i]+" ]").openPopup();							
-					}
-					setInterval(function(){ mymap.invalidateSize()}, 400);
+						for(var k=0;k<years.length;k++){						
 
+							var latitudes = [];
+							var longitudes=[];
 
-						
+							var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){	
 
-						/*L.circle([51.508, -0.11], 500, {
-							color: 'red',
-							fillColor: '#f03',
-							fillOpacity: 0.5
-						}).addTo(mymap).bindPopup("I am a circle.");
+								if(d.Latitude!="" && d.Longitude!=""){					
+									latitudes.push(parseFloat(d.Latitude))
+									longitudes.push(parseFloat(d.Longitude))
+								}
+							})	
 
-						L.polygon([
-							[51.509, -0.08],
-							[51.503, -0.06],
-							[51.51, -0.047]
-						]).addTo(mymap).bindPopup("I am a polygon.");
-
-
-						var popup = L.popup();
-
-						function onMapClick(e) {
-							popup
-								.setLatLng(e.latlng)
-								.setContent("You clicked the map at " + e.latlng.toString())
-								.openOn(mymap);
+							for(var i=0;i<datos_filter.length;i++){
+								
+								var coord = [latitudes[i],longitudes[i]];
+								lista.push(coord)
+							}		
 						}
 
-						mymap.on('click', onMapClick);*/			
-
-						
+						console.log(lista)
 
 
-			})		
+						for(var i=0;i<lista.length;i++){
 
-				/*var colors = ['#006400','#FF00FF','#1E90FF','#000000','#FFFF00','#2F4F4F','#FFFF00','#20B2AA','#8B4513','#FFFF00','#FF8C00','#868686'];
+							L.marker(lista[i]).addTo(mymap)
+							.bindPopup("The coordinates of the current point are: [ "+lista[i]+" ]").openPopup();							
+						}
+						setInterval(function(){ mymap.invalidateSize()}, 400);						
+					}
+					
 
-				var years =[];
-				var lista=[];
-				
-				datos.map(function(d){
-					years.push(d.Year)
-					years=years.filter(function(item, pos){
- 						return years.indexOf(item)== pos; 
-					});
-				})
+					if(mymap==null){	
+									
+						mymap = L.map('mapid').setView([51.505, -0.09], 13);
 
-				if(colors.length>years.length){
-						new_colors=colors.slice(0,years.length+1)
-				}
+					}
+					else{
+						console.log(mymap)
+						mymap.remove()
+						mymap=null;
+						console.log(mymap)
 
-				for(var k=0;k<years.length;k++){	
-
-					if (k!=0){				
-							new_colors.shift()
+						if(mymap==null){	
+									
+						mymap = L.map('mapid').setView([51.505, -0.09], 13);
+						drawMap(datos, mymap)
+						}
 					}
 
-					//for(var color=0;color<new_colors.length;color++){						
-						var latitudes = [];
-						var longitudes=[];
-
-						var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){	
-
-							if(d.Latitude!="" && d.Longitude!=""){					
-								latitudes.push(parseFloat(d.Latitude))
-								longitudes.push(parseFloat(d.Longitude))
-							}
-						})	
-
-						//console.log(latitudes)	
-						//console.log(longitudes)	
-
-				
-						for(var i=0;i<datos_filter.length;i++){
-							
-							var coord = [longitudes[i],latitudes[i]];
-							lista.push({
-								  type: 'Feature',
-								  properties: {
-								    'marker-color': new_colors[k],
-								    'marker-size': 'medium'
-								  },
-								  geometry: {
-								    type: 'Point',
-								    coordinates: coord
-								  }
-							})
-						}		
-				}
-
-				console.log(lista.length)
-
-
-
-						var geojsonObject = {
-						type: 'FeatureCollection',
-						crs: { type: 'name', properties: { name: 'EPSG:4326' }},
-						features: lista};
-
-						var features = new ol.format.GeoJSON().readFeatures(geojsonObject, {
-							featureProjection: 'EPSG:3857'
-						});
-
-
-						var max_latitudes=Math.max.apply(Math,latitudes)
-						var min_latitudes=Math.min.apply(Math,latitudes)
-						var max_longitudes=Math.max.apply(Math,longitudes)
-						var min_longitudes=Math.min.apply(Math,longitudes)
-
-						var prom_latitudes= (max_latitudes+min_latitudes)/2;
-						var prom_longitudes=(max_longitudes+min_longitudes)/2;
-
-						var vectorSource = new ol.source.Vector({ features: features });
-						var vectorLayer = new ol.layer.Vector({
-							updateWhileInteracting: true,
-							source: vectorSource,
-							style: function (feature, resolution) {
-								//console.log(feature.getProperties(), feature.get('marker-color'));
-								return [new ol.style.Style({
-								  image: new ol.style.Circle({
-								    radius: 5,
-								    fill: new ol.style.Fill({ color: feature.get('marker-color') })
-								  })
-								})];
-							}
-						});
-
-
-
-						var map = new ol.Map({
-							target: 'map',
-							layers: [
-								new ol.layer.Tile({ source: new ol.source.OSM() }),
-								vectorLayer
-							],
-							view: new ol.View({			
-								center: ol.proj.fromLonLat([prom_longitudes,prom_latitudes]),
-								zoom: 11
-							})
-						});	
-
-
-				})	
-			window.onresize = function()
-			{
-				setTimeout(function(){ map.updateSize()}, 400);
-			}*/
+					drawMap(datos, mymap)	
+			})					
 	}])
 
 
