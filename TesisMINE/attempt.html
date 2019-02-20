@@ -1185,8 +1185,13 @@
 	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 
 			var mymap=null;	
-			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){					
+			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){									
 							
+					var prom_latitudes=[];
+					var prom_longitudes=[];
+					var lat=[];
+					var long=[];
+
 					function drawMap(datos, mymap){
 						L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 							maxZoom: 18,
@@ -1215,7 +1220,7 @@
 
 								if(d.Latitude!="" && d.Longitude!=""){					
 									latitudes.push(parseFloat(d.Latitude))
-									longitudes.push(parseFloat(d.Longitude))
+									longitudes.push(parseFloat(d.Longitude))								
 								}
 							})	
 
@@ -1224,23 +1229,55 @@
 								var coord = [latitudes[i],longitudes[i]];
 								lista.push(coord)
 							}		
-						}
+						}						
 
-						console.log(lista)
+							var identificators=[]
+							datos.map(function(d){
+								identificators.push(d['ID'])
+							})
 
+							var dates=[]
+							datos.map(function(d){
+								dates.push(d['Month']+" / "+d['Day']+" / "+d['Year']+"  ("+d['DayOfTheWeek']+")")
+							})							
 
-						for(var i=0;i<lista.length;i++){
+							for(var i=0;i<lista.length;i++){					
+										
+									if(datos[i].hasOwnProperty('Date')){	
+										console.log("Has Date")								
+										L.marker(lista[i]).addTo(mymap)
+										.bindPopup("The coordinates of the current point are:\n\n<b>["+lista[i]+"]</b>\n\n\n <b>Identificator: "+identificators[i]+"</b> from the <b>Date: "+dates[i]+"</b>");	
+									}
+									else{		
+										console.log("NO Date")								
+										L.marker(lista[i]).addTo(mymap)
+										.bindPopup("The coordinates of the current point are:\n\n<b>["+lista[i]+"]</b>\n\n\n <b>Identificator: "+identificators[i]+"</b>");	
+									}
+																											
+							}
+							
 
-							L.marker(lista[i]).addTo(mymap)
-							.bindPopup("The coordinates of the current point are: [ "+lista[i]+" ]").openPopup();							
-						}
 						setInterval(function(){ mymap.invalidateSize()}, 400);						
 					}
-					
 
+					datos.map(function(d){
+
+						long.push(d.Longitude)
+						lat.push(d.Latitude)
+					
+						var max_latitudes=Math.max.apply(Math,lat)
+						var min_latitudes=Math.min.apply(Math,lat)
+						var max_longitudes=Math.max.apply(Math,long)
+						var min_longitudes=Math.min.apply(Math,long)
+
+						prom_latitudes= (max_latitudes+min_latitudes)/2;
+						prom_longitudes=(max_longitudes+min_longitudes)/2;
+					
+					})
+					
 					if(mymap==null){	
 									
-						mymap = L.map('mapid').setView([51.505, -0.09], 13);
+						mymap = L.map('mapid').setView([prom_latitudes, prom_longitudes], 11);
 
 					}
 					else{
@@ -1249,15 +1286,13 @@
 						mymap=null;
 						console.log(mymap)
 
-						if(mymap==null){	
-									
-						mymap = L.map('mapid').setView([51.505, -0.09], 13);
-						drawMap(datos, mymap)
+						if(mymap==null){									
+							mymap = L.map('mapid').setView([prom_latitudes, prom_longitudes], 11);
+							drawMap(datos, mymap)
 						}
 					}
-
 					drawMap(datos, mymap)	
-			})					
+			})				
 	}])
 
 
