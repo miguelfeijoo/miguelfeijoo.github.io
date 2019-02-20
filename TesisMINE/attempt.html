@@ -1,12 +1,19 @@
+
+<!--  DEPENDENCIES / STYLES   -->
+<link rel="shortcut icon" href="favicon.ico">
 <script type="text/javascript" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="//golden-layout.com/assets/js/goldenlayout.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
 <link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-base.css" />
 <link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-light-theme.css" />
-
 <link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' >
 <link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css' >
-
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+   integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+   crossorigin=""></script>
 <script src='https://code.jquery.com/jquery-1.12.4.js'></script>
 <script src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
@@ -16,32 +23,18 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.html5.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.print.min.js'></script>
-
 <script src="https://cdn.jsdelivr.net/npm/vega@4.3.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc8"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.20.0"></script>
-
 <script src="http://d3js.org/queue.v1.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
 <script src="js/xlsx.full.min.js"></script>
-
-<!-- NAVIO Step 0: Load the libraries -->
 <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/navio/dist/navio.min.js"></script>
 
-<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.0.1/ol.js"></script>-->
 
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
-   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-   crossorigin=""/>
-
- <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
-   integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
-   crossorigin=""></script>
-
-
+<!--  TEMPLATE FOR EACH MODULE/VIEW   -->
 <template type="text/html" id="fileselectorTemplate">
   <div id='selector' ng-controller="fileselectorController" class="fileselector">
 		<p><strong>Select a file of your interest to get to analyze its current attributes </strong>(Accepted Extensions: <i>.csv, .xlsx</i> )</p>
@@ -81,6 +74,7 @@
 	<div id='boxplotid' ng-controller="boxplotController" class="boxplot">
 		<div id="list4" align="center"></div>
 		<div id="boxplot"></div>
+		<div id="list5" align="center"></div>
 	</div>
 </template>
 
@@ -89,11 +83,18 @@
 	</div>
 </template>
 
+
+<!-- PRELIMINARY CONTENT STYLE -->
+
 <style type="text/css">
 	body .lm_content{
 	  overflow: scroll;
 	}	
 	#mapid { margin: 0px; height: 100%; width: 100% }
+	#boxplot { margin: 0px; height: 100%; width: 100% }
+	#temporal { margin: 0px; height: 100%; width: 100% }
+	#spatial { margin: 0px; height: 100%; width: 100% }
+	#navio { margin: 0px; height: 100%; width: 100% }
 </style>
 
 
@@ -1215,69 +1216,88 @@
 							});
 						})		
 
-						/*var new_colors=[];
-						if(colors.length>years.length){
-								console.log(colors)
-								new_colors=colors.slice(0,years.length+1)
-								console.log(new_colors)
-						}*/					
+						if(datos[0].hasOwnProperty('Year')){
 
-						for(var k=0;k<years.length;k++){	
+							for(var k=0;k<years.length;k++){	
 
-							if (k!=0){										
-								colors.pop()	
-							}				
+								if (k!=0){										
+									colors.pop()	
+								}				
+
+								var latitudes = [];
+								var longitudes=[];							
+
+								var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){	
+
+									if(d.Latitude!="" && d.Longitude!=""){					
+										latitudes.push(parseFloat(d.Latitude))
+										longitudes.push(parseFloat(d.Longitude))								
+									}
+								})									
+													
+								for(var i=0;i<datos_filter.length;i++){
+									
+									var coord = [latitudes[i],longitudes[i]];
+									lista.push(coord)
+									counter=counter+1;
+								}	
+
+								var identificators=[]
+								datos.map(function(d){
+									identificators.push(d['ID'])
+								})
+
+								var dates=[]
+								datos.map(function(d){
+									dates.push(d['Month']+" / "+d['Day']+" / "+d['Year']+"  ("+d['DayOfTheWeek']+")")
+								})							
+
+								for(var b=previous_counter;b<counter;b++){								
+
+										if(b==counter-1){
+											previous_counter=counter										
+										}
+										else{
+											if(lista[b]!=undefined || lista[b]!=null){
+										 		L.circleMarker(lista[b],{fillOpacity:0.5,color:colors[k]}).addTo(mymap)
+												.bindPopup("The coordinates of the current point are:\n\n<b>["+lista[b]+"]</b>\n\n\n <b>Identificator: "+identificators[b]+"</b> from the <b>Date: "+dates[b]+"</b>");
+											}									
+										}																										
+									}	
+								}		
+							
+							setInterval(function(){ mymap.invalidateSize()}, 400);	
+						}
+						else{
 
 							var latitudes = [];
-							var longitudes=[];							
+							var longitudes=[];					
 
-							var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){	
-
+							datos.map(function(d){
 								if(d.Latitude!="" && d.Longitude!=""){					
 									latitudes.push(parseFloat(d.Latitude))
 									longitudes.push(parseFloat(d.Longitude))								
 								}
-							})									
-												
-							for(var i=0;i<datos_filter.length;i++){
-								
-								var coord = [latitudes[i],longitudes[i]];
-								lista.push(coord)
-								counter=counter+1;
-							}	
+							})
+
+							for(var i=0;i<datos.length;i++){									
+									var coord = [latitudes[i],longitudes[i]];
+									lista.push(coord)
+							}
+							console.log(lista)
 
 							var identificators=[]
 							datos.map(function(d){
 								identificators.push(d['ID'])
 							})
 
-							var dates=[]
-							datos.map(function(d){
-								dates.push(d['Month']+" / "+d['Day']+" / "+d['Year']+"  ("+d['DayOfTheWeek']+")")
-							})							
+							for(var i=0;i<lista.length;i++){
+								L.circleMarker(lista[i],{fillOpacity:0.5,color:'blue'}).addTo(mymap)
+								.bindPopup("The coordinates of the current point are:\n\n<b>["+lista[i]+"]</b>\n\n\n <b>Identificator: "+identificators[i]+"</b>");	
+							}																	
+						}
 
-							for(var b=previous_counter;b<counter;b++){								
-
-									if(b==counter-1){
-										previous_counter=counter										
-									}
-									else{
-										if(datos[0].hasOwnProperty('Date')){												
-											if(lista[b]!=undefined || lista[b]!=null){
-												console.log(lista[b])
-										 		L.circleMarker(lista[b],{fillOpacity:0.5,color:colors[k]}).addTo(mymap)
-												.bindPopup("The coordinates of the current point are:\n\n<b>["+lista[b]+"]</b>\n\n\n <b>Identificator: "+identificators[b]+"</b> from the <b>Date: "+dates[b]+"</b>");
-											}
-										}
-										else{		
-											L.circleMarker(lista[b]).addTo(mymap)
-											.bindPopup("The coordinates of the current point are:\n\n<b>["+lista[b]+"]</b>\n\n\n <b>Identificator: "+identificators[b]+"</b>");	
-										}	
-									}																										
-							}	
-						}		
-						
-						setInterval(function(){ mymap.invalidateSize()}, 400);						
+					
 					}
 
 					datos.map(function(d){
