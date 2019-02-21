@@ -46,12 +46,14 @@
 
 <template type="text/html" id="navioTemplate">
     <div id='navio_widget' ng-controller="navioController" class="navio">
+    	<p></p>
     	<div id="navio"></div>
     </div>
 </template>	
 
 <template type="text/html" id="spatioTemplate">
     <div id='spatial_id' ng-controller="spatioController" class="spatialviz">
+		<p></p>
 		<div id="text" align="left"></div>
 		<p></p>
 		<div id="list" align="center"></div>
@@ -65,6 +67,7 @@
 
 <template type="text/html" id="temporalTemplate">
 	<div id='temporal_id' ng-controller="temporalController" class="temporalviz">
+    	  <p></p>
     	  <div id="list3" align="center"></div>
 		  <div id="temporal"></div>
     </div>
@@ -72,8 +75,10 @@
 
 <template type="text/html" id="boxplotTemplate">
 	<div id='boxplotid' ng-controller="boxplotController" class="boxplot">
+		<p></p>
 		<div id="list4" align="center"></div>
 		<div id="boxplot"></div>
+		<p></p>
 		<div id="list5" align="center"></div>
 	</div>
 </template>
@@ -91,10 +96,7 @@
 	  overflow: scroll;
 	}	
 	#mapid { margin: 0px; height: 100%; width: 100% }
-	#boxplot { margin: 0px; height: 100%; width: 100% }
-	#temporal { margin: 0px; height: 100%; width: 100% }
-	#spatial { margin: 0px; height: 100%; width: 100% }
-	#navio { margin: 0px; height: 100%; width: 100% }
+	#boxplotid { margin: 0px; height: 100%; width: 100% }
 </style>
 
 
@@ -1100,7 +1102,7 @@
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){		
 
 				if(datos[0].hasOwnProperty("Date")){
-					document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols
+					document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols				
 
 					function onlyUnique(value, index, self) { 
 					    return self.indexOf(value) === index;
@@ -1121,6 +1123,8 @@
 					var months_temp_array = months_temp.filter(onlyUnique)
 
 					d3.select("#attr4").on("change", function(){
+
+						document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'
 
 						var attr4 = this.value;
 						console.log("Selected Value Attr4: "+attr4)		
@@ -1174,6 +1178,91 @@
 						};
 
 						Plotly.newPlot('boxplot', data, layout);
+
+						d3.select("#attr5").on("change", function(){
+							var attr5 = this.value;
+							var valores=[];
+							datos.map(function(d){								
+								valores.push(d[attr4])								
+								valores.sort(function(a, b){return a-b});
+								console.log(valores)
+							})
+
+							function isOdd(num) { return num % 2;}
+								
+							if(isOdd(valores.length)){
+
+								var pos_median= (valores.length +1)/2;
+								var value_median= valores[pos_median]; 
+
+								console.log("MEDIAN :  "+value_median)
+
+								var pos_Q1= (pos_median-1)/2;
+								console.log(pos_Q1)
+								var value_Q1= valores[pos_median-pos_Q1];
+
+								console.log("Q1 :  "+value_Q1)
+
+								var pos_Q3= (pos_median-1)/2;
+								var value_Q3= valores[pos_median+pos_Q3];
+
+								console.log("Q3 :  "+value_Q3)
+
+								console.log("aaa   "+value_Q1)
+								
+								var data_filter=[]
+
+								if(attr5=='25th-50th Percentile [Q1 <-> Q2 (Median)]'){
+									datos.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])>=value_median).map(function(d){					
+										data_filter.push(d)										
+									})
+
+									datos=data_filter
+
+									console.log(datos)
+
+									container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
+
+								}
+
+
+
+
+
+
+
+
+							}
+							else{
+
+								var pos_median= (valores.length +1)/2;
+								var value_median= (valores[pos_median-0.5]+valores[pos_median+0.5])/2; 
+
+								console.log("MEDIAN :  "+value_median)	
+
+								var pos_Q1= (((pos_median)-0.5)+1)/2;
+								var value_Q1= (valores[pos_Q1-0.5]+valores[pos_Q1+0.5])/2;
+
+								console.log("Q1 :  "+value_Q1)
+
+								var pos_Q3= (pos_median-1)/2;
+								var value_Q3= (valores[pos_Q3-0.5]+valores[pos_Q3+0.5])/2;
+
+								console.log("Q3 :  "+value_Q3)
+
+							}
+
+
+
+							
+
+
+						})
+
+
+
+
+
 					})
 				}
 				else{
@@ -1334,8 +1423,6 @@
 					drawMap(datos, mymap,previous_counter,counter)	
 			})				
 	}])
-
-
 
 	var app1El = document.getElementById('fileselector');
 	var app2El = document.getElementById('navio');
