@@ -86,6 +86,10 @@
 </template>
 
 <template type="text/html" id="mapTemplate">
+	<div id="list6" align="center"></div>
+	<p></p>
+	<div id="list7" align="center"></div>
+	<p></p>
 	<div id='mapid' ng-controller="mapController" class="map">	
 	</div>
 </template>
@@ -599,6 +603,7 @@
 			container.layoutManager.eventHub.on( 'seqiniciales', function( seqiniciales ){
 				container.layoutManager.eventHub.on( 'catiniciales', function( catiniciales ){
 
+
 			$scope.data=jQuery.extend(true, [], datosiniciales);
 			$scope.dataFinal=TestService.changeData($scope.data)
 			$scope.dataFinal=TestService.get();
@@ -622,10 +627,12 @@
 	}])
 
 	navioApp.controller('navioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
-
+		
+		console.log("entro aca")
 		container.layoutManager.eventHub.on( 'datos', function( data ){
 				container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
 					container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
+
 
 					container.extendState({dataFinal:data,
 						seqColumnsFinal:seqColumns,
@@ -660,7 +667,8 @@
 
 				});
 			});
-		});
+		});	
+
 	}])
 
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
@@ -676,8 +684,6 @@
 
 						function drawViz(seqColumns,catColumns,attr1,attr2,visible)
 						{
-							console.log("se llamo el metodo")
-
 							if(datos[0].hasOwnProperty('Year')){
 								if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
 								var yourVlSpec = {
@@ -1005,8 +1011,12 @@
 								                "y": {"field": "Latitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Latitude), d3.max(visible,d => +d.Latitude)]}}
 								              }
 								            }, yourVlSpec]
-								          }
+								          }									
+
 								vegaEmbed("#spatial", spatialvis);
+
+								console.log(d3.select('#spatial').selection(d3.select('#spatial'),'brush_store'))
+
 						}
 
 						var vis = function(attr1,attr2,seqColumns,catColumns,visible){
@@ -1171,7 +1181,6 @@
 									      outliercolor: 'rgb(219, 64, 82, 1.0)',
 									      outlierwidth: 2
 									    }
-
 									  },
 									  boxpoints: 'all'
 									};
@@ -1206,7 +1215,6 @@
 
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											console.log(datos)
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
 										}	
@@ -1219,8 +1227,8 @@
 
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											console.log(datos)
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 0-25th Percentile [MIN <-> Q1] </strong>'
 										}
 									}
@@ -1231,7 +1239,6 @@
 
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											console.log(datos)
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 50th-75th Percentile [Q2 (Median) <-> Q3] </strong>'
 										}	
@@ -1244,7 +1251,6 @@
 
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											console.log(datos)
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 75th-100th Percentile [Q3 <-> MAX] </strong>'
 										}	
@@ -1257,7 +1263,6 @@
 
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											console.log(datos)
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> Interquartile Range </strong>'
 										}
@@ -1270,7 +1275,6 @@
 
 										if(data_filter.length>0){
 											datos=data_filter
-											console.log(datos)
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 											document.getElementById("counter").innerHTML = '<strong> From '+returnData.length+' original values\n'+datos.length+' were filtered\nas Outliers </strong>'
 										}
@@ -1370,7 +1374,8 @@
 	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 
 			var mymap=null;	
-			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){									
+			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){	
+		
 							
 					var prom_latitudes=[];
 					var prom_longitudes=[];
@@ -1553,22 +1558,16 @@
 	    content:[{
 	        type: 'row',
 	        content: [{
-	            width: 20,
-	            title: 'File Picker',
-	            type: 'component',
-	            componentName: 'angularModule',
-	            componentState: {
-	                module: 'fileselector',
-	                templateId: 'fileselectorTemplate',
-	            }
-	        },{
-	            type: 'component',
-	            title: 'Geo-Referentiation',
-	            componentName: 'angularModule',
-	            componentState: {
-	                module: 'map',
-	                templateId: 'mapTemplate'
-	            }
+	        	type: 'column',
+	      		content: [{
+		            width: 20,
+		            title: 'File Picker',
+		            type: 'component',
+		            componentName: 'angularModule',
+		            componentState: {
+		                module: 'fileselector',
+		                templateId: 'fileselectorTemplate',
+		            }
 	        },{
 	            type: 'component',
 	            title: 'WHAT - Widget: Navio',
@@ -1577,31 +1576,45 @@
 	                module: 'navio',
 	                templateId: 'navioTemplate'
 	            }
-	        },{
-	            type: 'component',
-	            title: 'WHERE',
-	            componentName: 'angularModule',
-	            componentState: {
-	                module: 'spatialviz',
-	                templateId: 'spatioTemplate'
-	       		}
-	    	},{
-	            type: 'component',
-	            title: 'WHEN',
-	            componentName: 'angularModule',
-	            componentState: {
-	                module: 'temporalviz',
-	                templateId: 'temporalTemplate'
-	         }
-	       },{
-	            type: 'component',
-	            title: 'General Statistics',
-	            componentName: 'angularModule',
-	            componentState: {
-	                module: 'boxplot',
-	                templateId: 'boxplotTemplate'
-	         }
-	       }]
+	        }]},{
+	        type: 'column',
+	        content: [{
+                type: 'component',
+                title: 'Geo-Referentiation',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'map',
+                    templateId: 'mapTemplate'
+                }
+            },{
+                type: 'component',
+                title: 'General Statistics',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'boxplot',
+                    templateId: 'boxplotTemplate'
+             }
+           }]
+	   },{
+	        type: 'column',
+	        content: [{
+                type: 'component',
+                title: 'WHERE',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'spatialviz',
+                    templateId: 'spatioTemplate'
+                }
+            },{
+                type: 'component',
+                title: 'WHEN',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'temporalviz',
+                    templateId: 'temporalTemplate'
+             }
+           }]
+	   }]
 	   }]
 	});
 
