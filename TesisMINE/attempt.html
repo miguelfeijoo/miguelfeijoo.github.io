@@ -1394,30 +1394,37 @@
 								else{
 
 									var pos_median= (valores.length +1)/2;
+									console.log("pos_median   "+pos_median)
 									var value_median= (valores[pos_median-0.5-1]+valores[pos_median+0.5-1])/2; 
 
 										console.log("MEDIAN :  "+value_median)	
 
 									if(isOdd(pos_median)){
+										console.log("a")
 
 										var pos_Q1= (((pos_median)-0.5)+1)/2;
-										var value_Q1= (valores[pos_Q1-0.5-1]+valores[pos_Q1+0.5-1])/2;
+										console.log("pos 1:     "+pos_Q1)
+										var value_Q1= (valores[pos_Q1-1-0.5]+valores[pos_Q1-1+0.5])/2;
 
 											console.log("Q1 :  "+value_Q1)
 
-										var pos_Q3= (pos_median-1)/2;
-										var value_Q3= (valores[pos_Q3-0.5-1]+valores[pos_Q3+0.5-1])/2;
+										var pos_Q3= (((pos_median)+0.5))/2;
+										console.log("pos 2:     "+pos_Q3)
+										var value_Q3= (valores[pos_Q3-1-0.5]+valores[pos_Q3-1+0.5])/2;
 
 											console.log("Q3 :  "+value_Q3)
 									}
 									else{
+										console.log("b")
 										var pos_Q1= (((pos_median)-0.5))/2;
-										var value_Q1= (valores[pos_Q1-0.5-1]+valores[pos_Q1+0.5-1])/2;
+										console.log("pos 1:     "+pos_Q1)
+										var value_Q1= (valores[pos_Q1-1-0.5]+valores[pos_Q1-1+0.5])/2;
 
 											console.log("Q1 :  "+value_Q1)
 
-										var pos_Q3= (pos_median-1)/2;
-										var value_Q3= (valores[pos_Q3-0.5-1]+valores[pos_Q3+0.5-1])/2;
+										var pos_Q3= (pos_median)/2;
+										console.log("pos 2:     "+pos_Q3)
+										var value_Q3= (valores[pos_Q3-1]+valores[pos_Q3-1])/2;
 
 											console.log("Q3 :  "+value_Q3)
 									}
