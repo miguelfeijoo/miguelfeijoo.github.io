@@ -94,6 +94,15 @@
 	</div>
 </template>
 
+<template type="text/html" id="splomTemplate">	
+	<div id='splomid' ng-controller="splomController" class="splom">
+		<p></p>
+		<div id="list6" align="center"></div>
+		<p></p>
+		<div id="splomGraph"></div>
+	</div>
+</template>
+
 
 <!-- PRELIMINARY CONTENT STYLE -->
 
@@ -113,6 +122,7 @@
 	var temporalApp = angular.module('temporalviz', ['test-service'] );
 	var boxplotApp = angular.module('boxplot', ['test-service'] );
 	var mapApp = angular.module('map', ['test-service'] );
+	var splomApp = angular.module('splom', ['test-service'] );
 
 
 	angular.module('test-service', []).service('TestService', function($rootScope, $window){
@@ -505,7 +515,9 @@
 				    return item !== value
 				 })}
 
-				$scope.seq=parse.filter((value, index, self) => self.indexOf(value) === index);			
+				$scope.seq=parse.filter((value, index, self) => self.indexOf(value) === index);		
+
+
 				
 
 				for (var i=0;i<dateparse.length;i++){
@@ -513,7 +525,11 @@
 
 				  }
 
+				container.layoutManager.eventHub.emit( 'dateParseEvent', dateparse );
+
 				$scope.cat=categoric.filter((value, index, self) => self.indexOf(value) === index);
+
+				container.layoutManager.eventHub.emit( 'categoricsEvent', $scope.cat );
 
 				cols.map(function(col) {
 				headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
@@ -559,20 +575,7 @@
 		    		} );
 				} );
 
-				container.layoutManager.eventHub.on( 'redrawVisibleData', function(returnData){					
-				console.log(returnData)
-
-
-
-				document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
-				$(document).ready(function() {
-					$('#data').DataTable( {  
-		    			"scrollY": 300,
-		    			"scrollX": true
-		    		} );
-				} );
-			})
-
+				
 				function loadScript(src) {
 				       var script = document.createElement("script");
 				       script.type = "text/javascript";
@@ -615,6 +618,25 @@
 				document.getElementById("tableGoesHere").appendChild(script);
 
 				otherfunction();
+
+
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function(returnData){					
+					console.log(returnData)
+					document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
+					$(document).ready(function() {
+						$('#data').DataTable( {  
+							destroy: true,
+						    dom: 'lBfrtip',
+						    buttons: [
+						        'copy', 'csv', 'excel', 'pdf', 'print'
+						    ],
+			    			"scrollY": 300,
+			    			"scrollX": true
+			    		} );
+					});				
+
+					
+				})
 			})
 
 			function otherfunction(){
@@ -1399,7 +1421,42 @@
 
 										console.log("MEDIAN :  "+value_median)	
 
-									if(isOdd(pos_median)){
+
+									if(isOdd(pos_median-0.5)){
+
+										console.log("a")
+
+										var pos_Q1= (((pos_median)-0.5)+1)/2;
+										console.log("pos 1:     "+pos_Q1)
+										var value_Q1= valores[pos_Q1-1];
+											console.log("Q1 :  "+value_Q1)
+									}
+									else{
+										console.log("b")
+										var pos_Q1= (((pos_median)-0.5)+1 )/2;
+										console.log("pos 1:     "+pos_Q1)
+										var value_Q1= (valores[(pos_Q1-0.5)-1]+valores[(pos_Q1+0.5)-1])/2;
+											console.log("Q1 :  "+value_Q1)
+									}
+
+									if(isOdd(pos_median+0.5)){
+										console.log("c")
+										var pos_Q3= (((pos_median)+0.5)+1)/2;
+										console.log("pos 2:     "+pos_Q3)
+										var value_Q3= valores[(pos_Q3)-1];
+
+											console.log("Q3 :  "+value_Q3)
+									}
+									else{
+										console.log("d")
+										var pos_Q3= ((pos_median+0.5)+1)/2;
+										console.log("pos 2:     "+pos_Q3)
+										var value_Q3= valores[pos_Q3-1];
+
+											console.log("Q3 :  "+value_Q3)
+									}
+
+									/*if(isOdd(pos_median)){
 										console.log("a")
 
 										var pos_Q1= (((pos_median)-0.5)+1)/2;
@@ -1427,7 +1484,7 @@
 										var value_Q3= (valores[pos_Q3-1]+valores[pos_Q3-1])/2;
 
 											console.log("Q3 :  "+value_Q3)
-									}
+									}*/
 
 									var interquartile_range = value_Q3 - value_Q1;
 
@@ -1439,7 +1496,7 @@
 
 									var value_max= value_Q3 + (1.5*interquartile_range)
 
-										console.log("Min Value:  "+value_max)
+										console.log("Max Value:  "+value_max)
 
 									calcShowPercentiles(datos,returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max)
 
@@ -1610,12 +1667,102 @@
 			})				
 	}])
 
+	splomApp.controller('splomController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
+		
+		var lista ='';
+		var lista_seq=[]
+		container.layoutManager.eventHub.on( 'dateParseEvent', function( datPa ){
+			container.layoutManager.eventHub.on( 'categoricsEvent', function( cat ){						
+				container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){	
+
+					for(var i =0;i<cat.length;i++){
+						lista_seq.push('<option value="'+cat[i]+'">')	
+					}
+
+					lista=lista_seq.join('')
+
+					document.getElementById("list6").innerHTML = '<strong>Select a Quantitative Attribute: </strong> <input list="attrs6" type="text" id="attr6"><datalist id="attrs6">'+lista
+					
+					    function unpack(rows, key) {
+					        return rows.map(function(row) { return row[key.replace('.',' ')]; });
+					    }
+
+					    colors = []
+					    for (i=0; i < unpack(rows, 'class').length; i++) {
+					      if (unpack(rows, 'class')[i] == "Iris-setosa") {
+					        colors.push(0)
+					      } else if (unpack(rows, 'class')[i] == "Iris-versicolor") {
+					        colors.push(0.5)
+					      } else if (unpack(rows, 'class')[i] == "Iris-virginica") {
+					        colors.push(1)
+					      }
+					    }
+
+					    var pl_colorscale= d3.schemeCategory10
+
+
+					    var axis = () => ({
+					      showline:false,
+					      zeroline:false,
+					      gridcolor:'#ffff',
+					      ticklen:5
+					    })
+
+					    var data = [{
+					      type: 'splom',
+					      dimensions: [
+					        {label:'sepal length', values:unpack(rows,'Beat')},
+					        {label:'sepal width', values:unpack(rows,'Community Area')},
+					        {label:'petal length', values:unpack(rows,'District')},
+					        {label:'petal width', values:unpack(rows,'Ward')},
+					        {label:'pepito', values:unpack(rows,'Minutes')}
+					      ],
+					      text: unpack(rows, 'class'),
+					      marker: {
+					        color: colors,
+					        colorscale:pl_colorscale,
+					        size: 7,
+					        line: {
+					          color: 'white',
+					          width: 0.5
+					        }
+					      }
+					    }]
+
+					    var layout = {
+					      title:'SPLOM Graphic - [Scatter Plot Matrix / Correlations]',
+					      height: 800,
+					      width: 800,
+					      autosize: false,
+					      hovermode:'closest',
+					      dragmode:'select',
+					      plot_bgcolor:'rgba(240,240,240, 0.95)',
+					      xaxis:axis(),
+					      yaxis:axis(),
+					      xaxis2:axis(),
+					      xaxis3:axis(),
+					      xaxis4:axis(),
+					      xaxis5:axis(),
+					      yaxis2:axis(),
+					      yaxis3:axis(),
+					      yaxis4:axis(),
+					      yaxis5:axis()
+					    }
+
+					    Plotly.react('splomGraph', data, layout)	
+				})
+			})
+		})			
+	}])
+
+
 	var app1El = document.getElementById('fileselector');
 	var app2El = document.getElementById('navio');
 	var app3El = document.getElementById('spatialviz');
 	var app4El = document.getElementById('temporalviz');
 	var app5El = document.getElementById('boxplot');
 	var app6El = document.getElementById('map');
+	var app7El = document.getElementById('splom');
 
 
 	angular.bootstrap(app1El, ['fileselector', 'test-service']);
@@ -1624,6 +1771,7 @@
 	angular.bootstrap(app4El, ['temporalviz', 'test-service']);
 	angular.bootstrap(app5El, ['boxplot', 'test-service']);
 	angular.bootstrap(app6El, ['map', 'test-service']);
+	angular.bootstrap(app7El, ['splom', 'test-service']);
 
 	var AngularModuleComponent = function( container, state ) {
 	    var html = $( '#' + state.templateId ).html(),
@@ -1698,6 +1846,14 @@
                 componentState: {
                     module: 'temporalviz',
                     templateId: 'temporalTemplate'
+             }
+           },{
+                type: 'component',
+                title: '[Statistical Analysis] Correlations',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'splom',
+                    templateId: 'splomTemplate'
              }
            }]
 	   }]
