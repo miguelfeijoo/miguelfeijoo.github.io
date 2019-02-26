@@ -425,246 +425,276 @@
 
 	fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"container","state","TestService",function($scope,$timeout,container,state, TestService) {	
 
-		$scope.dat= state.dat || null;
-		$scope.datos= state.datos || null;
-		$scope.dataFinal= state.dataFinal || null;
+		
+			$scope.dat= state.dat || null;
+			$scope.datos= state.datos || null;
+			$scope.dataFinal= state.dataFinal || null;
 
-		$scope.seq= state.seq || null;
-		$scope.seqColumns= state.seqColumns || null;
-		$scope.seqColumnsFinal= state.seqColumnsFinal || null;
+			$scope.seq= state.seq || null;
+			$scope.seqColumns= state.seqColumns || null;
+			$scope.seqColumnsFinal= state.seqColumnsFinal || null;
 
-		$scope.cat= state.cat || null;
-		$scope.catColumns= state.catColumns || null;
-		$scope.catColumnsFinal= state.catColumnsFinal || null;
+			$scope.cat= state.cat || null;
+			$scope.catColumns= state.catColumns || null;
+			$scope.catColumnsFinal= state.catColumnsFinal || null;
 
-		TestService.getData(function(d){
+			TestService.getData(function(d){
 
-			console.log(d)
+				console.log(d)
 
-			$scope.dat =d;
+				$scope.dat =d;
 
-			var parse=[];
-	    	var dateparse=[];
-	   		var categoric=[];
+				var parse=[];
+		    	var dateparse=[];
+		   		var categoric=[];
 
-			function json2table(json, classes) {
+				function json2table(json, classes) {
 
-			var cols = Object.keys(json[0]);
-			  
-			var headerRow = '';
-			var bodyRows = '';
-			var columnas='';
-			var columnasSeq='';
-			var columns=[];
-			  
-			classes = classes || '';
+				var cols = Object.keys(json[0]);
 
-			function capitalizeFirstLetter(string) {
-			    return string.charAt(0).toUpperCase() + string.slice(1);
+				console.log(cols)
+				  
+				var headerRow = '';
+				var bodyRows = '';
+				var columnas='';
+				var columnasSeq='';
+				var columnsSequential=[];
+				var columns=[];
+				  
+				classes = classes || '';
+
+				function capitalizeFirstLetter(string) {
+				    return string.charAt(0).toUpperCase() + string.slice(1);
+				}
+				  
+				json.map(function(row) {
+				    bodyRows += '<tr>';
+				    cols.map(function(colName) {
+				      bodyRows += '<td>' + row[colName] + '</td>';
+				      columns.push(row[colName])
+				      //console.log(cols.length)
+				    })
+					bodyRows += '</tr>';
+				});
+
+				for (i = 0; i < cols.length; i++){
+				    if(/^[+-]?([0-9]*[.])?[0-9]+$/.test(columns[i]))
+				    { 
+				     parse.push(cols[i])
+				    }
+				    else if(/([0-9]{0,4})([0-9]{0,4})?(\/)([0-9]{0,4})([0-9]{0,4})?(\/)(\d{0,4})/.test(columns[i]))
+				    {
+				      dateparse.push(cols[i])
+				    } 
+
+				    else if(/[GMT-]{4}[0-9]{4}/.test(columns[i]))
+				    {
+				      dateparse.push(cols[i])
+				    }  
+				    else
+				    {
+				      categoric.push(cols[i])
+				    }
+				}
+
+				if(parse.includes('Year') && categoric.includes('Year')){
+
+				    var value = 'Year'
+
+				    parse=parse.filter(function(item) { 
+				    return item !== value
+				 })}
+
+				$scope.seq=parse.filter((value, index, self) => self.indexOf(value) === index);			
+				
+
+				for (var i=0;i<dateparse.length;i++){
+				       $scope.seq.push(dateparse[i])      
+
+				  }
+
+				$scope.cat=categoric.filter((value, index, self) => self.indexOf(value) === index);
+
+				cols.map(function(col) {
+				headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
+
+				columnas += '<option value="'+col+'">'
+				});	
+
+
+				
+				$scope.seq.map(function(col) {							
+
+						if (!(col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col=="Hours" || col=="Seconds" || col=='__seqId')){
+								if(!($scope.cat).includes(col)){
+									console.log(col)									
+									columnsSequential.push('<option value="'+col+'">')	
+								}
+						}		
+								
+					columnsSequential=columnsSequential.filter((value, index, self) => self.indexOf(value) === index)
+
+					columnasSeq=columnsSequential.join('')	
+
+				});
+
+
+				//console.log(columnasSeq)
+
+				container.layoutManager.eventHub.emit( 'columnas_list', columnas );
+				container.layoutManager.eventHub.emit( 'columnasSeq_list', columnasSeq );
+
+				return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
+				     headerRow +
+				     '</tr></thead><tbody>' +
+				     bodyRows +
+				     '</tbody></table>';
+				}
+
+				document.getElementById('tableGoesHere').innerHTML = json2table($scope.dat, 'table');
+				$(document).ready(function() {
+					$('#data').DataTable( {  
+		    			"scrollY": 300,
+		    			"scrollX": true
+		    		} );
+				} );
+
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function(returnData){					
+				console.log(returnData)
+
+
+
+				document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
+				$(document).ready(function() {
+					$('#data').DataTable( {  
+		    			"scrollY": 300,
+		    			"scrollX": true
+		    		} );
+				} );
+			})
+
+				function loadScript(src) {
+				       var script = document.createElement("script");
+				       script.type = "text/javascript";
+				       document.getElementById("tableGoesHere").appendChild(script);
+				       script.src = src;		      
+				}
+				function loadStyle(src) {
+				       var script = document.createElement("link");
+				       script.rel = 'stylesheet'
+				       script.type = "text/css";
+				       document.getElementById("tableGoesHere").appendChild(script);
+				       script.href = src;
+				}
+
+				$(document).ready(function() {
+				$('#data').DataTable( {
+					destroy: true,
+				    dom: 'lBfrtip',
+				    buttons: [
+				        'copy', 'csv', 'excel', 'pdf', 'print'
+				    ],
+				    "scrollY": 300,
+		    		"scrollX": true
+				} );
+				} );
+
+				loadStyle('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css')
+				loadStyle('https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css')
+				loadScript('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js')
+				loadScript('https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js')
+				loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js')
+				loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js')
+				loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js')
+				loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js')
+				loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js')
+				loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js')
+
+				var script = document.createElement("script");
+				script.text="var table; $(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'lBfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
+				document.getElementById("tableGoesHere").appendChild(script);
+
+				otherfunction();
+			})
+
+			function otherfunction(){
+				$scope.datos=$scope.dat
+				$scope.seqColumns=$scope.seq
+				$scope.catColumns=$scope.cat
+
+				container.layoutManager.eventHub.emit( 'datosiniciales', $scope.datos );
+				container.layoutManager.eventHub.emit( 'seqiniciales', $scope.seqColumns );
+				container.layoutManager.eventHub.emit( 'catiniciales', $scope.catColumns );
+
 			}
-			  
-			json.map(function(row) {
-			    bodyRows += '<tr>';
-			    cols.map(function(colName) {
-			      bodyRows += '<td>' + row[colName] + '</td>';
-			      columns.push(row[colName])
-			      //console.log(cols.length)
-			    })
-				bodyRows += '</tr>';
-			});
 
-			for (i = 0; i < cols.length; i++){
-			    if(/^[+-]?([0-9]*[.])?[0-9]+$/.test(columns[i]))
-			    { 
-			     parse.push(cols[i])
-			    }
-			    else if(/([0-9]{0,4})([0-9]{0,4})?(\/)([0-9]{0,4})([0-9]{0,4})?(\/)(\d{0,4})/.test(columns[i]))
-			    {
-			      dateparse.push(cols[i])
-			    } 
-
-			    else if(/[GMT-]{4}[0-9]{4}/.test(columns[i]))
-			    {
-			      dateparse.push(cols[i])
-			    }  
-			    else
-			    {
-			      categoric.push(cols[i])
-			    }
-			}
-
-			if(parse.includes('Year') && categoric.includes('Year')){
-
-			    var value = 'Year'
-
-			    parse=parse.filter(function(item) { 
-			    return item !== value
-			 })}
-
-			$scope.seq=parse;
-
-			for (var i=0;i<dateparse.length;i++){
-			       $scope.seq.push(dateparse[i])      
-
-			  }
-
-			$scope.cat=categoric;
-
-			cols.map(function(col) {
-			headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
-
-			columnas += '<option value="'+col+'">'
-			});
-
-			$scope.seq.map(function(col) {
-
-			if (col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col== "Hours" || col=="Seconds"){
-			    columnasSeq += ''
-			}
-			else{
-			    columnasSeq += '<option value="'+col+'">'
-			}
-			});
-
-			container.layoutManager.eventHub.emit( 'columnas_list', columnas );
-			container.layoutManager.eventHub.emit( 'columnasSeq_list', columnasSeq );
-
-			return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
-			     headerRow +
-			     '</tr></thead><tbody>' +
-			     bodyRows +
-			     '</tbody></table>';
-			}
-			
-			document.getElementById('tableGoesHere').innerHTML = json2table($scope.dat, 'table');
-			$(document).ready(function() {
-				$('#data').DataTable( {  
-	    			"scrollY": 300,
-	    			"scrollX": true
-	    		} );
-			} );
-
-			function loadScript(src) {
-			       var script = document.createElement("script");
-			       script.type = "text/javascript";
-			       document.getElementById("tableGoesHere").appendChild(script);
-			       script.src = src;		      
-			}
-			function loadStyle(src) {
-			       var script = document.createElement("link");
-			       script.rel = 'stylesheet'
-			       script.type = "text/css";
-			       document.getElementById("tableGoesHere").appendChild(script);
-			       script.href = src;
-			}
-
-			$(document).ready(function() {
-			$('#data').DataTable( {
-				destroy: true,
-			    dom: 'lBfrtip',
-			    buttons: [
-			        'copy', 'csv', 'excel', 'pdf', 'print'
-			    ],
-			    "scrollY": 300,
-	    		"scrollX": true
-			} );
-			} );
-
-			loadStyle('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css')
-			loadStyle('https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css')
-			loadScript('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js')
-			loadScript('https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js')
-			loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js')
-			loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js')
-			loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js')
-			loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js')
-			loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js')
-			loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js')
-
-			var script = document.createElement("script");
-			script.text="var table; $(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'lBfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
-			document.getElementById("tableGoesHere").appendChild(script);
-
-			otherfunction();
-		})
-
-		function otherfunction(){
-			$scope.datos=$scope.dat
-			$scope.seqColumns=$scope.seq
-			$scope.catColumns=$scope.cat
-
-			container.layoutManager.eventHub.emit( 'datosiniciales', $scope.datos );
-			container.layoutManager.eventHub.emit( 'seqiniciales', $scope.seqColumns );
-			container.layoutManager.eventHub.emit( 'catiniciales', $scope.catColumns );
-
-		}
-
-		container.layoutManager.eventHub.on( 'datosiniciales', function( datosiniciales ){
-			container.layoutManager.eventHub.on( 'seqiniciales', function( seqiniciales ){
-				container.layoutManager.eventHub.on( 'catiniciales', function( catiniciales ){
+			container.layoutManager.eventHub.on( 'datosiniciales', function( datosiniciales ){
+				container.layoutManager.eventHub.on( 'seqiniciales', function( seqiniciales ){
+					container.layoutManager.eventHub.on( 'catiniciales', function( catiniciales ){
 
 
-			$scope.data=jQuery.extend(true, [], datosiniciales);
-			$scope.dataFinal=TestService.changeData($scope.data)
-			$scope.dataFinal=TestService.get();
+				$scope.data=jQuery.extend(true, [], datosiniciales);
+				$scope.dataFinal=TestService.changeData($scope.data)
+				$scope.dataFinal=TestService.get();
 
-			$scope.seqCols=jQuery.extend(true, [], seqiniciales);
-			$scope.seqColumnsFinal=TestService.changeSeqColumns($scope.seqCols)
-			$scope.seqColumnsFinal=TestService.getSeqColumns();
+				$scope.seqCols=jQuery.extend(true, [], seqiniciales);
+				$scope.seqColumnsFinal=TestService.changeSeqColumns($scope.seqCols)
+				$scope.seqColumnsFinal=TestService.getSeqColumns();
 
 
-			$scope.catCols=jQuery.extend(true, [], catiniciales);
-			$scope.catColumnsFinal=TestService.changeCatColumns($scope.catCols)
-			$scope.catColumnsFinal=TestService.getCatColumns();		
+				$scope.catCols=jQuery.extend(true, [], catiniciales);
+				$scope.catColumnsFinal=TestService.changeCatColumns($scope.catCols)
+				$scope.catColumnsFinal=TestService.getCatColumns();		
 
-			container.layoutManager.eventHub.emit( 'datos', $scope.dataFinal );
-			container.layoutManager.eventHub.emit( 'seqColumns', $scope.seqColumnsFinal );
-			container.layoutManager.eventHub.emit( 'catColumns', $scope.catColumnsFinal );
+				container.layoutManager.eventHub.emit( 'datos', $scope.dataFinal );
+				container.layoutManager.eventHub.emit( 'seqColumns', $scope.seqColumnsFinal );
+				container.layoutManager.eventHub.emit( 'catColumns', $scope.catColumnsFinal );
 
+						})
 					})
-				})
-			})	
+				})			
 	}])
 
 	navioApp.controller('navioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		
-		console.log("entro aca")
+		console.log("entro aca")	
+
 		container.layoutManager.eventHub.on( 'datos', function( data ){
 				container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
 					container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
 
+						nv=navio(d3.select("#navio"), 600);
 
-					container.extendState({dataFinal:data,
-						seqColumnsFinal:seqColumns,
-						catColumnsFinal:catColumns
-					});
+							catColumns.forEach((c) => nv.addCategoricalAttrib(c));
+							seqColumns.forEach((c) => nv.addSequentialAttrib(c));
+							
+							nv.data(data);
 
-					nv=navio(d3.select("#navio"), 600);
+							visible = nv.getVisible();						
+							
+							container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
 
-					catColumns.forEach((c) => nv.addCategoricalAttrib(c));
-					seqColumns.forEach((c) => nv.addSequentialAttrib(c));
-					
-					nv.data(data);
-
-					visible = nv.getVisible();						
-					
-					container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
-					container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
+							console.log(data)
 
 
-					nv.updateCallback(function(){
-						visible = nv.getVisible();
-						container.layoutManager.eventHub.emit( 'datosvisibles', visible );
+							nv.updateCallback(function(){
+								visible = nv.getVisible();
+								container.layoutManager.eventHub.emit( 'datosvisibles', visible );
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
 
-						container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
-							container.layoutManager.eventHub.on( 'change-attr2', function( attr2 ){
-								container.layoutManager.eventHub.on( 'vis', function( vis ){
-									vis(attr1,attr2,seqColumns,catColumns,visible)
+								console.log(visible)
+
+								container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
+									console.log(attr1)
+									container.layoutManager.eventHub.on( 'change-attr2', function( attr2 ){
+										console.log(attr2)
+										container.layoutManager.eventHub.on( 'vis', function( vis ){
+											vis(attr1,attr2,seqColumns,catColumns,visible)
+										})
+									})
 								})
-							})
-						})
-					})
-
+							})	
 				});
 			});
 		});	
@@ -1053,6 +1083,10 @@
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
 				container.layoutManager.eventHub.on( 'yourVlSpec', function(yourVlSpec){
 
+
+					console.log(cols)
+
+
 					if(datos[0].hasOwnProperty("Date")){
 						document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols					
 						var temporal=function(yourVlSpec,visible){
@@ -1116,6 +1150,7 @@
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
+
 
 					if(datos[0].hasOwnProperty("Date")){
 						document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols				
@@ -1197,8 +1232,8 @@
 							d3.select("#attr5").on("change", function(){
 								var attr5 = this.value;
 								var valores=[];
-								datos.map(function(d){								
-									valores.push(d[attr4])								
+								returnData.map(function(d){								
+									valores.push(parseInt(d[attr4]))								
 									valores.sort(function(a, b){return a-b});
 									console.log(valores)
 								})
@@ -1209,74 +1244,85 @@
 									var data_filter=[]
 
 									if(attr5=='25th-50th Percentile [Q1 <-> Q2 (Median)]'){
-										datos.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_median).map(function(d){					
+										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_median).map(function(d){					
 											data_filter.push(d)										
 										})
 
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
 										}	
 
 									}
 									if(attr5=='0-25th Percentile [MIN <-> Q1]'){
-										datos.filter(d=>parseInt(d[attr4])>=value_min && parseInt(d[attr4])<=value_Q1).map(function(d){					
+										returnData.filter(d=>parseInt(d[attr4])>=value_min && parseInt(d[attr4])<=value_Q1).map(function(d){					
 											data_filter.push(d)										
 										})
 
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 0-25th Percentile [MIN <-> Q1] </strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
 										}
 									}
 									if(attr5=='50th-75th Percentile [Q2 (Median) <-> Q3]'){
-										datos.filter(d=>parseInt(d[attr4])>=value_median && parseInt(d[attr4])<=value_Q3).map(function(d){					
+										returnData.filter(d=>parseInt(d[attr4])>=value_median && parseInt(d[attr4])<=value_Q3).map(function(d){					
 											data_filter.push(d)										
 										})
 
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 50th-75th Percentile [Q2 (Median) <-> Q3] </strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
 										}	
 
 									}
 									if(attr5=='75th-100th Percentile [Q3 <-> MAX]'){
-										datos.filter(d=>parseInt(d[attr4])>=value_Q3 && parseInt(d[attr4])<=value_max).map(function(d){					
+										returnData.filter(d=>parseInt(d[attr4])>=value_Q3 && parseInt(d[attr4])<=value_max).map(function(d){					
 											data_filter.push(d)										
 										})
 
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 75th-100th Percentile [Q3 <-> MAX] </strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
 										}	
 
 									}
 									if(attr5=='Interquartile Range'){
-										datos.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_Q3).map(function(d){					
+										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_Q3).map(function(d){					
 											data_filter.push(d)										
 										})
 
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> Interquartile Range </strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );												
 										}
 
 									}
 									if(attr5=='Outliers'){
-										datos.filter(d=>parseInt(d[attr4])<value_min && parseInt(d[attr4])>value_max).map(function(d){					
+										returnData.filter(d=>parseInt(d[attr4])<value_min && parseInt(d[attr4])>value_max).map(function(d){					
 											data_filter.push(d)										
 										})
 
 										if(data_filter.length>0){
 											datos=data_filter
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 											document.getElementById("counter").innerHTML = '<strong> From '+returnData.length+' original values\n'+datos.length+' were filtered\nas Outliers </strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
 										}
 										else{
 											setTimeout(function(){
@@ -1284,30 +1330,49 @@
 											},400)
 										}	
 									}
-									if(attr5=='COMPLETE DATA'){										
+									if(attr5=='COMPLETE DATA'){	
+										console.log(returnData)									
 										datos=returnData;
-										container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
-										document.getElementById("counter").innerHTML = '<strong> SHOWING\n'+datos.length+' from the original loaded data </strong>'								
+										document.getElementById("counter").innerHTML = '<strong> SHOWING\n'+datos.length+' from the original loaded data </strong>'	
+										//returnData=data_filter
+										container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+										container.layoutManager.eventHub.emit( 'datosvisibles', datos );																		
 									}
 								}
 									
+								console.log("valores:   "+valores)
+								console.log("tamaño:    "+ valores.length)
 								if(isOdd(valores.length)){
 
-									var pos_median= (valores.length +1)/2;
-									var value_median= valores[pos_median]; 
+									var pos_median= (valores.length+1)/2;
+									var value_median= valores[pos_median-1]; 
 
 										console.log("MEDIAN :  "+value_median)
 
-									var pos_Q1= (pos_median-1)/2;
-									console.log(pos_Q1)
-									var value_Q1= valores[pos_median-pos_Q1];
+									if(isOdd(pos_median)){
+										var pos_Q1= (pos_median+1)/2;
+										console.log(pos_Q1)
+										var value_Q1= valores[pos_median-pos_Q1-1];
 
-										console.log("Q1 :  "+value_Q1)
+											console.log("Q1 :  "+value_Q1)
 
-									var pos_Q3= (pos_median-1)/2;
-									var value_Q3= valores[pos_median+pos_Q3];
+										var pos_Q3= (pos_median+1)/2;
+										var value_Q3= valores[pos_median+pos_Q3-1];
 
-										console.log("Q3 :  "+value_Q3)
+											console.log("Q3 :  "+value_Q3)
+									}
+									else{
+										var pos_Q1= (pos_median)/2;
+										console.log(pos_Q1)
+										var value_Q1= valores[pos_median-pos_Q1-1];
+
+											console.log("Q1 :  "+value_Q1)
+
+										var pos_Q3= (pos_median)/2;
+										var value_Q3= valores[pos_median+pos_Q3-1];
+
+											console.log("Q3 :  "+value_Q3)
+									}
 
 									var interquartile_range = value_Q3 - value_Q1;
 
@@ -1329,19 +1394,33 @@
 								else{
 
 									var pos_median= (valores.length +1)/2;
-									var value_median= (valores[pos_median-0.5]+valores[pos_median+0.5])/2; 
+									var value_median= (valores[pos_median-0.5-1]+valores[pos_median+0.5-1])/2; 
 
 										console.log("MEDIAN :  "+value_median)	
 
-									var pos_Q1= (((pos_median)-0.5)+1)/2;
-									var value_Q1= (valores[pos_Q1-0.5]+valores[pos_Q1+0.5])/2;
+									if(isOdd(pos_median)){
 
-										console.log("Q1 :  "+value_Q1)
+										var pos_Q1= (((pos_median)-0.5)+1)/2;
+										var value_Q1= (valores[pos_Q1-0.5-1]+valores[pos_Q1+0.5-1])/2;
 
-									var pos_Q3= (pos_median-1)/2;
-									var value_Q3= (valores[pos_Q3-0.5]+valores[pos_Q3+0.5])/2;
+											console.log("Q1 :  "+value_Q1)
 
-										console.log("Q3 :  "+value_Q3)
+										var pos_Q3= (pos_median-1)/2;
+										var value_Q3= (valores[pos_Q3-0.5-1]+valores[pos_Q3+0.5-1])/2;
+
+											console.log("Q3 :  "+value_Q3)
+									}
+									else{
+										var pos_Q1= (((pos_median)-0.5))/2;
+										var value_Q1= (valores[pos_Q1-0.5-1]+valores[pos_Q1+0.5-1])/2;
+
+											console.log("Q1 :  "+value_Q1)
+
+										var pos_Q3= (pos_median-1)/2;
+										var value_Q3= (valores[pos_Q3-0.5-1]+valores[pos_Q3+0.5-1])/2;
+
+											console.log("Q3 :  "+value_Q3)
+									}
 
 									var interquartile_range = value_Q3 - value_Q1;
 
