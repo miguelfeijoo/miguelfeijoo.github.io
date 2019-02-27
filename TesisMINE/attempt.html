@@ -37,17 +37,17 @@
 <!--  TEMPLATE FOR EACH MODULE/VIEW   -->
 <template type="text/html" id="fileselectorTemplate">
   <div id='selector' ng-controller="fileselectorController" class="fileselector">
-		<p><strong>Select a file of your interest to get to analyze its current attributes </strong>(Accepted Extensions: <i>.csv, .xlsx</i> )</p>
+		<p><strong>Select a file of your interest to analyze its current attributes </strong>(Accepted Extensions: <i>.csv, .xlsx</i> )</p>
 		<p></p>
 		<input ng-model='shared.current_data' type="file" accept=".csv,.xlsx" id="files" name="file" />
 
-		<div id="tableGoesHere"></div>				
+		<div id="tableGoesHere"align="center"></div>				
 </template>	
 
 <template type="text/html" id="navioTemplate">
     <div id='navio_widget' ng-controller="navioController" class="navio">
     	<p></p>
-    	<div id="navio"></div>
+    	<div id="navio"align="center"></div>
     </div>
 </template>	
 
@@ -61,7 +61,7 @@
 		<div id="list2" align="center"></div>
 		<p></p>
 		<p></p>
-		<div id="spatial"></div>
+		<div id="spatial"align="center"></div>
     </div>
 </template>	
 
@@ -69,7 +69,7 @@
 	<div id='temporal_id' ng-controller="temporalController" class="temporalviz">
     	  <p></p>
     	  <div id="list3" align="center"></div>
-		  <div id="temporal"></div>
+		  <div id="temporal"align="center"></div>
     </div>
 </template>	
 
@@ -86,10 +86,6 @@
 </template>
 
 <template type="text/html" id="mapTemplate">
-	<div id="list6" align="center"></div>
-	<p></p>
-	<div id="list7" align="center"></div>
-	<p></p>
 	<div id='mapid' ng-controller="mapController" class="map">	
 	</div>
 </template>
@@ -99,7 +95,9 @@
 		<p></p>
 		<div id="list6" align="center"></div>
 		<p></p>
-		<div id="splomGraph"></div>
+		<div id="list7" align="center"></div>
+		<p></p>
+		<div id="splomGraph"align="center"></div>
 	</div>
 </template>
 
@@ -112,6 +110,7 @@
 	}	
 	#mapid { margin: 0px; height: 100%; width: 100% }
 	#boxplotid { margin: 0px; height: 100%; width: 100% }
+	#splomid { margin: 0px; height: 100%; width: 100% }
 </style>
 
 
@@ -336,7 +335,7 @@
 								d.Hours = d.Date.getHours();
 								d.Minutes = d.Date.getMinutes();
 								d.Seconds = d.Date.getSeconds();
-								d.DayNight = d.Hours < 6 || d.Hours>18 ? "night": "day";
+								d.DayNight = d.Hours < 6 || d.Hours>18 ? "night": "diurnal";
 								d.WeekOfTheMonth = weekMonth(d.Date)
 								d.DayOfTheWeek = weekday[d.Date.getDay()];	
 								d.isWeekDay= isWeekDay(d.Date)					
@@ -453,6 +452,7 @@
 				console.log(d)
 
 				$scope.dat =d;
+				container.layoutManager.eventHub.emit( 'completedata', $scope.dat );
 
 				var parse=[];
 		    	var dateparse=[];
@@ -1669,36 +1669,90 @@
 
 	splomApp.controller('splomController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 		
-		var lista ='';
-		var lista_seq=[]
+		
+		container.layoutManager.eventHub.on( 'completedata', function( completedata ){	
 		container.layoutManager.eventHub.on( 'dateParseEvent', function( datPa ){
-			container.layoutManager.eventHub.on( 'categoricsEvent', function( cat ){						
-				container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){	
+			container.layoutManager.eventHub.on( 'categoricsEvent', function( cat ){	
+				container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){
+					container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){	
+						
+					
+					var x=[]
+					var lista ='';
+					var lista_seq=[]
 
 					for(var i =0;i<cat.length;i++){
-						lista_seq.push('<option value="'+cat[i]+'">')	
+						if(!(cat[i]=='__i'||cat[i]=='__seqId'||cat[i]=='visible')){
+							lista_seq.push('<option value="'+cat[i]+'">')	
+						}
 					}
 
-					lista=lista_seq.join('')
+					lista=lista_seq.join('')					
 
-					document.getElementById("list6").innerHTML = '<strong>Select a Quantitative Attribute: </strong> <input list="attrs6" type="text" id="attr6"><datalist id="attrs6">'+lista
-					
+					document.getElementById("list6").innerHTML = '<strong>Select a Quantitative Attribute to segment the loaded data: </strong> <input list="attrs6" type="text" id="attr6"><datalist id="attrs6">'+lista	
+
+					d3.select("#attr6").on("change", function(){
+						var attr6 = this.value;
+
 					    function unpack(rows, key) {
 					        return rows.map(function(row) { return row[key.replace('.',' ')]; });
 					    }
 
-					    colors = []
-					    for (i=0; i < unpack(rows, 'class').length; i++) {
-					      if (unpack(rows, 'class')[i] == "Iris-setosa") {
-					        colors.push(0)
-					      } else if (unpack(rows, 'class')[i] == "Iris-versicolor") {
-					        colors.push(0.5)
-					      } else if (unpack(rows, 'class')[i] == "Iris-virginica") {
-					        colors.push(1)
-					      }
-					    }
+					    colors = []	
 
-					    var pl_colorscale= d3.schemeCategory10
+						var values=unpack(rows, attr6).filter((value, index, self) => self.indexOf(value) === index)
+						var pl_colorscale= ['rgb(93, 164, 214, 0.5)', 'rgb(255, 144, 14, 0.5)', 'rgb(44, 160, 101, 0.5)', 'rgb(255, 65, 54, 0.5)', 'rgb(207, 114, 255, 0.5)', 'rgb(127, 96, 0, 0.5)', 'rgb(255, 140, 184, 0.5)', 'rgb(79, 90, 117, 0.5)', 'rgb(222, 223, 0, 0.5)','rgb(0,128,128)','rgb(214,12,140)','rgb(128, 0, 0)','rgb(255,255,0)','rgb(128,128,0)','rgb(0,255,255)','rgb(0,0,255)','rgb(255,0,255)','rgb(107,174,214)','rgb(128,0,128)'];
+						
+						var c=0;
+						var attributes=[];
+						for (k=0; k < values.length; k++) {
+							for (i=0; i < unpack(rows, attr6).length; i++) {	
+
+								if(unpack(rows, attr6)[i]==values[k]){
+									c=c+1/values.length
+									console.log(unpack(rows, attr6)[i] + "         "+values[k] + "     "+pl_colorscale[k])									
+									colors.push(pl_colorscale[k])
+									attributes.push(values[k])
+								}								
+							}						
+						}  
+
+						attributes=attributes.filter((value, index, self) => self.indexOf(value) === index)
+
+						var att =[];
+						
+
+						for(var i =0;i<attributes.length;i++){							
+								att.push('<option value="'+attributes[i]+'">')							
+						}
+
+						att.push('<option value="COMPLETE DATA ('+completedata.length+' values)">')
+
+
+						var att_text= att.join('')
+
+						document.getElementById("list7").innerHTML = '<strong>Do you want to FILTER any of these current values of your selected attribute?\nSelect a value to filter: </strong> <input list="attrs7" type="text" id="attr7"><datalist id="attrs7">'+att_text					
+
+						d3.select("#attr7").on("change", function(){
+							var attr7 = this.value;
+							var filtered=[]
+							rows.map(function(d){
+								if(attr7=='COMPLETE DATA ('+completedata.length+' values)'){									
+									filtered=completedata
+								}
+								else{
+									if(d[attr6]==attr7){
+										filtered.push(d)
+									}
+									
+								}
+							})
+							console.log(filtered)
+
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', filtered );
+							container.layoutManager.eventHub.emit( 'datosvisibles', filtered );
+						})
+
 
 
 					    var axis = () => ({
@@ -1708,32 +1762,39 @@
 					      ticklen:5
 					    })
 
+					    var cols = Object.keys(rows[0]);
+
+					    if(x.length>0){
+					    	x=[]
+					    }
+						for(var i=0;i<cols.length;i++){
+							if(!(cols[i]=='__i'||cols[i]=='__seqId'||cols[i]=='visible'||cols[i]=='Year'||cols[i]=='Minutes'||cols[i]=='Latitude'||cols[i]=='Longitude'||cols[i]=='Seconds'||datPa.includes(cols[i])||cat.includes(cols[i]))){
+								x.push({label:cols[i], values:unpack(rows,cols[i])})
+							}
+						}
+
+						console.log(x)
+
 					    var data = [{
 					      type: 'splom',
-					      dimensions: [
-					        {label:'sepal length', values:unpack(rows,'Beat')},
-					        {label:'sepal width', values:unpack(rows,'Community Area')},
-					        {label:'petal length', values:unpack(rows,'District')},
-					        {label:'petal width', values:unpack(rows,'Ward')},
-					        {label:'pepito', values:unpack(rows,'Minutes')}
-					      ],
-					      text: unpack(rows, 'class'),
+					      dimensions: x,
+					      text: unpack(rows, attr6),
 					      marker: {
 					        color: colors,
 					        colorscale:pl_colorscale,
-					        size: 7,
 					        line: {
 					          color: 'white',
 					          width: 0.5
 					        }
+
 					      }
 					    }]
 
 					    var layout = {
 					      title:'SPLOM Graphic - [Scatter Plot Matrix / Correlations]',
-					      height: 800,
-					      width: 800,
-					      autosize: false,
+					      height: container.height + 1000,
+					      width: container.width + 1000,
+					      autosize: true,
 					      hovermode:'closest',
 					      dragmode:'select',
 					      plot_bgcolor:'rgba(240,240,240, 0.95)',
@@ -1749,7 +1810,10 @@
 					      yaxis5:axis()
 					    }
 
-					    Plotly.react('splomGraph', data, layout)	
+					    Plotly.newPlot('splomGraph', data, layout)	
+					})
+					})
+					})
 				})
 			})
 		})			
@@ -1821,13 +1885,24 @@
                     templateId: 'mapTemplate'
                 }
             },{
+            	 type: 'stack',
+	       		 content: [{
+	                type: 'component',
+	                title: 'General Statistics',
+	                componentName: 'angularModule',
+	                componentState: {
+	                    module: 'boxplot',
+	                    templateId: 'boxplotTemplate'	             
+             		}
+         		},{
                 type: 'component',
-                title: 'General Statistics',
+                title: '[Statistical Analysis] Correlations',
                 componentName: 'angularModule',
                 componentState: {
-                    module: 'boxplot',
-                    templateId: 'boxplotTemplate'
+                    module: 'splom',
+                    templateId: 'splomTemplate'
              }
+           }]
            }]
 	   },{
 	        type: 'column',
@@ -1846,14 +1921,6 @@
                 componentState: {
                     module: 'temporalviz',
                     templateId: 'temporalTemplate'
-             }
-           },{
-                type: 'component',
-                title: '[Statistical Analysis] Correlations',
-                componentName: 'angularModule',
-                componentState: {
-                    module: 'splom',
-                    templateId: 'splomTemplate'
              }
            }]
 	   }]
