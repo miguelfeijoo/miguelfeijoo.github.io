@@ -34,6 +34,11 @@
 <script type="text/javascript" src="https://unpkg.com/navio/dist/navio.min.js"></script>
 
 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.min.map"></script>
+
+
 <!--  TEMPLATE FOR EACH MODULE/VIEW   -->
 <template type="text/html" id="fileselectorTemplate">
   <div id='selector' ng-controller="fileselectorController" class="fileselector">
@@ -1266,7 +1271,7 @@
 									var data_filter=[]
 
 									if(attr5=='25th-50th Percentile [Q1 <-> Q2 (Median)]'){
-										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_median).map(function(d){					
+										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<value_median).map(function(d){					
 											data_filter.push(d)										
 										})
 
@@ -1280,7 +1285,7 @@
 
 									}
 									if(attr5=='0-25th Percentile [MIN <-> Q1]'){
-										returnData.filter(d=>parseInt(d[attr4])>=value_min && parseInt(d[attr4])<=value_Q1).map(function(d){					
+										returnData.filter(d=>parseInt(d[attr4])>=value_min && parseInt(d[attr4])<value_Q1).map(function(d){					
 											data_filter.push(d)										
 										})
 
@@ -1293,7 +1298,7 @@
 										}
 									}
 									if(attr5=='50th-75th Percentile [Q2 (Median) <-> Q3]'){
-										returnData.filter(d=>parseInt(d[attr4])>=value_median && parseInt(d[attr4])<=value_Q3).map(function(d){					
+										returnData.filter(d=>parseInt(d[attr4])>=value_median && parseInt(d[attr4])<value_Q3).map(function(d){					
 											data_filter.push(d)										
 										})
 
@@ -1307,7 +1312,7 @@
 
 									}
 									if(attr5=='75th-100th Percentile [Q3 <-> MAX]'){
-										returnData.filter(d=>parseInt(d[attr4])>=value_Q3 && parseInt(d[attr4])<=value_max).map(function(d){					
+										returnData.filter(d=>parseInt(d[attr4])>=value_Q3 && parseInt(d[attr4])<value_max).map(function(d){					
 											data_filter.push(d)										
 										})
 
@@ -1364,143 +1369,30 @@
 									
 								console.log("valores:   "+valores)
 								console.log("tamaño:    "+ valores.length)
-								if(isOdd(valores.length)){
 
-									var pos_median= (valores.length+1)/2;
-									var value_median= valores[pos_median-1]; 
+								var value_median=math.median(valores)
 
-										console.log("MEDIAN :  "+value_median)
+								var _firstHalf = valores.filter(function(f){ return f < value_median })
+    							var _secondHalf = valores.filter(function(f){ return f >= value_median })
 
-									if(isOdd(pos_median)){
-										var pos_Q1= (pos_median+1)/2;
-										console.log(pos_Q1)
-										var value_Q1= valores[pos_median-pos_Q1-1];
+    							var _25percent = math.median(_firstHalf);
+    								console.log("Q1:   "+_25percent)
+    							var _50percent = value_median;
+    								console.log("MEDIAN:  "+_50percent)
+    							var _75percent = math.median(_secondHalf);
+    								console.log("Q3:    "+_75percent)  						
+   							
+								var interquartile_range = _75percent - _25percent;
+									console.log("Interquartile Range:  "+interquartile_range)
 
-											console.log("Q1 :  "+value_Q1)
+								var value_min= _25percent - (1.5*interquartile_range)
+									console.log("Min Value:  "+value_min)
 
-										var pos_Q3= (pos_median+1)/2;
-										var value_Q3= valores[pos_median+pos_Q3-1];
+								var value_max= _75percent + (1.5*interquartile_range)
+									console.log("Max Value:  "+value_max)									
 
-											console.log("Q3 :  "+value_Q3)
-									}
-									else{
-										var pos_Q1= (pos_median)/2;
-										console.log(pos_Q1)
-										var value_Q1= valores[pos_median-pos_Q1-1];
-
-											console.log("Q1 :  "+value_Q1)
-
-										var pos_Q3= (pos_median)/2;
-										var value_Q3= valores[pos_median+pos_Q3-1];
-
-											console.log("Q3 :  "+value_Q3)
-									}
-
-									var interquartile_range = value_Q3 - value_Q1;
-
-										console.log("Interquartile Range:  "+interquartile_range)
-
-									var value_min= value_Q1 - (1.5*interquartile_range)
-
-										console.log("Min Value:  "+value_min)
-
-									var value_max= value_Q3 + (1.5*interquartile_range)
-
-										console.log("Min Value:  "+value_max)
-
-									
-									calcShowPercentiles(datos,returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max)
-									
-
-								}
-								else{
-
-									var pos_median= (valores.length +1)/2;
-									console.log("pos_median   "+pos_median)
-									var value_median= (valores[pos_median-0.5-1]+valores[pos_median+0.5-1])/2; 
-
-										console.log("MEDIAN :  "+value_median)	
-
-
-									if(isOdd(pos_median-0.5)){
-
-										console.log("a")
-
-										var pos_Q1= (((pos_median)-0.5)+1)/2;
-										console.log("pos 1:     "+pos_Q1)
-										var value_Q1= valores[pos_Q1-1];
-											console.log("Q1 :  "+value_Q1)
-									}
-									else{
-										console.log("b")
-										var pos_Q1= (((pos_median)-0.5)+1 )/2;
-										console.log("pos 1:     "+pos_Q1)
-										var value_Q1= (valores[(pos_Q1-0.5)-1]+valores[(pos_Q1+0.5)-1])/2;
-											console.log("Q1 :  "+value_Q1)
-									}
-
-									if(isOdd(pos_median+0.5)){
-										console.log("c")
-										var pos_Q3= (((pos_median)+0.5)+1)/2;
-										console.log("pos 2:     "+pos_Q3)
-										var value_Q3= valores[(pos_Q3)-1];
-
-											console.log("Q3 :  "+value_Q3)
-									}
-									else{
-										console.log("d")
-										var pos_Q3= ((pos_median+0.5)+1)/2;
-										console.log("pos 2:     "+pos_Q3)
-										var value_Q3= valores[pos_Q3-1];
-
-											console.log("Q3 :  "+value_Q3)
-									}
-
-									/*if(isOdd(pos_median)){
-										console.log("a")
-
-										var pos_Q1= (((pos_median)-0.5)+1)/2;
-										console.log("pos 1:     "+pos_Q1)
-										var value_Q1= (valores[pos_Q1-1-0.5]+valores[pos_Q1-1+0.5])/2;
-
-											console.log("Q1 :  "+value_Q1)
-
-										var pos_Q3= (((pos_median)+0.5))/2;
-										console.log("pos 2:     "+pos_Q3)
-										var value_Q3= (valores[pos_Q3-1-0.5]+valores[pos_Q3-1+0.5])/2;
-
-											console.log("Q3 :  "+value_Q3)
-									}
-									else{
-										console.log("b")
-										var pos_Q1= (((pos_median)-0.5))/2;
-										console.log("pos 1:     "+pos_Q1)
-										var value_Q1= (valores[pos_Q1-1-0.5]+valores[pos_Q1-1+0.5])/2;
-
-											console.log("Q1 :  "+value_Q1)
-
-										var pos_Q3= (pos_median)/2;
-										console.log("pos 2:     "+pos_Q3)
-										var value_Q3= (valores[pos_Q3-1]+valores[pos_Q3-1])/2;
-
-											console.log("Q3 :  "+value_Q3)
-									}*/
-
-									var interquartile_range = value_Q3 - value_Q1;
-
-										console.log("Interquartile Range:  "+interquartile_range)
-
-									var value_min= value_Q1 - (1.5*interquartile_range)
-
-										console.log("Min Value:  "+value_min)
-
-									var value_max= value_Q3 + (1.5*interquartile_range)
-
-										console.log("Max Value:  "+value_max)
-
-									calcShowPercentiles(datos,returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max)
-
-								}	
+								
+								calcShowPercentiles(datos,returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)			
 
 							})
 
