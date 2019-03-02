@@ -37,6 +37,11 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.min.map"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/regression/1.4.0/regression.min.js"></script>
+<script type="text/javascript" src="https://cdn.anychart.com/releases/8.5.0/js/anychart-base.min.js"></script>
+
+
+
 
 
 <!--  TEMPLATE FOR EACH MODULE/VIEW   -->
@@ -71,10 +76,7 @@
 </template>	
 
 <template type="text/html" id="temporalTemplate">
-	<div id='temporal_id' ng-controller="temporalController" class="temporalviz">
-    	  <p></p>
-    	  <div id="list3" align="center"></div>
-		  <div id="temporal"align="center"></div>
+	<div id='temporal_id' ng-controller="temporalController" class="temporalviz">    	  
     </div>
 </template>	
 
@@ -106,6 +108,17 @@
 	</div>
 </template>
 
+<template type="text/html" id="regressionTemplate">	
+	<div id='regressionid' ng-controller="regressionController" class="regression">
+		<p></p>
+		<div id="list8" align="center"></div>
+		<p></p>
+		<div id="list9" align="center"></div>
+		<p></p>
+		<div id="regressionGraph"align="center"></div>
+	</div>
+</template>
+
 
 <!-- PRELIMINARY CONTENT STYLE -->
 
@@ -116,6 +129,9 @@
 	#mapid { margin: 0px; height: 100%; width: 100% }
 	#boxplotid { margin: 0px; height: 100%; width: 100% }
 	#splomid { margin: 0px; height: 100%; width: 100% }
+	#regressionid { margin: 0px; height: 100%; width: 100% }
+	#temporal_id { margin: 15px; height: 100%; width: 100% }
+	#spatial_id { margin: 15px; height: 100%; width: 100% }
 </style>
 
 
@@ -127,6 +143,7 @@
 	var boxplotApp = angular.module('boxplot', ['test-service'] );
 	var mapApp = angular.module('map', ['test-service'] );
 	var splomApp = angular.module('splom', ['test-service'] );
+	var regressionApp = angular.module('regression', ['test-service'] );
 
 
 	angular.module('test-service', []).service('TestService', function($rootScope, $window){
@@ -438,7 +455,6 @@
 	})
 
 	fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"container","state","TestService",function($scope,$timeout,container,state, TestService) {	
-
 		
 			$scope.dat= state.dat || null;
 			$scope.datos= state.datos || null;
@@ -543,21 +559,23 @@
 				});	
 
 
+				console.log(dateparse)
 				
 				$scope.seq.map(function(col) {							
 
-						if (!(col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col=="Hours" || col=="Seconds" || col=='__seqId')){
-								if(!($scope.cat).includes(col)){
-									console.log(col)									
-									columnsSequential.push('<option value="'+col+'">')	
-								}
-						}		
-								
-					columnsSequential=columnsSequential.filter((value, index, self) => self.indexOf(value) === index)
+							if (!(col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col=="Hours" || col=="Seconds" || col=='__seqId'||dateparse.includes(col))){
+									if(!($scope.cat).includes(col)){
+										console.log(col)									
+										columnsSequential.push('<option value="'+col+'">')	
+									}
+							}		
+									
+						columnsSequential=columnsSequential.filter((value, index, self) => self.indexOf(value) === index)
 
-					columnasSeq=columnsSequential.join('')	
+						columnasSeq=columnsSequential.join('')	
 
-				});
+					});
+				
 
 
 				//console.log(columnasSeq)
@@ -725,7 +743,6 @@
 				});
 			});
 		});	
-
 	}])
 
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
@@ -1072,8 +1089,6 @@
 
 								vegaEmbed("#spatial", spatialvis);
 
-								console.log(d3.select('#spatial').selection(d3.select('#spatial'),'brush_store'))
-
 						}
 
 						var vis = function(attr1,attr2,seqColumns,catColumns,visible){
@@ -1106,66 +1121,305 @@
 
 	temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 
-		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
-			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
-				container.layoutManager.eventHub.on( 'yourVlSpec', function(yourVlSpec){
+		container.layoutManager.eventHub.on( 'completedata', function( completedata ){
+			container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){				
+					container.layoutManager.eventHub.on( 'yourVlSpec', function(yourVlSpec){
+
+						var year=[]
+						var daynight=[]
+						var dayofMonth=[]
+						var day=[]
+						var month=[]
+						var hour=[]
+						var weekmonth=[]
+						var isWeekDay=[]
+
+						var year_t=''
+						var daynight_t=''
+						var dayofMonth_t=''
+						var day_t=''
+						var month_t=''
+						var hour_t=''
+						var weekmonth_t=''
+						var isWeekDay_t=''
+
+						if(datos[0].hasOwnProperty("Date")){
+
+							datos.map(function(d){
+								year.push(d['Year'])
+								daynight.push(d['DayNight'])
+								day.push(d['DayOfTheWeek'])
+								dayofMonth.push(d['Day'])
+								month.push(d['Month'])
+								hour.push(d['Hours'])
+								weekmonth.push(d['WeekOfTheMonth'])
+								isWeekDay.push(d['isWeekDay'])
+							})
+
+							function sortNumber(a,b) {
+						        return a - b;
+						    }
+
+							year=year.filter((value, index, self) => self.indexOf(value) === index).sort(sortNumber)
+							daynight=daynight.filter((value, index, self) => self.indexOf(value) === index).sort()
+							day=day.filter((value, index, self) => self.indexOf(value) === index).sort().sort(sortNumber)
+							dayofMonth=dayofMonth.filter((value, index, self) => self.indexOf(value) === index).sort()
+							month=month.filter((value, index, self) => self.indexOf(value) === index)
+							hour=hour.filter((value, index, self) => self.indexOf(value) === index).sort(sortNumber)
+							weekmonth=weekmonth.filter((value, index, self) => self.indexOf(value) === index).sort()
+							isWeekDay=isWeekDay.filter((value, index, self) => self.indexOf(value) === index)
 
 
-					console.log(cols)
-
-
-					if(datos[0].hasOwnProperty("Date")){
-						document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols					
-						var temporal=function(yourVlSpec,visible){
-							d3.select("#attr3").on("change", function(){
-							  var attrSeq = this.value;
-							  //console.log("cambioo   attr3 :"+attrSeq)
-
-							 // console.log("selected value:     "+attrSeq)
-
-							  var temporalvis = {
-							  "data": {"values":visible},
-							  "vconcat": [{
-							    "width": 700,
-							    "mark": "area",
-							    "encoding": {
-							      "x": {
-							        "field": "Date",
-							        "type": "temporal",
-							        "scale": {"domain": {"selection": "brush"}},
-							        "axis": {"title": ""}
-							      },
-							      "y": {"field": attrSeq,"type": "quantitative"}
-							    }
-							  }, {
-							    "width": 700,
-							    "height": 80,
-							    "mark": "area",
-							    "selection": {
-							      "brush": {"type": "interval", "encodings": ["x"],"zoom": "wheel!",
-							                  "mark": {"fill": "#333", "stroke": "green"}}
-							    },
-							    "encoding": {
-							      "x": {
-							        "field": "Date",
-							        "type": "temporal"
-							      },
-							      "y": {
-							        "field": attrSeq,
-							        "type": "quantitative",
-							        "axis": {"tickCount": 3, "grid": false}
-							      }
-							    }
-							  }, yourVlSpec]
+							for(var i=0;i<year.length;i++){
+								if(i!=10){
+									year_t+='<input type="checkbox" value="'+year[i]+'" id="year">'+year[i]
+								}
+								else{
+									year_t+='<p></p><input type="checkbox" value="'+year[i]+'" id="year">'+year[i]
+								}						}
+							for(var i=0;i<daynight.length;i++){
+								if(i!=10){
+									daynight_t+='<input type="checkbox" value="'+daynight[i]+'" id="daynight">'+daynight[i]
+								}
+								else{
+									daynight_t+='<p></p><input type="checkbox" value="'+daynight[i]+'" id="daynight">'+daynight[i]
+								}						}
+							for(var i=0;i<day.length;i++){
+								if(i!=10){
+									day_t+='<input type="checkbox" value="'+day[i]+'" id="day">'+day[i]
+								}
+								else{
+									day_t+='<p></p><input type="checkbox" value="'+day[i]+'" id="day">'+day[i]
+								}						}
+							for(var i=0;i<dayofMonth.length;i++){
+								if(i!=10){
+									dayofMonth_t+='<input type="checkbox" value="'+dayofMonth[i]+'" id="dayofMonth">'+dayofMonth[i]
+								}
+								else{
+									dayofMonth_t+='<p></p><input type="checkbox" value="'+dayofMonth[i]+'" id="dayofMonth">'+dayofMonth[i]
+								}						}
+							for(var i=0;i<month.length;i++){							
+								if(i!=10){
+									month_t+='<input type="checkbox" value="'+month[i]+'" id="month">'+month[i]
+								}
+								else{
+									month_t+='<p></p><input type="checkbox" value="'+month[i]+'" id="month">'+month[i]
+								}	
 							}
-							  vegaEmbed("#temporal", temporalvis);
+							for(var i=0;i<hour.length;i++){
+								if(i!=11){
+									hour_t+='<input type="checkbox" value="'+hour[i]+'" id="hour">'+hour[i]
+								}
+								else{
+									hour_t+='<p></p><input type="checkbox" value="'+hour[i]+'" id="hour">'+hour[i]
+								}						}
+							for(var i=0;i<weekmonth.length;i++){
+								if(i!=10){
+									weekmonth_t+='<input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth">'+weekmonth[i]
+								}
+								else{
+									weekmonth_t+='<p></p><input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth">'+weekmonth[i]
+								}						}
+							for(var i=0;i<isWeekDay.length;i++){
+								if(i!=10){
+									isWeekDay_t+='<input type="checkbox" value="'+isWeekDay[i]+'" id="isWeekDay">'+isWeekDay[i]
+								}
+								else{
+									isWeekDay_t+='<p></p><input type="checkbox" value="'+isWeekDay[i]+'" id="isWeekDay">'+isWeekDay[i]
+								}						}
+
+							year_t=('<ul>').concat(year_t)
+							daynight_t=('<ul>').concat(daynight_t)
+							dayofMonth_t=('<ul>').concat(dayofMonth_t)
+							day_t=('<ul>').concat(day_t)
+							month_t=('<ul>').concat(month_t)
+							hour_t=('<ul>').concat(hour_t)
+							weekmonth_t=('<ul>').concat(weekmonth_t)
+							isWeekDay_t=('<ul>').concat(isWeekDay_t)
+							year_t=year_t.concat('</ul>')
+							daynight_t=daynight_t.concat('</ul>')
+							dayofMonth_t=dayofMonth_t.concat('</ul>')
+							day_t=day_t.concat('</ul>')
+							month_t=month_t.concat('</ul>')
+							hour_t=hour_t.concat('</ul>')
+							weekmonth_t=weekmonth_t.concat('</ul>')
+							isWeekDay_t=isWeekDay_t.concat('</ul>')
+
+
+							document.getElementById("temporal_id").innerHTML='<p></p>   <p><strong>Year:</strong></p>   '+year_t+'   <p></p>   <p><strong>Month:</strong></p>   '+month_t+'    <p></p>   <p><strong>Day:</strong></p>   '+dayofMonth_t+'    <p></p>    <p><strong>Day of the Week:</strong></p>   '+day_t+'    <p></p>   <p><strong>Hour:</strong></p>   '+hour_t+'    <p></p>   <p><strong>Day/Night:</strong></p>  '+daynight_t+'    <p></p>   <p><strong>Week Of The Month:</strong></p>   '+weekmonth_t+'    <p></p>   <p><strong>Is Weekday:</strong></p>  '+isWeekDay_t+'    <div id="list3" align="center"><></div><div id="temporal"align="center"></div>'
+
+							var allInputs = document.getElementsByTagName("input");
+							for (var i = 0, max = allInputs.length; i < max; i++){
+							    if (allInputs[i].type === 'checkbox')
+							        allInputs[i].checked = true;
+							}					
+							
+
+							$('input[id="year"]').click(function() {								
+							    if(!this.checked){							    		
+							    		datos=datos.filter(d => !(d['Year']==this.value))		
+							    		container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							    		container.layoutManager.eventHub.emit( 'datosvisibles', datos );		    		
+							    }	
+							    else{	
+							    	completedata.filter(d=>d['Year']==this.value).map(e=>datos.push(e))	
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );					    							    	
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)					    
 							});
+
+							$('input[id="daynight"]').click(function() {
+							    if(!this.checked){
+							            datos=datos.filter(d => d['DayNight']!==this.value)	
+							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );							            				            
+							    }
+							    else{
+							    	completedata.filter(d=>d['DayNight']==this.value).map(e=>datos.push(e))		
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="day"]').click(function() {
+							    if(!this.checked){
+							        datos=datos.filter(d => d['DayOfTheWeek']!==this.value)	
+							        container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							        container.layoutManager.eventHub.emit( 'datosvisibles', datos );				            
+							    }
+							    else{
+							    	completedata.filter(d=>d['DayOfTheWeek']==this.value).map(e=>datos.push(e))
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );		
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="dayofMonth"]').click(function() {
+							    if(!this.checked){
+							           datos= datos.filter(d => !(d['Day']==this.value))	
+							           container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							           container.layoutManager.eventHub.emit( 'datosvisibles', datos );					           					           
+							    }
+							    else{
+							    	completedata.filter(d=>d['Day']==this.value).map(e=>datos.push(e))	
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="month"]').click(function() {
+							    if(!this.checked){
+							            datos=datos.filter(d => !(d['Month']==this.value))
+							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );						            
+							    }
+							    else{
+							    	completedata.filter(d=>d['Month']==this.value).map(e=>datos.push(e))
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );							    
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="hour"]').click(function() {
+							    if(!this.checked){
+							           datos=datos.filter(d => !(d['Hours']==this.value))	
+							           container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );		
+							           container.layoutManager.eventHub.emit( 'datosvisibles', datos );			           
+							    }
+							    else{
+							    	completedata.filter(d=>d['Hours']==this.value).map(e=>datos.push(e))
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );								    
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="weekmonth"]').click(function() {
+							    if(!this.checked){
+							            datos=datos.filter(d => d['WeekOfTheMonth']!==this.value)	
+							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );					            
+							    }
+							    else{
+							    	completedata.filter(d=>d['WeekOfTheMonth']==this.value).map(e=>datos.push(e))	
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );						    
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="isWeekDay"]').click(function() {
+							    if(!this.checked){
+							            datos=datos.filter(d => d['isWeekDay']!==this.value)
+							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );						            
+							    }
+							    else{
+							    	completedata.filter(d=>d['isWeekDay']==this.value).map(e=>datos.push(e))
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
+								}
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+
+
+							document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols					
+							var temporal=function(yourVlSpec,visible){
+								d3.select("#attr3").on("change", function(){
+								  var attrSeq = this.value;
+								  var temporalvis = {
+								  "data": {"values":visible},
+								  "vconcat": [{
+								    "width": 700,
+								    "mark": "area",
+								    "encoding": {
+								      "x": {
+								        "field": "Date",
+								        "type": "temporal",
+								        "scale": {"domain": {"selection": "brush"}},
+								        "axis": {"title": ""}
+								      },
+								      "y": {"field": attrSeq,"type": "quantitative"}
+								    }
+								  }, {
+								    "width": 700,
+								    "height": 80,
+								    "mark": "area",
+								    "selection": {
+								      "brush": {"type": "interval", "encodings": ["x"],"zoom": "wheel!",
+								                  "mark": {"fill": "#333", "stroke": "green"}}
+								    },
+								    "encoding": {
+								      "x": {
+								        "field": "Date",
+								        "type": "temporal"
+								      },
+								      "y": {
+								        "field": attrSeq,
+								        "type": "quantitative",
+								        "axis": {"tickCount": 3, "grid": false}
+								      }
+								    }
+								  }, yourVlSpec]
+								}
+								  vegaEmbed("#temporal", temporalvis);
+								});
+							}
+							temporal(yourVlSpec,datos)
 						}
-						temporal(yourVlSpec,datos)
-					}
-					else{
-						document.getElementById("list3").innerHTML = '<strong> THERE ARE NOT TEMPORAL ATTRIBUTES THAT PERMITS ANY TEMPORAL ANALYSIS </strong>'
-					}
+						else{
+							document.getElementById("list3").innerHTML = '<strong> THERE ARE NOT TEMPORAL ATTRIBUTES THAT PERMITS ANY TEMPORAL ANALYSIS </strong>'
+						}
+					});
 				});
 			});
 		});
@@ -1581,7 +1835,7 @@
 
 					lista=lista_seq.join('')					
 
-					document.getElementById("list6").innerHTML = '<strong>Select a Quantitative Attribute to segment the loaded data: </strong> <input list="attrs6" type="text" id="attr6"><datalist id="attrs6">'+lista	
+					document.getElementById("list6").innerHTML = '<strong>Select a Categoric Attribute to segment the loaded data: </strong> <input list="attrs6" type="text" id="attr6"><datalist id="attrs6">'+lista	
 
 					d3.select("#attr6").on("change", function(){
 						var attr6 = this.value;
@@ -1660,7 +1914,7 @@
 					    	x=[]
 					    }
 						for(var i=0;i<cols.length;i++){
-							if(!(cols[i]=='__i'||cols[i]=='__seqId'||cols[i]=='visible'||cols[i]=='Year'||cols[i]=='Minutes'||cols[i]=='Latitude'||cols[i]=='Longitude'||cols[i]=='Seconds'||datPa.includes(cols[i])||cat.includes(cols[i]))){
+							if(!(cols[i]=='__i'||cols[i]=='__seqId'||cols[i]=='visible'||cols[i]=='Year'||cols[i]=='Minutes'||cols[i]=='Latitude'||cols[i]=='Longitude'||cols[i]=='Seconds'||cols[i]=='ID'||datPa.includes(cols[i])||cat.includes(cols[i]))){
 								x.push({label:cols[i], values:unpack(rows,cols[i])})
 							}
 						}
@@ -1711,6 +1965,82 @@
 		})			
 	}])
 
+	regressionApp.controller('regressionController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
+
+		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){	
+			container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
+
+					document.getElementById("list8").innerHTML = '<strong>Select a Quantitative Attribute to segment the loaded data: </strong> <input list="attrs8" type="text" id="attr8"><datalist id="attrs8">'+cols
+					document.getElementById("list9").innerHTML = '<strong>Select a Quantitative Attribute to segment the loaded data: </strong> <input list="attrs9" type="text" id="attr9"><datalist id="attrs9">'+cols											
+					
+					$("#regressionGraph").empty()
+					d3.select("#attr8").on("change", function(){	
+						var attr8 = this.value;
+						d3.select("#attr9").on("change", function(){							
+							$("#regressionGraph").empty()							
+							var attr9 = this.value;		
+							var datos_raw=[]
+							var datos_raw2=[]
+							returnData.map(function(d){									
+								datos_raw2.push([d[attr8],d[attr9]])
+								datos_raw.push([parseFloat(d[attr8]),parseFloat(d[attr9])])
+							})
+
+							console.log(datos_raw)
+							console.log(datos_raw2)
+
+							var rawData = datos_raw;
+
+						
+							var result = regression('linear', rawData);
+
+							var coeff = result.equation;							
+
+							anychart.onDocumentReady(function () {
+
+							  var data_1 = rawData;
+							  var data_2 = setTheoryData(rawData);
+
+							  chart = anychart.scatter();
+
+							  chart.title("The calculated formula: " + result.string + "\nThe coefficient of determination (R2): " + result.r2.toPrecision(2));
+
+							  chart.legend(true);
+
+							  var series1 = chart.marker(data_1);
+							  series1.name("Experimental data");
+
+							  var series2 = chart.line(data_2);
+							  series2.name("Theoretically calculated data");
+							  series2.markers(true);
+
+							  chart.container("regressionGraph");
+							  chart.draw();
+							});
+
+							function formula(coeff, x) {
+							  var result = null;
+							  for (var i = 0, j = coeff.length - 1; i < coeff.length; i++, j--) {
+							    result += coeff[i] * Math.pow(x, j);
+							  }
+							  return result;
+							}
+
+							function setTheoryData(rawData) {
+							  var theoryData = [];
+							  for (var i = 0; i < rawData.length; i++) {
+							    theoryData[i] = [rawData[i][0], formula(coeff, rawData[i][0])];
+							  }
+							  return theoryData;
+							}		
+						})
+					})					
+				})
+			})
+		})						
+	}])
+
 
 	var app1El = document.getElementById('fileselector');
 	var app2El = document.getElementById('navio');
@@ -1719,6 +2049,7 @@
 	var app5El = document.getElementById('boxplot');
 	var app6El = document.getElementById('map');
 	var app7El = document.getElementById('splom');
+	var app8El = document.getElementById('regression');
 
 
 	angular.bootstrap(app1El, ['fileselector', 'test-service']);
@@ -1728,6 +2059,7 @@
 	angular.bootstrap(app5El, ['boxplot', 'test-service']);
 	angular.bootstrap(app6El, ['map', 'test-service']);
 	angular.bootstrap(app7El, ['splom', 'test-service']);
+	angular.bootstrap(app8El, ['regression', 'test-service']);
 
 	var AngularModuleComponent = function( container, state ) {
 	    var html = $( '#' + state.templateId ).html(),
@@ -1780,7 +2112,7 @@
             	 type: 'stack',
 	       		 content: [{
 	                type: 'component',
-	                title: 'General Statistics',
+	                title: 'Box Plot',
 	                componentName: 'angularModule',
 	                componentState: {
 	                    module: 'boxplot',
@@ -1788,13 +2120,21 @@
              		}
          		},{
                 type: 'component',
-                title: '[Statistical Analysis] Correlations',
+                title: 'Correlations -SPLOM',
                 componentName: 'angularModule',
                 componentState: {
                     module: 'splom',
                     templateId: 'splomTemplate'
              }
-           }]
+	       },{
+                type: 'component',
+                title: 'Regressions',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'regression',
+                    templateId: 'regressionTemplate'
+             }
+	       }]
            }]
 	   },{
 	        type: 'column',
