@@ -137,8 +137,6 @@
 	#regressionid { margin: 0px; height: 100%; width: 100% }
 	#temporal_id { margin: 15px; height: 100%; width: 100% }
 	#spatial_id { margin: 15px; height: 100%; width: 100% }
-	#selector { margin: 15px; height: 100%; width: 100% }
-	#navio { margin: 15px; height: 100%; width: 100% }
 </style>
 
 
@@ -1146,7 +1144,8 @@
 		container.layoutManager.eventHub.on( 'completedata', function( completedata ){
 			container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){				
-					
+					container.layoutManager.eventHub.on( 'yourVlSpec', function(yourVlSpec){
+
 
 						var year=[]
 						var daynight=[]
@@ -1431,7 +1430,7 @@
 
 
 							document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols					
-							var temporal=function(datos){
+							var temporal=function(yourVlSpec,datos){
 								d3.select("#attr3").on("change", function(){
 								  var attrSeq = this.value;
 								  var temporalvis = {
@@ -1467,12 +1466,12 @@
 								        "axis": {"tickCount": 3, "grid": false}
 								      }
 								    }
-								  }]
+								  }, yourVlSpec]
 								}
 								  vegaEmbed("#temporal", temporalvis);
 								});
 							}
-							temporal(datos)
+							temporal(yourVlSpec,datos)
 
 							console.log(datos)
 						}
