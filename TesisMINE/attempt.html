@@ -47,9 +47,9 @@
 <!--  TEMPLATE FOR EACH MODULE/VIEW   -->
 <template type="text/html" id="fileselectorTemplate">
   <div id='selector' ng-controller="fileselectorController" class="fileselector">
-		<p><strong>Select a file of your interest to analyze its current attributes </strong>(Accepted Extensions: <i>.csv, .xlsx</i> )</p>
+		<p><strong>Select a file of your interest to analyze its current attributes </strong>(Accepted Extensions: <i>.csv, .xls, .xlsx</i> )</p>
 		<p></p>
-		<input ng-model='shared.current_data' type="file" accept=".csv,.xlsx" id="files" name="file" />
+		<input ng-model='shared.current_data' type="file" accept=".csv,.xlsx,.xls" id="files" name="file" />
 
 		<div id="tableGoesHere"align="center"></div>				
 </template>	
@@ -64,7 +64,7 @@
 <template type="text/html" id="spatioTemplate">
     <div id='spatial_id' ng-controller="spatioController" class="spatialviz">
 		<p></p>
-		<div id="text" align="left"></div>
+		<div id="text" align="center"></div>
 		<p></p>
 		<div id="list" align="center"></div>
 		<p></p>
@@ -81,6 +81,7 @@
 <template type="text/html" id="temporalTemplate">
 	<div id='temporal_id' ng-controller="temporalController" class="temporalviz">   
 	 	<p></p>
+	 	<div id="list3" align="center"></div>
 		<p></p>
     </div>
 </template>	
@@ -98,7 +99,7 @@
 </template>
 
 <template type="text/html" id="mapTemplate">
-	<div id='mapid' ng-controller="mapController" class="map">	
+	<div id='mapid' ng-controller="mapController" class="map" align='center'>	
 	</div>
 </template>
 
@@ -376,7 +377,7 @@
 							return d;
 				}
 
-				if(event.target.files[0].name.includes(".xlsx")){
+				if(event.target.files[0].name.includes(".xlsx") || event.target.files[0].name.includes(".xls")){
 
 					/* set up XMLHttpRequest */
 					var url = tmppath;
@@ -403,13 +404,42 @@
 
 					  var dats= XLSX.utils.sheet_to_json(worksheet,{raw:true});
 
-					  var dats_callback=[];					  
-					  for(var i=0;i<dats.length;i++){	
-					  	dats_callback.push(parsing(dats[i]))
-					  }
+					  var cols = Object.keys(dats[0]);
+					  console.log(cols.indexOf('Time'))
+					  
+					  cols=cols.slice(0,cols.indexOf('Time'))
+
+
+					var dats_callback=[]
+						for(var i=0;i<dats.length;i++){	
+							  	if(dats[i].hasOwnProperty('Time')){
+							  		dats[i]['Name']=dats[i]['Time'].split(']')[0].split('[')[0]							  		
+							  		if((dats[i]['Time'].split(',')).length ==3){
+							  			dats[i]['Shape']=dats[i]['Time'].split(']')[0].split('[')[1].split(',')[0]
+							  			dats[i]['Status']=dats[i]['Time'].split(',')[2].split(']')[0]
+							  			dats[i]['Type']=dats[i]['Time'].split(',')[1]  			
+							  		}
+							  		if((dats[i]['Time'].split(',')).length ==2){
+						  				dats[i]['Shape']=dats[i]['Time'].split(',')[0].split('[')[1]
+						  				dats[i]['Type']=dats[i]['Time'].split(',')[1].split(']')[0]			  								  			
+							  		}
+							  		if((dats[i]['Time'].split(',')).length ==1){
+							  			dats[i]['Shape']=dats[i]['Time'].split(']')[0].split('[')[1]
+							  		}
+							  		
+
+							  		delete dats[i]['Time'];				  		
+							  		
+							  	}
+
+							  	dats_callback.push(parsing(dats[i]))
+					   }
+					
+					 			
 
 					  callback(dats_callback);
-					}
+
+				}
 
 					oReq.send();
 				}
@@ -421,7 +451,7 @@
 
 							},  function (err, data) {	
 							 	dat=data;								 					 	
-							 	callback(dat);
+							 	callback(dat);							 	
 							})
 					};			
 				});				
@@ -476,8 +506,6 @@
 			$scope.catColumnsFinal= state.catColumnsFinal || null;
 
 			TestService.getData(function(d){
-
-				console.log(d)
 
 				$scope.dat =d;
 				container.layoutManager.eventHub.emit( 'completedata', $scope.dat );
@@ -761,378 +789,384 @@
 							container.layoutManager.eventHub.on( 'datosvisibles', function( datosvisibles ){
 							container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){
 
-								document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
-								document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+cols
-								document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+cols
+								if(datos[0].hasOwnProperty('Latitude') && datos[0].hasOwnProperty('Longitude')){
+									document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
+									document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+cols
+									document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+cols
 
-								document.getElementById("btn1").innerHTML='<button type="button" id="complete_t"> <strong>SHOW ('+completedata.length+' VALUES)</strong></button>'
+									document.getElementById("btn1").innerHTML='<button type="button" id="complete_t"> <strong>SHOW ('+completedata.length+' VALUES)</strong></button>'
 
 
-								$('button[id="complete_t"]').click(function() {								    	
-							    	
-							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );	
-							    	container.layoutManager.eventHub.emit( 'datosvisibles', completedata );			   	
-								   
+									$('button[id="complete_t"]').click(function() {								    	
+										
+										container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );	
+										container.layoutManager.eventHub.emit( 'datosvisibles', completedata );			   	
+									   
 
-								});
+									});
 
-								function drawViz(seqColumns,catColumns,attr1,attr2,visible)
-								{
-									if(datos[0].hasOwnProperty('Year')){
-										if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
-										var yourVlSpec = {
-											"width": 1000,
-											"height": 300,
-											"autosize": {"type": "fit", "contains": "padding"},
-											"data": {"values":visible},
-											"transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
-											"selection": {
-											"grid": {
-											"type": "interval", "bind": "scales"
-										},
-											"CylYr": {
-											"type": "single",
-											"fields": ["Year"],
-											"bind": {
-											"Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
-										},
-											"on": "click",
-											"resolve": "global",
-											"empty": "all"
-										}
-										},
-											"mark": "circle",
-											"encoding": {
-											"x": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
-											"y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}},
-											"color": {
-											"condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-											"value": "#D8D8D8"
+									function drawViz(seqColumns,catColumns,attr1,attr2,visible)
+									{
+										if(datos[0].hasOwnProperty('Year')){
+											if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
+											var yourVlSpec = {
+												"width": 1000,
+												"height": 300,
+												"autosize": {"type": "fit", "contains": "padding"},
+												"data": {"values":visible},
+												"transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+												"selection": {
+												"grid": {
+												"type": "interval", "bind": "scales"
 											},
-											"size": {
-												"condition": {
-												  "selection": "CylYr",
-												  "value": 100,
-												  "fill":'None'
+												"CylYr": {
+												"type": "single",
+												"fields": ["Year"],
+												"bind": {
+												"Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+											},
+												"on": "click",
+												"resolve": "global",
+												"empty": "all"
+											}
+											},
+												"mark": "circle",
+												"encoding": {
+												"x": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
+												"y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}},
+												"color": {
+												"condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+												"value": "#D8D8D8"
+												},
+												"size": {
+													"condition": {
+													  "selection": "CylYr",
+													  "value": 100,
+													  "fill":'None'
+													}
 												}
 											}
-										}
-										}
-										container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
-										spatial(yourVlSpec,visible)
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
+											spatial(yourVlSpec,visible)
 
-										}
-										else if(catColumns.includes(attr1) && catColumns.includes(attr2)){
-										setTimeout(function(){
-											alert("You selected TWO categorical attributes.\nSelect a variable combination, as follows:\nCATEGORICAL/SEQUENTIAL or SEQUENTIAL/SEQUENTIAL")
-										},200)
-										}							
-										else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
-										var yourVlSpec = {
-										  "width": 1000,
-										  "height": 300,
-										  "autosize": {"type": "fit", "contains": "padding"},
-										  "data": {"values":visible},
-										  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
-										  "selection": {
-										  "grid": {
-										  "type": "interval", "bind": "scales"
-										  },
-										  "CylYr": {
-										  "type": "single",
-										  "fields": ["Year"],
-										  "bind": {
-										  "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
-										  },
-										  "on": "click",
-										  "resolve": "global",
-										  "empty": "all"
-										  }
-										  },
-										  "mark": "bar",
-										  "encoding": {
-										  "x": {"field": attr1, "type": "ordinal"},
-										  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}},
-										  "color": {
-										  "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-										  "value": "#D8D8D8"
-										  },
-										  "size": {
-										      "condition": {
-										          "selection": "CylYr",
-										          "value": 100,
-										          "fill":'None'
-										      	}
-										  	}
-										 }
-										}
-										container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-										spatial(yourVlSpec,visible)
+											}
+											else if(catColumns.includes(attr1) && catColumns.includes(attr2)){
+											setTimeout(function(){
+												alert("You selected TWO categorical attributes.\nSelect a variable combination, as follows:\nCATEGORICAL/SEQUENTIAL or SEQUENTIAL/SEQUENTIAL")
+											},200)
+											}							
+											else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  },
+											  "CylYr": {
+											  "type": "single",
+											  "fields": ["Year"],
+											  "bind": {
+											  "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+											  },
+											  "on": "click",
+											  "resolve": "global",
+											  "empty": "all"
+											  }
+											  },
+											  "mark": "bar",
+											  "encoding": {
+											  "x": {"field": attr1, "type": "ordinal"},
+											  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}},
+											  "color": {
+											  "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+											  "value": "#D8D8D8"
+											  },
+											  "size": {
+											      "condition": {
+											          "selection": "CylYr",
+											          "value": 100,
+											          "fill":'None'
+											      	}
+											  	}
+											 }
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
 
-										}
-										else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
-										var yourVlSpec = {
-										  "width": 1000,
-										  "height": 300,
-										  "autosize": {"type": "fit", "contains": "padding"},
-										  "data": {"values":visible},
-										  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
-										  "selection": {
-										  "grid": {
-										  "type": "interval", "bind": "scales"
-										  },
-										  "CylYr": {
-										  "type": "single",
-										  "fields": ["Year"],
-										  "bind": {
-										  "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
-										  },
-										  "on": "click",
-										  "resolve": "global",
-										  "empty": "all"
-										  }
-										  },
-										  "mark": "bar",
-										  "encoding": {
-										  "x": {"field": attr2, "type": "ordinal"},
-										  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
-										  "color": {
-										  "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
-										  "value": "#D8D8D8"
-										  },
-										  "size": {
-										      "condition": {
-										          "selection": "CylYr",
-										          "value": 100,
-										          "fill":'None'
-										      }
-										  }
-										 }
-										}
-										container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-										spatial(yourVlSpec,visible)
+											}
+											else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  },
+											  "CylYr": {
+											  "type": "single",
+											  "fields": ["Year"],
+											  "bind": {
+											  "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+											  },
+											  "on": "click",
+											  "resolve": "global",
+											  "empty": "all"
+											  }
+											  },
+											  "mark": "bar",
+											  "encoding": {
+											  "x": {"field": attr2, "type": "ordinal"},
+											  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
+											  "color": {
+											  "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+											  "value": "#D8D8D8"
+											  },
+											  "size": {
+											      "condition": {
+											          "selection": "CylYr",
+											          "value": 100,
+											          "fill":'None'
+											      }
+											  }
+											 }
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
 
-										}
-										else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
+											}
+											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
 
-										console.log("ENTRÓ ACÁ")
+											console.log("ENTRÓ ACÁ")
 
-										var yourVlSpec = {
-										  "width": 1000,
-										  "height": 300,
-										  "autosize": {"type": "fit", "contains": "padding"},
-										  "data": {"values":visible},
-										  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
-										  "selection": {
-										  "grid": {
-										  "type": "interval", "bind": "scales"
-										  }},
-										  "mark": {"type":"point"},
-										  "encoding": {
-										  "x": {"field": attr1, "type": "temporal"},
-										  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
-										}
-										}
-										container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-										spatial(yourVlSpec,visible)
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": {"type":"point"},
+											  "encoding": {
+											  "x": {"field": attr1, "type": "temporal"},
+											  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
 
-										}
-										else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
+											}
+											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
 
-										var yourVlSpec = {
-										  "width": 1000,
-										  "height": 300,
-										  "autosize": {"type": "fit", "contains": "padding"},
-										  "data": {"values":visible},
-										  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
-										  "selection": {
-										  "grid": {
-										  "type": "interval", "bind": "scales"
-										  }},
-										  "mark": {"type":"point"},
-										  "encoding": {
-										  "x": {"field": attr2, "type": "temporal"},
-										  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}
-										}
-										}
-										container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-										spatial(yourVlSpec,visible)
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": {"type":"point"},
+											  "encoding": {
+											  "x": {"field": attr2, "type": "temporal"},
+											  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
 
+											}
+										}
+										else{
+
+											if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
+											var yourVlSpec = {
+												"width": 1000,
+												"height": 300,
+												"autosize": {"type": "fit", "contains": "padding"},
+												"data": {"values":visible},
+												"transform": [{"filter": {"selection": "brush"}}],
+												"selection": {
+												"grid": {
+												"type": "interval", "bind": "scales"
+											}},
+												"mark": "circle",
+												"encoding": {
+												"x": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
+												"y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(catColumns.includes(attr1) && catColumns.includes(attr2)){
+											setTimeout(function(){
+												alert("You selected TWO categorical attributes.\nSelect a variable combination, as follows:\nCATEGORICAL/SEQUENTIAL or SEQUENTIAL/SEQUENTIAL")
+											},200)
+											}							
+											else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": "bar",
+											  "encoding": {
+											  "x": {"field": attr1, "type": "ordinal"},
+											  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}							  
+											 }
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": "bar",
+											  "encoding": {
+											  "x": {"field": attr2, "type": "ordinal"},
+											  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}								  
+											 }
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
+
+											console.log("ENTRÓ ACÁ")
+
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": {"type":"point"},
+											  "encoding": {
+											  "x": {"field": attr1, "type": "temporal"},
+											  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
+
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": {"type":"point"},
+											  "encoding": {
+											  "x": {"field": attr2, "type": "temporal"},
+											  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
 										}
 									}
-									else{
 
-										if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
-										var yourVlSpec = {
-											"width": 1000,
-											"height": 300,
-											"autosize": {"type": "fit", "contains": "padding"},
-											"data": {"values":visible},
-											"transform": [{"filter": {"selection": "brush"}}],
-											"selection": {
-											"grid": {
-											"type": "interval", "bind": "scales"
-										}},
-											"mark": "circle",
-											"encoding": {
-											"x": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
-											"y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
-										}
-										}
-										container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
-										spatial(yourVlSpec,visible)
+									var spatial=function(yourVlSpec,visible)
+									{
+											var spatialvis = {
+											            "width": 1000,
+											            "height": 300,
+											            "data": {"values":visible},
+											            "transform": [{"filter": {"selection": "brush"}}],
+											            "vconcat": [{
+											              "selection": {
+											                "brush": {
+											                  "type": "interval",
+											                  "on": "[mousedown, window:mouseup] > window:mousemove!",
+											                  "encodings": ["x", "y"],
+											                  "translate": "[mousedown, window:mouseup] > window:mousemove!",
+											                  "zoom": "wheel!",
+											                  "mark": {"fill": "#333", "stroke": "green"},
+											                  "resolve": "global"
+											                  }
+											              },
+											              "width": 700,
+											              "mark": "point",
+											              "encoding": {
+											                "x": {"field": "Longitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Longitude), d3.max(visible,d => +d.Longitude)]}},
+											                "y": {"field": "Latitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Latitude), d3.max(visible,d => +d.Latitude)]}}
+											              }
+											            }, yourVlSpec]
+											          }									
 
-										}
-										else if(catColumns.includes(attr1) && catColumns.includes(attr2)){
-										setTimeout(function(){
-											alert("You selected TWO categorical attributes.\nSelect a variable combination, as follows:\nCATEGORICAL/SEQUENTIAL or SEQUENTIAL/SEQUENTIAL")
-										},200)
-										}							
-										else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
-										var yourVlSpec = {
-										  "width": 1000,
-										  "height": 300,
-										  "autosize": {"type": "fit", "contains": "padding"},
-										  "data": {"values":visible},
-										  "transform": [{"filter": {"selection": "brush"}}],
-										  "selection": {
-										  "grid": {
-										  "type": "interval", "bind": "scales"
-										  }},
-										  "mark": "bar",
-										  "encoding": {
-										  "x": {"field": attr1, "type": "ordinal"},
-										  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}							  
-										 }
-										}
-										container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-										spatial(yourVlSpec,visible)
+											vegaEmbed("#spatial", spatialvis);
 
-										}
-										else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
-										var yourVlSpec = {
-										  "width": 1000,
-										  "height": 300,
-										  "autosize": {"type": "fit", "contains": "padding"},
-										  "data": {"values":visible},
-										  "transform": [{"filter": {"selection": "brush"}}],
-										  "selection": {
-										  "grid": {
-										  "type": "interval", "bind": "scales"
-										  }},
-										  "mark": "bar",
-										  "encoding": {
-										  "x": {"field": attr2, "type": "ordinal"},
-										  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}								  
-										 }
-										}
-										container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-										spatial(yourVlSpec,visible)
-
-										}
-										else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
-
-										console.log("ENTRÓ ACÁ")
-
-										var yourVlSpec = {
-										  "width": 1000,
-										  "height": 300,
-										  "autosize": {"type": "fit", "contains": "padding"},
-										  "data": {"values":visible},
-										  "transform": [{"filter": {"selection": "brush"}}],
-										  "selection": {
-										  "grid": {
-										  "type": "interval", "bind": "scales"
-										  }},
-										  "mark": {"type":"point"},
-										  "encoding": {
-										  "x": {"field": attr1, "type": "temporal"},
-										  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
-										}
-										}
-										container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-										spatial(yourVlSpec,visible)
-
-										}
-										else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
-
-										var yourVlSpec = {
-										  "width": 1000,
-										  "height": 300,
-										  "autosize": {"type": "fit", "contains": "padding"},
-										  "data": {"values":visible},
-										  "transform": [{"filter": {"selection": "brush"}}],
-										  "selection": {
-										  "grid": {
-										  "type": "interval", "bind": "scales"
-										  }},
-										  "mark": {"type":"point"},
-										  "encoding": {
-										  "x": {"field": attr2, "type": "temporal"},
-										  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}
-										}
-										}
-										container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
-										spatial(yourVlSpec,visible)
-
-										}
 									}
-								}
 
-								var spatial=function(yourVlSpec,visible)
-								{
-										var spatialvis = {
-										            "width": 1000,
-										            "height": 300,
-										            "data": {"values":visible},
-										            "transform": [{"filter": {"selection": "brush"}}],
-										            "vconcat": [{
-										              "selection": {
-										                "brush": {
-										                  "type": "interval",
-										                  "on": "[mousedown, window:mouseup] > window:mousemove!",
-										                  "encodings": ["x", "y"],
-										                  "translate": "[mousedown, window:mouseup] > window:mousemove!",
-										                  "zoom": "wheel!",
-										                  "mark": {"fill": "#333", "stroke": "green"},
-										                  "resolve": "global"
-										                  }
-										              },
-										              "width": 700,
-										              "mark": "point",
-										              "encoding": {
-										                "x": {"field": "Longitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Longitude), d3.max(visible,d => +d.Longitude)]}},
-										                "y": {"field": "Latitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Latitude), d3.max(visible,d => +d.Latitude)]}}
-										              }
-										            }, yourVlSpec]
-										          }									
-
-										vegaEmbed("#spatial", spatialvis);
-
-								}
-
-								var vis = function(attr1,attr2,seqColumns,catColumns,visible){
-									
-									d3.select("#attr1").on("change", function(){
-										attr1 = this.value;
-										container.layoutManager.eventHub.emit( 'change-attr1', attr1 );	
-									  	//console.log(attr1)
-
-										drawViz(seqColumns,catColumns,attr1,attr2,visible)	
+									var vis = function(attr1,attr2,seqColumns,catColumns,visible){
 										
-									})
+										d3.select("#attr1").on("change", function(){
+											attr1 = this.value;
+											container.layoutManager.eventHub.emit( 'change-attr1', attr1 );	
+										  	//console.log(attr1)
 
-									d3.select("#attr2").on("change", function(){
-									  	attr2 = this.value;
-									  	container.layoutManager.eventHub.emit( 'change-attr2', attr2 );		
+											drawViz(seqColumns,catColumns,attr1,attr2,visible)	
+											
+										})
 
-									  	//console.log(attr2)
+										d3.select("#attr2").on("change", function(){
+										  	attr2 = this.value;
+										  	container.layoutManager.eventHub.emit( 'change-attr2', attr2 );		
 
-									  	drawViz(seqColumns,catColumns,attr1,attr2,visible)
-									})				
+										  	//console.log(attr2)
 
-								}
-								container.layoutManager.eventHub.emit( 'vis', vis(attr1,attr2,seqColumns,catColumns,datos) );
+										  	drawViz(seqColumns,catColumns,attr1,attr2,visible)
+										})				
+
+									}
+									container.layoutManager.eventHub.emit( 'vis', vis(attr1,attr2,seqColumns,catColumns,datos) );
+								}		
+
+								else{
+									document.getElementById("text").innerHTML='<p><strong>THERE ARE NOT SPATIAL ATTRIBUTES THAT PERMITS ANY SPATIAL ANALYSIS</strong></p>'
+								}					
 							})
 						})
 					})
@@ -1148,6 +1182,7 @@
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){				
 					container.layoutManager.eventHub.on( 'yourVlSpec', function(yourVlSpec){
 
+						document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
 
 						var year=[]
 						var daynight=[]
@@ -1167,7 +1202,7 @@
 						var weekmonth_t=''
 						var isWeekDay_t=''
 
-						if(datos[0].hasOwnProperty("Date")){
+						if(datos[0].hasOwnProperty("Year")){
 
 							datos.map(function(d){
 								year.push(d['Year'])
@@ -1429,9 +1464,6 @@
 							});	
 
 
-
-
-							document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols					
 							var temporal=function(yourVlSpec,datos){
 								d3.select("#attr3").on("change", function(){
 								  var attrSeq = this.value;
@@ -1494,7 +1526,7 @@
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
 
 
-					if(datos[0].hasOwnProperty("Date")){
+					if(datos[0].hasOwnProperty("Year")){
 						document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols				
 
 						function onlyUnique(value, index, self) { 
@@ -1725,8 +1757,9 @@
 
 			var mymap=null;	
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){	
-		
-							
+				
+			datos.map(function(d){
+				if(d.hasOwnProperty('Latitude') && d.hasOwnProperty('Longitude')){	
 					var prom_latitudes=[];
 					var prom_longitudes=[];
 					var lat=[];
@@ -1871,7 +1904,14 @@
 						}
 					}
 					drawMap(datos, mymap,previous_counter,counter)	
-			})				
+					}
+					else{
+					document.getElementById("mapid").innerHTML = '<strong> THERE ARE NOT ANY SPATIAL ATTRIBUTES THAT PERMITS THE DISPLAY OF THE MAP </strong>'
+				}
+				})
+
+			})			
+
 	}])
 
 	splomApp.controller('splomController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
