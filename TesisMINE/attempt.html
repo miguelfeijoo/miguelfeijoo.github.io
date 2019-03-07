@@ -17,6 +17,9 @@
    crossorigin=""></script>
 <script type="application/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.js"></script>
 <script type="application/javascript" src="//unpkg.com/@turf/turf@latest/turf.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+
 <script src='https://code.jquery.com/jquery-1.12.4.js'></script>
 <script src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
@@ -1770,6 +1773,7 @@
 	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 
 			var mymap=null;	
+			container.layoutManager.eventHub.on( 'completedata', function( completedata ){
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){	
 
 			var new_data=[]
@@ -1909,6 +1913,12 @@
 						    edit: false
 						}).addTo(mymap);
 
+
+						L.easyButton('<img src="https://cdn.onlinewebfonts.com/svg/img_351337.png" style="width:20px">',function(btn,map){
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );
+							container.layoutManager.eventHub.emit( 'datosvisibles', completedata );
+						}).addTo(mymap)
+
 						L.Polygon.include({
 						    contains: function (latLng) {
 						        return turf.inside(new L.circleMarker(latLng).toGeoJSON(), this.toGeoJSON());
@@ -1970,15 +1980,8 @@
 						   	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
 							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
-
-						    		
-
-							 //console.log(datos)
-
-
-						});							
-
-					
+						});		
+	
 					}
 					
 					datos.map(function(d){
@@ -1996,20 +1999,23 @@
 					
 					})
 					
-					if(mymap==null){	
+					/*if(mymap==null){	
 									
-						mymap = L.map('mapid').setView([prom_latitudes, prom_longitudes], 11);
+						mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
 
 					}
 					else{
 						mymap.remove()
-						mymap=null;
+						//mymap=null;
 
 						if(mymap==null){									
-							mymap = L.map('mapid').setView([prom_latitudes, prom_longitudes], 11);
+							mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
 							drawMap(datos, mymap,previous_counter,counter,new_data)
 						}
-					}
+					}*/
+
+					if (mymap != undefined) { mymap.remove(); }
+					mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
 					drawMap(datos, mymap,previous_counter,counter,new_data)						
 
 					}
@@ -2018,8 +2024,8 @@
 				}
 				})
 
-			})			
-
+			})	
+		})		
 	}])
 
 	splomApp.controller('splomController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
