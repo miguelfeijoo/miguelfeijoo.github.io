@@ -1771,6 +1771,8 @@
 
 			var mymap=null;	
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){	
+
+			var new_data=[]
 				
 			datos.map(function(d){
 				if(d.hasOwnProperty('Latitude') && d.hasOwnProperty('Longitude')){	
@@ -1785,7 +1787,7 @@
 					var list_markers=[]
 					var list_remaining=[]
 
-					function drawMap(datos, mymap,anterior,actual){
+					function drawMap(datos, mymap,anterior,actual,new_data){
 
 						var markers = new L.LayerGroup().addTo(mymap);
 
@@ -1925,7 +1927,11 @@
 						    }
 						});
 
+
+
 						mymap.on(L.Draw.Event.CREATED, function (e) {
+							new_data=[]
+							list_remaining=[]
 						    markers.eachLayer(function (marker) {
 						        if (!e.layer.contains(marker.getLatLng())) {
 						            marker.remove();						            
@@ -1947,10 +1953,10 @@
 						    }
 						    
 						   	console.log(list_remaining)
-
-						   	var new_data=[]
+						   	
 						   	
 						   	datos.map(function(d){
+
 							   	for(var i=0;i<list_remaining.length;i++){
 							   		if(d['ID']==list_remaining[i]){
 							   			new_data.push(d)
@@ -1958,10 +1964,11 @@
 							   	}
 
 							   	datos=new_data
-							   	console.log(datos)
-							   	/*container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-								container.layoutManager.eventHub.emit( 'datosvisibles', datos );*/
+							   	console.log(datos)							   	
 						   	})
+
+						   	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
 
 						    		
@@ -2000,10 +2007,10 @@
 
 						if(mymap==null){									
 							mymap = L.map('mapid').setView([prom_latitudes, prom_longitudes], 11);
-							drawMap(datos, mymap,previous_counter,counter)
+							drawMap(datos, mymap,previous_counter,counter,new_data)
 						}
 					}
-					drawMap(datos, mymap,previous_counter,counter)						
+					drawMap(datos, mymap,previous_counter,counter,new_data)						
 
 					}
 					else{
