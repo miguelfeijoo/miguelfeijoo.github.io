@@ -1,0 +1,2583 @@
+
+<!--  DEPENDENCIES / STYLES   -->
+<link rel="shortcut icon" href="favicon.ico">
+<script type="text/javascript" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="//golden-layout.com/assets/js/goldenlayout.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+<link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-base.css" />
+<link type="text/css" rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-light-theme.css" />
+<link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css' >
+<link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/scroller/2.0.0/css/scroller.dataTables.min.css' >
+<link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css' >
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/>
+<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.css" />
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+   integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+   crossorigin=""></script>
+<script type="application/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.js"></script>
+<script type="application/javascript" src="//unpkg.com/@turf/turf@latest/turf.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+
+<script src='https://code.jquery.com/jquery-3.3.1.js'></script>
+<script src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
+<script src='https://cdn.datatables.net/scroller/2.0.0/js/dataTables.scroller.min.js'></script>
+
+<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.flash.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.html5.min.js'></script>
+<script src='https://cdn.datatables.net/buttons/1.4.0/js/buttons.print.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@4.3.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc8"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@3.20.0"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="js/xlsx.full.min.js"></script>
+<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/navio/dist/navio.min.js"></script>
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.min.map"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/regression/1.4.0/regression.min.js"></script>
+<script type="text/javascript" src="https://cdn.anychart.com/releases/8.5.0/js/anychart-base.min.js"></script>
+
+
+
+
+
+
+
+<!--  TEMPLATE FOR EACH MODULE/VIEW   -->
+<template type="text/html" id="fileselectorTemplate">
+  <div id='selector' ng-controller="fileselectorController" class="fileselector">
+		<p><strong>Select a file of your interest to analyze its current attributes </strong>(Accepted Extensions: <i>.csv, .xls, .xlsx</i> )</p>
+		<p></p>
+		<input ng-model='shared.current_data' type="file" accept=".csv,.xlsx,.xls" id="files" name="file" />
+
+		<div id="tableGoesHere"align="center"></div>				
+</template>	
+
+<template type="text/html" id="navioTemplate">
+    <div id='navio_widget' ng-controller="navioController" class="navio">
+    	<p></p>
+    	<div id="navio"></div>
+    </div>
+</template>	
+
+<template type="text/html" id="spatioTemplate">
+    <div id='spatial_id' ng-controller="spatioController" class="spatialviz">
+		<p></p>
+		<div id="text" align="center"></div>
+		<p></p>
+		<div id="list" align="center"></div>
+		<p></p>
+		<div id="list2" align="center"></div>
+		<p></p>
+		<p></p>
+		<div id="btn1" align="center"></div>
+		<p></p>
+		<p></p>
+		<div id="spatial"align="center"></div>
+    </div>
+</template>	
+
+<template type="text/html" id="temporalTemplate">
+	<div id='temporal_id' ng-controller="temporalController" class="temporalviz">   
+	 	<p></p>
+	 	<div id="list3" align="center"></div>
+		<p></p>
+    </div>
+</template>	
+
+<template type="text/html" id="boxplotTemplate">
+	<div id='boxplotid' ng-controller="boxplotController" class="boxplot">
+		<p></p>
+		<div id="list4" align="center"></div>		
+		<div id="boxplot"></div>
+		<p></p>
+		<div id="list5" align="center"></div>	
+		<p></p>				
+		<div id="counter" align="center"></div>	
+	</div>
+</template>
+
+<template type="text/html" id="mapTemplate">
+	<div id='mapid' ng-controller="mapController" class="map" align='center'>	
+	</div>
+</template>
+
+<template type="text/html" id="splomTemplate">	
+	<div id='splomid' ng-controller="splomController" class="splom">
+		<p></p>
+		<div id="list6" align="center"></div>
+		<p></p>
+		<div id="list7" align="center"></div>
+		<p></p>
+		<div id="splomGraph"align="center"></div>
+	</div>
+</template>
+
+<template type="text/html" id="regressionTemplate">	
+	<div id='regressionid' ng-controller="regressionController" class="regression">
+		<p></p>
+		<div id="list8" align="center"></div>
+		<p></p>
+		<div id="list9" align="center"></div>
+		<p></p>
+		<div id="regressionGraph"align="center"></div>
+	</div>
+</template>
+
+<template type="text/html" id="StatisticsTemplate">	
+	<div id='statisticsid' ng-controller="statisticsController" class="statistics">
+		<p></p>
+		<div id="list8" align="center"></div>
+		<p></p>
+		<div id="list9" align="center"></div>
+		<p></p>
+		<div id="regressionGraph"align="center"></div>
+	</div>
+</template>
+
+
+<!-- PRELIMINARY CONTENT STYLE -->
+
+<style type="text/css">
+	body .lm_content{
+	  overflow: scroll;
+	}	
+	#mapid { margin: 0px; height: 100%; width: 100% }
+	#boxplotid { margin: 0px; height: 100%; width: 100% }
+	#splomid { margin: 0px; height: 100%; width: 100% }
+	#regressionid { margin: 0px; height: 100%; width: 100% }
+	#temporal_id { margin: 15px; height: 100%; width: 100% }
+	#spatial_id { margin: 15px; height: 100%; width: 100% }
+	#navio { margin: 15px; height: 100%; width: 100% }
+	#selector { margin: 15px; height: 100%; width: 100% }
+</style>
+
+
+<script type="text/javascript">
+	var fileselectorApp = angular.module('fileselector', ['test-service'] );
+	var navioApp = angular.module('navio', ['test-service'] );
+	var spatioApp = angular.module('spatialviz', ['test-service'] );
+	var temporalApp = angular.module('temporalviz', ['test-service'] );
+	var boxplotApp = angular.module('boxplot', ['test-service'] );
+	var mapApp = angular.module('map', ['test-service'] );
+	var splomApp = angular.module('splom', ['test-service'] );
+	var regressionApp = angular.module('regression', ['test-service'] );
+
+
+	angular.module('test-service', []).service('TestService', function($rootScope, $window){
+
+	  var datos= null;
+	  var seq= null;
+	  var cat= null;
+
+
+	  $window.rootScopes = $window.rootScopes || [];
+	    $window.rootScopes.push($rootScope);
+
+	   if (!!$window.sharedService){
+	      return $window.sharedService;
+	    }
+	    
+	    $window.sharedService = {      
+	      get: function(){
+	        return datos;
+	      },
+	      getData: function(callback) {
+		  	$(function()
+			{
+				$('#files').change( function(event) {
+				console.log(event.target.files[0].name)
+				var tmppath = URL.createObjectURL(event.target.files[0]);
+				console.log(tmppath)
+
+
+				var fmt1 = d3.timeParse("%m/%d/%Y %H:%M:%S %p");
+				var fmt2 = d3.timeParse("%m/%d/%Y %H:%M:%S ");
+				var fmt3 = d3.timeParse("%m/%d/%Y %H:%M");
+				var fmt4 = d3.timeParse("%d/%m/%Y %H:%M:%S %p");
+				var fmt5 = d3.timeParse("%d/%m/%Y %H:%M:%S ");
+				var fmt6 = d3.timeParse("%d/%m/%Y %H:%M");
+				var fmt7 = d3.timeParse("%Y/%m/%d %H:%M:%S %p");
+				var fmt8 = d3.timeParse("%Y/%m/%d %H:%M:%S ");
+				var fmt9 = d3.timeParse("%Y/%m/%d %H:%M");
+				var fmt10 = d3.timeParse("%m-%d-%Y %H:%M:%S %p");
+				var fmt11 = d3.timeParse("%m-%d-%Y %H:%M:%S ");
+				var fmt12 = d3.timeParse("%m-%d-%Y %H:%M");
+				var fmt13 = d3.timeParse("%d-%m-%Y %H:%M:%S %p");
+				var fmt14 = d3.timeParse("%d-%m-%Y %H:%M:%S ");
+				var fmt15 = d3.timeParse("%d-%m-%Y %H:%M");
+				var fmt16 = d3.timeParse("%Y-%m-%d %H:%M:%S %p");
+				var fmt17 = d3.timeParse("%Y-%m-%d %H:%M:%S ");
+				var fmt18 = d3.timeParse("%Y-%m-%d %H:%M");
+
+				function parsing(d){					
+							if (d.hasOwnProperty("Latitud")){
+							     d["Latitude"] = +d["Latitud"];
+							    delete d["Latitud"];
+							}
+							if(d.hasOwnProperty("latitud")){
+							    d["Latitude"] = +d["latitud"];
+							    delete d["latitud"];
+							}
+							if(d.hasOwnProperty("X")){
+							    d["Latitude"] = +d["X"];
+							    delete d["X"];
+							}
+							if(d.hasOwnProperty("x")){
+							    d["Latitude"] = +d["x"];
+							    delete d["x"];
+							}
+							if (d.hasOwnProperty("Longitud")){
+							     d["Longitude"] = +d["Longitud"];
+							    delete d["Longitud"];
+							}
+							if(d.hasOwnProperty("longitud")){
+							    d["Longitude"] = +d["longitud"];
+							    delete d["longitud"];
+							}
+							if(d.hasOwnProperty("Y")){
+							    d["Longitude"] = +d["Y"];
+							    delete d["Y"];
+							}
+							if(d.hasOwnProperty("y")){
+							    d["Longitude"] = +d["y"];
+							    delete d["y"];
+							}
+							if (!d.hasOwnProperty("Latitude") && !d.hasOwnProperty("Longitude")){
+							 var x=Object.keys(d)
+							 for(var i=0;i<x.length;i++){
+							  //console.log(d[x[i]])
+							  if (/(\()?(\-)?([0-9]){1,3}(\.){1}([0-9]){2,10}( )?(\,)?(\;)?(\-)?( )?(\-)?([0-9]){1,3}(\.){1}([0-9]){1,10}(\))?/.test(d[x[i]])){
+							    d['Latitude']=+d[x[i]].split(',')[0].split('(')[1]
+							    d['Longitude']=+d[x[i]].split(',')[1].split(')')[0]
+							    delete d[x[i]];					        
+							  }
+							 }
+							}
+
+							if (d.hasOwnProperty("Fecha")){
+							d["Date"] = d["Fecha"];
+							delete d["Fecha"];
+							if (/[a]{1}\.( )?[m]{1}\./.test(d.Date)){
+							d.Date = d.Date.replace(/[a]{1}\.( )?[m]{1}\./, "AM");
+							seqColumnsconsole.log(d.Date)
+							}
+							else if (/[p]{1}\.( )?[m]{1}\./.test(d.Date)){
+							d.Date = d.Date.replace(/[p]{1}\.( )?[m]{1}\./, "PM");
+							console.log(d.Date)
+							} 
+							}
+							else if (d.hasOwnProperty("fecha")){
+							d["Date"] = d["fecha"];
+							delete d["fecha"];
+							if (/[a]{1}\.?( )[m]{1}\.\./.test(d.Date)){
+							d.Date = d.Date.replace(/[a]{1}\.?( )[m]{1}\./, "AM");
+							}
+							else if (/[p]{1}\.?( )[m]{1}\./.test(d.Date)){
+							d.Date = d.Date.replace(/[p]{1}\.?( )[m]{1}\./, "PM");
+							} 
+							}
+
+							// This function is applied to each row of the dataset
+							if(fmt1(d.Date)!=null){
+							  d.Date = fmt1(d.Date);
+							}
+							else if (fmt2(d.Date)!=null){
+							  d.Date = fmt2(d.Date);
+							}
+							else if (fmt3(d.Date)!=null){
+							  d.Date = fmt3(d.Date);
+							}
+							else if (fmt4(d.Date)!=null){
+							  d.Date = fmt4(d.Date);
+							}
+							else if (fmt5(d.Date)!=null){
+							  d.Date = fmt5(d.Date);
+							}
+							else if (fmt6(d.Date)!=null){
+							  d.Date = fmt6(d.Date);
+							}
+							else if (fmt7(d.Date)!=null){
+							  d.Date = fmt7(d.Date);
+							}
+							else if (fmt8(d.Date)!=null){
+							  d.Date = fmt8(d.Date);
+							}
+							else if (fmt9(d.Date)!=null){
+							  d.Date = fmt9(d.Date);
+							}
+							else if (fmt10(d.Date)!=null){
+							  d.Date = fmt10(d.Date);
+							}
+							else if (fmt11(d.Date)!=null){
+							  d.Date = fmt11(d.Date);
+							}
+							else if (fmt12(d.Date)!=null){
+							  d.Date = fmt12(d.Date);
+							}
+							else if (fmt13(d.Date)!=null){
+							  d.Date = fmt13(d.Date);
+							}
+							else if (fmt14(d.Date)!=null){
+							  d.Date = fmt14(d.Date);
+							}
+							else if (fmt15(d.Date)!=null){
+							  d.Date = fmt15(d.Date);
+							}
+							else if (fmt16(d.Date)!=null){
+							  d.Date = fmt16(d.Date);
+							}
+							else if (fmt17(d.Date)!=null){
+							  d.Date = fmt17(d.Date);
+							}
+							else if (fmt18(d.Date)!=null){
+							  d.Date = fmt18(d.Date);
+							}
+							
+
+							var weekday = new Array(7);
+							weekday[0] =  "Sunday";
+							weekday[1] = "Monday";
+							weekday[2] = "Tuesday";
+							weekday[3] = "Wednesday";
+							weekday[4] = "Thursday";
+							weekday[5] = "Friday";
+							weekday[6] = "Saturday";
+
+
+							var month = new Array(12);
+							month[0] = "January";
+							month[1] = "February";
+							month[2] = "March";
+							month[3] = "April";
+							month[4] = "May";
+							month[5] = "June";
+							month[6] = "July";
+							month[7] = "August";
+							month[8] = "September";
+							month[9] = "October";
+							month[10] = "November";
+							month[11] = "December";
+
+
+							function weekMonth(date) {						    
+							    var prefixes = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
+							    return prefixes[Math.floor(date.getDate() / 7)];
+							}
+
+							function isWeekDay(date){
+								if(date.getDay()!=0 || date.getDay()!=6){
+									return true
+								}
+							}
+
+							if (d.hasOwnProperty("Date")){
+								d.Hours = d.Date.getHours();
+								d.Minutes = d.Date.getMinutes();
+								d.Seconds = d.Date.getSeconds();
+								d.DayNight = d.Hours < 6 || d.Hours>18 ? "night": "diurnal";
+								d.WeekOfTheMonth = weekMonth(d.Date)
+								d.DayOfTheWeek = weekday[d.Date.getDay()];	
+								d.isWeekDay= isWeekDay(d.Date)					
+								d.Year = d.Date.getFullYear().toString();
+								d.Month = month[d.Date.getMonth()];
+								d.Day = d.Date.getDate();
+							}
+
+							console.log(d)
+
+							return d;
+				}
+
+				if(event.target.files[0].name.includes(".xlsx") || event.target.files[0].name.includes(".xls")){
+
+					var url = tmppath;
+
+
+
+
+					/*var oReq = new XMLHttpRequest();
+					oReq.open("GET", url, true);
+					oReq.responseType = "arraybuffer";
+
+					oReq.onload = function(e) {
+					  var arraybuffer = oReq.response;
+
+					  var data = new Uint8Array(arraybuffer);
+					  var arr = new Array();
+					  for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+					  var bstr = arr.join("");
+
+					  var workbook = XLSX.read(bstr, {type:"binary"});
+
+					  var first_sheet_name = workbook.SheetNames[0];
+
+					  var worksheet = workbook.Sheets[first_sheet_name];
+
+					  var dats= XLSX.utils.sheet_to_json(worksheet,{raw:true});
+
+					  var cols = Object.keys(dats[0]);
+					  console.log(cols.indexOf('Time'))
+					  
+					  cols=cols.slice(0,cols.indexOf('Time'))
+
+
+					var dats_callback=[]
+						for(var i=0;i<dats.length;i++){	
+							  	if(dats[i].hasOwnProperty('Time')){
+							  		dats[i]['Name']=dats[i]['Time'].split(']')[0].split('[')[0]							  		
+							  		if((dats[i]['Time'].split(',')).length ==3){
+							  			dats[i]['Shape']=dats[i]['Time'].split(']')[0].split('[')[1].split(',')[0]
+							  			dats[i]['Status']=dats[i]['Time'].split(',')[2].split(']')[0]
+							  			dats[i]['Type']=dats[i]['Time'].split(',')[1]  			
+							  		}
+							  		if((dats[i]['Time'].split(',')).length ==2){
+						  				dats[i]['Shape']=dats[i]['Time'].split(',')[0].split('[')[1]
+						  				dats[i]['Type']=dats[i]['Time'].split(',')[1].split(']')[0]			  								  			
+							  		}
+							  		if((dats[i]['Time'].split(',')).length ==1){
+							  			dats[i]['Shape']=dats[i]['Time'].split(']')[0].split('[')[1]
+							  		}
+							  		
+
+							  		delete dats[i]['Time'];				  		
+							  		
+							  	}
+
+							  	dats_callback.push(parsing(dats[i]))
+					   }
+					
+					 			
+
+					  callback(dats_callback);
+
+				}
+
+					oReq.send();*/
+				}
+				else if(event.target.files[0].name.includes(".csv")){
+					console.log("va a leer")
+					d3.csv(tmppath, function (d) { 
+							parsing(d)
+							return d;
+
+							},  function (err, data) {	
+							 	dat=data;								 					 	
+							 	callback(dat);							 	
+							})
+					};			
+				});				
+				});	
+		}, changeData: function(newArr){
+	        datos = newArr;
+	        angular.forEach($window.rootScopes, function(scope) {
+	          if(!scope.$$phase) {
+	              scope.$apply();
+	          }
+	        });
+	        return datos;
+	      }, getSeqColumns: function(){
+	        return seq;
+	      }, changeSeqColumns: function(newArr){
+	        seq = newArr;
+	        angular.forEach($window.rootScopes, function(scope) {
+	          if(!scope.$$phase) {
+	              scope.$apply();
+	          }
+	        });
+	        return seq;
+	      }, getCatColumns: function(){
+	        return cat;
+	      }, changeCatColumns: function(newArr){
+	        cat = newArr;
+	        angular.forEach($window.rootScopes, function(scope) {
+	          if(!scope.$$phase) {
+	              scope.$apply();
+	          }
+	        });
+	        return cat;
+	      }
+
+	    }
+
+	    return $window.sharedService;
+	})
+
+	fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"container","state","TestService",function($scope,$timeout,container,state, TestService) {	
+		
+			$scope.dat= state.dat || null;
+			$scope.datos= state.datos || null;
+			$scope.dataFinal= state.dataFinal || null;
+
+			$scope.seq= state.seq || null;
+			$scope.seqColumns= state.seqColumns || null;
+			$scope.seqColumnsFinal= state.seqColumnsFinal || null;
+
+			$scope.cat= state.cat || null;
+			$scope.catColumns= state.catColumns || null;
+			$scope.catColumnsFinal= state.catColumnsFinal || null;
+
+			
+			TestService.getData(function(d){
+				$scope.dat =d;
+				container.layoutManager.eventHub.emit( 'completedata', $scope.dat );
+
+				var parse=[];
+		    	var dateparse=[];
+		   		var categoric=[];
+
+				function json2table(json, classes) {
+					var cols = Object.keys(json[0]);
+					console.log(cols)
+
+					var headerRow = '';
+					var bodyRows = '';
+					var columnas='';
+					var columnasSeq='';
+					var columnsSequential=[];
+					var columns=[];
+
+					classes = classes || '';
+
+					function capitalizeFirstLetter(string) {
+				    	return string.charAt(0).toUpperCase() + string.slice(1);
+					}
+
+					json.map(function(row) {
+					    bodyRows += '<tr>';
+					    cols.map(function(colName) {
+					      bodyRows += '<td>' + row[colName] + '</td>';
+					      columns.push(row[colName])
+					      //console.log(cols.length)
+					    })
+						bodyRows += '</tr>';
+					});	
+					
+					for (i = 0; i < cols.length; i++){
+					    if(/^[+-]?([0-9]*[.])?[0-9]+$/.test(columns[i]))
+					    { 
+					     parse.push(cols[i])
+					    }
+					    else if(/([0-9]{0,4})([0-9]{0,4})?(\/)([0-9]{0,4})([0-9]{0,4})?(\/)(\d{0,4})/.test(columns[i]))
+					    {
+					      dateparse.push(cols[i])
+					    } 
+
+					    else if(/[GMT-]{4}[0-9]{4}/.test(columns[i]))
+					    {
+					      dateparse.push(cols[i])
+					    }  
+					    else
+					    {
+					      categoric.push(cols[i])
+					    }
+					}
+
+					if(parse.includes('Year') && categoric.includes('Year')){
+					    var value = 'Year'
+					    parse=parse.filter(function(item) { 
+					    	return item !== value
+						}
+					)}	
+
+					$scope.seq=parse.filter((value, index, self) => self.indexOf(value) === index);		
+
+					for (var i=0;i<dateparse.length;i++){
+					       $scope.seq.push(dateparse[i])      
+
+					}
+
+					container.layoutManager.eventHub.emit( 'dateParseEvent', dateparse );
+
+					$scope.cat=categoric.filter((value, index, self) => self.indexOf(value) === index);
+
+					container.layoutManager.eventHub.emit( 'categoricsEvent', $scope.cat );
+
+					cols.map(function(col) {
+						headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
+						columnas += '<option value="'+col+'">'
+					});	
+
+					console.log(dateparse)
+
+					$scope.seq.map(function(col) {		
+						if (!(col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col=="Hours" || col=="Seconds" || col=='__seqId'||dateparse.includes(col))){
+								if(!($scope.cat).includes(col)){
+									console.log(col)									
+									columnsSequential.push('<option value="'+col+'">')	
+								}
+						}										
+						columnsSequential=columnsSequential.filter((value, index, self) => self.indexOf(value) === index)
+						columnasSeq=columnsSequential.join('')	
+					});
+
+
+					container.layoutManager.eventHub.emit( 'columnas_list', columnas );
+					container.layoutManager.eventHub.emit( 'columnasSeq_list', columnasSeq );
+
+					return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
+					     headerRow +
+					     '</tr></thead><tbody>' +
+					     bodyRows +
+					     '</tbody></table>';				
+				}
+
+				document.getElementById('tableGoesHere').innerHTML = json2table($scope.dat, 'table');
+
+				$(document).ready(function() {
+				    var data = [];
+				    if($scope.dat.length<=500000){
+				    	var cols = Object.keys($scope.dat[0]);
+				    	var arre=[]
+				    	var subfinal=[]
+				    	var remaining=[]
+				    	console.log(cols)
+
+						function toCSV(json) {
+						  json = Object.values(json);
+						  var csv = "";
+						  var x=[]
+						  var keys = (json[0] && Object.keys(json[0])) || [];
+						  for (var line of json) {
+						    keys.map(function(key){	
+
+						    	if((typeof line[key])=='string'){
+						    		var str= JSON.stringify(line[key])
+						    		if(str.includes(',')){
+						    			var nuevo=str.split(',')
+						    			line[key]= nuevo.join('')
+						    			console.log(line[key])
+						    		}
+						    	}
+						    		    					    					     
+
+						    	
+						    	x.push(line[key]);
+						    })
+						  }
+
+						  csv=x.join(',')
+
+						  return csv;
+						}	    	
+				  
+				  		
+
+				    	arre=toCSV($scope.dat).split(',') 				    	
+
+
+						function chunk(array, size) {
+						  if (!array) return [];
+						  const firstChunk = array.slice(0, size); // create the first chunk of the given array
+						  if (!firstChunk.length) {
+						    return array; // this is the base case to terminal the recursive
+						  }
+						  return [firstChunk].concat(chunk(array.slice(size, array.length), size)); 
+						}		
+
+						var news=chunk(arre,cols.length)
+
+						news.splice(-1,1)
+						console.log(news)
+
+
+
+			    	
+
+					    for ( var i=0 ; i<$scope.dat.length ; i++ ) {
+					    	//console.log("valor:   "+i)
+					        data.push( news[i] );
+					    }
+					     
+					    $('#data').DataTable( {
+					    	destroy: true,
+					        data:           data,
+					        deferRender:    true,
+					        //scrollY:        200,
+					        scrollCollapse: true,
+					        scroller:       true,					       
+						    dom: 'lBfrtip',
+						    buttons: [
+						        'copy', 'csv', 'excel', 'pdf', 'print'
+						    ],
+						    "scrollY": 300,
+				    		"scrollX": true
+							    });
+					}
+					else{
+						alert("Big File (for Browser) - Please enter a subset of your data that contains less than 500.000 rows")
+					}
+
+				});									
+
+			})
+
+
+			/*TestService.getData(function(d){
+
+				$scope.dat =d;
+				container.layoutManager.eventHub.emit( 'completedata', $scope.dat );
+
+				var parse=[];
+		    	var dateparse=[];
+		   		var categoric=[];
+
+				function json2table(json, classes) {
+				var cols = Object.keys(json[0]);
+
+				console.log(cols)
+				  
+				var headerRow = '';
+				var bodyRows = '';
+				var columnas='';
+				var columnasSeq='';
+				var columnsSequential=[];
+				var columns=[];
+				  
+				classes = classes || '';
+
+				function capitalizeFirstLetter(string) {
+				    return string.charAt(0).toUpperCase() + string.slice(1);
+				}
+				  
+				json.map(function(row) {
+				    bodyRows += '<tr>';
+				    cols.map(function(colName) {
+				      bodyRows += '<td>' + row[colName] + '</td>';
+				      columns.push(row[colName])
+				      //console.log(cols.length)
+				    })
+					bodyRows += '</tr>';
+				});
+
+				for (i = 0; i < cols.length; i++){
+				    if(/^[+-]?([0-9]*[.])?[0-9]+$/.test(columns[i]))
+				    { 
+				     parse.push(cols[i])
+				    }
+				    else if(/([0-9]{0,4})([0-9]{0,4})?(\/)([0-9]{0,4})([0-9]{0,4})?(\/)(\d{0,4})/.test(columns[i]))
+				    {
+				      dateparse.push(cols[i])
+				    } 
+
+				    else if(/[GMT-]{4}[0-9]{4}/.test(columns[i]))
+				    {
+				      dateparse.push(cols[i])
+				    }  
+				    else
+				    {
+				      categoric.push(cols[i])
+				    }
+				}
+
+				if(parse.includes('Year') && categoric.includes('Year')){
+
+				    var value = 'Year'
+
+				    parse=parse.filter(function(item) { 
+				    return item !== value
+				 })}
+
+				$scope.seq=parse.filter((value, index, self) => self.indexOf(value) === index);		
+
+
+				
+
+				for (var i=0;i<dateparse.length;i++){
+				       $scope.seq.push(dateparse[i])      
+
+				  }
+
+				container.layoutManager.eventHub.emit( 'dateParseEvent', dateparse );
+
+				$scope.cat=categoric.filter((value, index, self) => self.indexOf(value) === index);
+
+				container.layoutManager.eventHub.emit( 'categoricsEvent', $scope.cat );
+
+				cols.map(function(col) {
+				headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
+
+				columnas += '<option value="'+col+'">'
+				});	
+
+
+				console.log(dateparse)
+				
+				$scope.seq.map(function(col) {							
+
+							if (!(col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col=="Hours" || col=="Seconds" || col=='__seqId'||dateparse.includes(col))){
+									if(!($scope.cat).includes(col)){
+										console.log(col)									
+										columnsSequential.push('<option value="'+col+'">')	
+									}
+							}		
+									
+						columnsSequential=columnsSequential.filter((value, index, self) => self.indexOf(value) === index)
+
+						columnasSeq=columnsSequential.join('')	
+
+					});
+				
+
+
+				//console.log(columnasSeq)
+
+				container.layoutManager.eventHub.emit( 'columnas_list', columnas );
+				container.layoutManager.eventHub.emit( 'columnasSeq_list', columnasSeq );
+
+				return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
+				     headerRow +
+				     '</tr></thead><tbody>' +
+				     bodyRows +
+				     '</tbody></table>';
+				}
+
+				//document.getElementById('tableGoesHere').innerHTML = json2table($scope.dat, 'table');
+				$(document).ready(function() {
+					$('#data').DataTable( {  
+		    			"scrollY": 300,
+		    			"scrollX": true
+		    		} );
+				} );
+
+				
+				function loadScript(src) {
+				       var script = document.createElement("script");
+				       script.type = "text/javascript";
+				       document.getElementById("tableGoesHere").appendChild(script);
+				       script.src = src;		      
+				}
+				function loadStyle(src) {
+				       var script = document.createElement("link");
+				       script.rel = 'stylesheet'
+				       script.type = "text/css";
+				       document.getElementById("tableGoesHere").appendChild(script);
+				       script.href = src;
+				}
+
+				$(document).ready(function() {
+				$('#data').DataTable( {
+					destroy: true,
+				    dom: 'lBfrtip',
+				    buttons: [
+				        'copy', 'csv', 'excel', 'pdf', 'print'
+				    ],
+				    "scrollY": 300,
+		    		"scrollX": true
+				} );
+				} );
+
+				loadStyle('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css')
+				loadStyle('https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css')
+				loadScript('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js')
+				loadScript('https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js')
+				loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js')
+				loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js')
+				loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js')
+				loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js')
+				loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js')
+				loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js')
+
+				var script = document.createElement("script");
+				script.text="var table; $(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'lBfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
+				document.getElementById("tableGoesHere").appendChild(script);
+
+				otherfunction();
+
+
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function(returnData){					
+					console.log(returnData)
+					document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
+					$(document).ready(function() {
+						$('#data').DataTable( {  
+							destroy: true,
+						    dom: 'lBfrtip',
+						    buttons: [
+						        'copy', 'csv', 'excel', 'pdf', 'print'
+						    ],
+			    			"scrollY": 300,
+			    			"scrollX": true
+			    		} );
+					});				
+
+					
+				})
+			})*/
+
+
+
+			function otherfunction(){
+				$scope.datos=$scope.dat
+				$scope.seqColumns=$scope.seq
+				$scope.catColumns=$scope.cat
+
+				container.layoutManager.eventHub.emit( 'datosiniciales', $scope.datos );
+				container.layoutManager.eventHub.emit( 'seqiniciales', $scope.seqColumns );
+				container.layoutManager.eventHub.emit( 'catiniciales', $scope.catColumns );
+
+			}
+
+			container.layoutManager.eventHub.on( 'datosiniciales', function( datosiniciales ){
+				container.layoutManager.eventHub.on( 'seqiniciales', function( seqiniciales ){
+					container.layoutManager.eventHub.on( 'catiniciales', function( catiniciales ){
+
+
+				$scope.data=jQuery.extend(true, [], datosiniciales);
+				$scope.dataFinal=TestService.changeData($scope.data)
+				$scope.dataFinal=TestService.get();
+
+				$scope.seqCols=jQuery.extend(true, [], seqiniciales);
+				$scope.seqColumnsFinal=TestService.changeSeqColumns($scope.seqCols)
+				$scope.seqColumnsFinal=TestService.getSeqColumns();
+
+
+				$scope.catCols=jQuery.extend(true, [], catiniciales);
+				$scope.catColumnsFinal=TestService.changeCatColumns($scope.catCols)
+				$scope.catColumnsFinal=TestService.getCatColumns();		
+
+				container.layoutManager.eventHub.emit( 'datos', $scope.dataFinal );
+				container.layoutManager.eventHub.emit( 'seqColumns', $scope.seqColumnsFinal );
+				container.layoutManager.eventHub.emit( 'catColumns', $scope.catColumnsFinal );
+
+						})
+					})
+				})			
+	}])
+
+	navioApp.controller('navioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
+		
+		console.log("entro aca")	
+
+		container.layoutManager.eventHub.on( 'datos', function( data ){
+				container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
+					container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
+
+						nv=navio(d3.select("#navio"), 600);
+
+							catColumns.forEach((c) => nv.addCategoricalAttrib(c));
+							seqColumns.forEach((c) => nv.addSequentialAttrib(c));
+							
+							nv.data(data);
+
+							visible = nv.getVisible();						
+							
+							container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
+
+							console.log(data)
+
+
+							nv.updateCallback(function(){
+								visible = nv.getVisible();
+								container.layoutManager.eventHub.emit( 'datosvisibles', visible );
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
+
+								console.log(visible)
+
+								container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
+									console.log(attr1)
+									container.layoutManager.eventHub.on( 'change-attr2', function( attr2 ){
+										console.log(attr2)
+										container.layoutManager.eventHub.on( 'vis', function( vis ){
+											vis(attr1,attr2,seqColumns,catColumns,visible)
+										})
+									})
+								})
+							})	
+				});
+			});
+		});	
+	}])
+
+	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
+		
+		container.layoutManager.eventHub.on( 'completedata', function( completedata ){				
+				container.layoutManager.eventHub.on( 'columnas_list', function( cols ){			
+					container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
+						container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
+							container.layoutManager.eventHub.on( 'datosvisibles', function( datosvisibles ){
+							container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){
+
+								if(datos[0].hasOwnProperty('Latitude') && datos[0].hasOwnProperty('Longitude')){
+									document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
+									document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+cols
+									document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+cols
+
+									document.getElementById("btn1").innerHTML='<button type="button" id="complete_t"> <strong>SHOW ('+completedata.length+' VALUES)</strong></button>'
+
+
+									$('button[id="complete_t"]').click(function() {								    	
+										
+										container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );	
+										container.layoutManager.eventHub.emit( 'datosvisibles', completedata );			   	
+									   
+
+									});
+
+									function drawViz(seqColumns,catColumns,attr1,attr2,visible)
+									{
+										if(datos[0].hasOwnProperty('Year')){
+											if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
+											var yourVlSpec = {
+												"width": 1000,
+												"height": 300,
+												"autosize": {"type": "fit", "contains": "padding"},
+												"data": {"values":visible},
+												"transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+												"selection": {
+												"grid": {
+												"type": "interval", "bind": "scales"
+											},
+												"CylYr": {
+												"type": "single",
+												"fields": ["Year"],
+												"bind": {
+												"Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+											},
+												"on": "click",
+												"resolve": "global",
+												"empty": "all"
+											}
+											},
+												"mark": "circle",
+												"encoding": {
+												"x": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
+												"y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}},
+												"color": {
+												"condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+												"value": "#D8D8D8"
+												},
+												"size": {
+													"condition": {
+													  "selection": "CylYr",
+													  "value": 100,
+													  "fill":'None'
+													}
+												}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(catColumns.includes(attr1) && catColumns.includes(attr2)){
+											setTimeout(function(){
+												alert("You selected TWO categorical attributes.\nSelect a variable combination, as follows:\nCATEGORICAL/SEQUENTIAL or SEQUENTIAL/SEQUENTIAL")
+											},200)
+											}							
+											else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  },
+											  "CylYr": {
+											  "type": "single",
+											  "fields": ["Year"],
+											  "bind": {
+											  "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+											  },
+											  "on": "click",
+											  "resolve": "global",
+											  "empty": "all"
+											  }
+											  },
+											  "mark": "bar",
+											  "encoding": {
+											  "x": {"field": attr1, "type": "ordinal"},
+											  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}},
+											  "color": {
+											  "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+											  "value": "#D8D8D8"
+											  },
+											  "size": {
+											      "condition": {
+											          "selection": "CylYr",
+											          "value": 100,
+											          "fill":'None'
+											      	}
+											  	}
+											 }
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  },
+											  "CylYr": {
+											  "type": "single",
+											  "fields": ["Year"],
+											  "bind": {
+											  "Year": {"input": "range", "min": d3.min(visible,d=>+d.Year-1).toString(), "max":d3.max(visible,d=>+d.Year-1).toString(), "step": 1}
+											  },
+											  "on": "click",
+											  "resolve": "global",
+											  "empty": "all"
+											  }
+											  },
+											  "mark": "bar",
+											  "encoding": {
+											  "x": {"field": attr2, "type": "ordinal"},
+											  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
+											  "color": {
+											  "condition": {"selection": "CylYr", "field": "Year", "type": "nominal"},
+											  "value": "#D8D8D8"
+											  },
+											  "size": {
+											      "condition": {
+											          "selection": "CylYr",
+											          "value": 100,
+											          "fill":'None'
+											      }
+											  }
+											 }
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
+
+											console.log("ENTRÓ ACÁ")
+
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": {"type":"point"},
+											  "encoding": {
+											  "x": {"field": attr1, "type": "temporal"},
+											  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
+
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"calculate": "year(datum.Year)", "as": "Year"},{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": {"type":"point"},
+											  "encoding": {
+											  "x": {"field": attr2, "type": "temporal"},
+											  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+										}
+										else{
+
+											if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
+											var yourVlSpec = {
+												"width": 1000,
+												"height": 300,
+												"autosize": {"type": "fit", "contains": "padding"},
+												"data": {"values":visible},
+												"transform": [{"filter": {"selection": "brush"}}],
+												"selection": {
+												"grid": {
+												"type": "interval", "bind": "scales"
+											}},
+												"mark": "circle",
+												"encoding": {
+												"x": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}},
+												"y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(catColumns.includes(attr1) && catColumns.includes(attr2)){
+											setTimeout(function(){
+												alert("You selected TWO categorical attributes.\nSelect a variable combination, as follows:\nCATEGORICAL/SEQUENTIAL or SEQUENTIAL/SEQUENTIAL")
+											},200)
+											}							
+											else if(catColumns.includes(attr1) && seqColumns.includes(attr2)){
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": "bar",
+											  "encoding": {
+											  "x": {"field": attr1, "type": "ordinal"},
+											  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}							  
+											 }
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": "bar",
+											  "encoding": {
+											  "x": {"field": attr2, "type": "ordinal"},
+											  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}								  
+											 }
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
+
+											console.log("ENTRÓ ACÁ")
+
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": {"type":"point"},
+											  "encoding": {
+											  "x": {"field": attr1, "type": "temporal"},
+											  "y": {"field": attr2, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr2]), d3.max(visible,d => +d[attr2])]}}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
+
+											var yourVlSpec = {
+											  "width": 1000,
+											  "height": 300,
+											  "autosize": {"type": "fit", "contains": "padding"},
+											  "data": {"values":visible},
+											  "transform": [{"filter": {"selection": "brush"}}],
+											  "selection": {
+											  "grid": {
+											  "type": "interval", "bind": "scales"
+											  }},
+											  "mark": {"type":"point"},
+											  "encoding": {
+											  "x": {"field": attr2, "type": "temporal"},
+											  "y": {"field": attr1, "type": "quantitative","scale": {"domain": [d3.min(visible,d => +d[attr1]), d3.max(visible,d => +d[attr1])]}}
+											}
+											}
+											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
+											spatial(yourVlSpec,visible)
+
+											}
+										}
+									}
+
+									var spatial=function(yourVlSpec,visible)
+									{
+											var spatialvis = {
+											            "width": 1000,
+											            "height": 300,
+											            "data": {"values":visible},
+											            "transform": [{"filter": {"selection": "brush"}}],
+											            "vconcat": [{
+											              "selection": {
+											                "brush": {
+											                  "type": "interval",
+											                  "on": "[mousedown, window:mouseup] > window:mousemove!",
+											                  "encodings": ["x", "y"],
+											                  "translate": "[mousedown, window:mouseup] > window:mousemove!",
+											                  "zoom": "wheel!",
+											                  "mark": {"fill": "#333", "stroke": "green"},
+											                  "resolve": "global"
+											                  }
+											              },
+											              "width": 700,
+											              "mark": "point",
+											              "encoding": {
+											                "x": {"field": "Longitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Longitude), d3.max(visible,d => +d.Longitude)]}},
+											                "y": {"field": "Latitude","type": "quantitative","scale": {"domain": [d3.min(visible,d => +d.Latitude), d3.max(visible,d => +d.Latitude)]}}
+											              }
+											            }, yourVlSpec]
+											          }									
+
+											vegaEmbed("#spatial", spatialvis);
+
+									}
+
+									var vis = function(attr1,attr2,seqColumns,catColumns,visible){
+										
+										d3.select("#attr1").on("change", function(){
+											attr1 = this.value;
+											container.layoutManager.eventHub.emit( 'change-attr1', attr1 );	
+										  	//console.log(attr1)
+
+											drawViz(seqColumns,catColumns,attr1,attr2,visible)	
+											
+										})
+
+										d3.select("#attr2").on("change", function(){
+										  	attr2 = this.value;
+										  	container.layoutManager.eventHub.emit( 'change-attr2', attr2 );		
+
+										  	//console.log(attr2)
+
+										  	drawViz(seqColumns,catColumns,attr1,attr2,visible)
+										})				
+
+									}
+									container.layoutManager.eventHub.emit( 'vis', vis(attr1,attr2,seqColumns,catColumns,datos) );
+								}		
+
+								else{
+									document.getElementById("text").innerHTML='<p><strong>THERE ARE NOT SPATIAL ATTRIBUTES THAT PERMITS ANY SPATIAL ANALYSIS</strong></p>'
+								}					
+							})
+						})
+					})
+				})	
+			})
+		})	
+	}])
+
+	temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
+
+		container.layoutManager.eventHub.on( 'completedata', function( completedata ){
+			container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){				
+					container.layoutManager.eventHub.on( 'yourVlSpec', function(yourVlSpec){
+
+						document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
+
+						var year=[]
+						var daynight=[]
+						var dayofMonth=[]
+						var day=[]
+						var month=[]
+						var hour=[]
+						var weekmonth=[]
+						var isWeekDay=[]
+
+						var year_t=''
+						var daynight_t=''
+						var dayofMonth_t=''
+						var day_t=''
+						var month_t=''
+						var hour_t=''
+						var weekmonth_t=''
+						var isWeekDay_t=''
+
+						if(datos[0].hasOwnProperty("Year")){
+
+							datos.map(function(d){
+								year.push(d['Year'])
+								daynight.push(d['DayNight'])
+								day.push(d['DayOfTheWeek'])
+								dayofMonth.push(d['Day'])
+								month.push(d['Month'])
+								hour.push(d['Hours'])
+								weekmonth.push(d['WeekOfTheMonth'])
+								isWeekDay.push(d['isWeekDay'])
+							})
+
+							function sortNumber(a,b) {
+						        return a - b;
+						    }
+
+							year=year.filter((value, index, self) => self.indexOf(value) === index).sort(sortNumber)
+							daynight=daynight.filter((value, index, self) => self.indexOf(value) === index).sort()
+							day=day.filter((value, index, self) => self.indexOf(value) === index).sort().sort(sortNumber)
+							dayofMonth=dayofMonth.filter((value, index, self) => self.indexOf(value) === index).sort()
+							month=month.filter((value, index, self) => self.indexOf(value) === index)
+							hour=hour.filter((value, index, self) => self.indexOf(value) === index).sort(sortNumber)
+							weekmonth=weekmonth.filter((value, index, self) => self.indexOf(value) === index).sort()
+							isWeekDay=isWeekDay.filter((value, index, self) => self.indexOf(value) === index)
+
+
+							var complete_enable='<button type="button" id="complete"> Show ('+completedata.length+' values)</button>'
+							for(var i=0;i<year.length;i++){
+								if(i!=10){
+									year_t+='<input type="checkbox" value="'+year[i]+'" id="year">'+year[i]
+								}
+								else{
+									year_t+='<p></p><input type="checkbox" value="'+year[i]+'" id="year">'+year[i]
+								}						}
+							for(var i=0;i<daynight.length;i++){
+								if(i!=10){
+									daynight_t+='<input type="checkbox" value="'+daynight[i]+'" id="daynight">'+daynight[i]
+								}
+								else{
+									daynight_t+='<p></p><input type="checkbox" value="'+daynight[i]+'" id="daynight">'+daynight[i]
+								}						}
+							for(var i=0;i<day.length;i++){
+								if(i!=10){
+									day_t+='<input type="checkbox" value="'+day[i]+'" id="day">'+day[i]
+								}
+								else{
+									day_t+='<p></p><input type="checkbox" value="'+day[i]+'" id="day">'+day[i]
+								}						}
+							for(var i=0;i<dayofMonth.length;i++){
+								if(i!=10){
+									dayofMonth_t+='<input type="checkbox" value="'+dayofMonth[i]+'" id="dayofMonth">'+dayofMonth[i]
+								}
+								else{
+									dayofMonth_t+='<p></p><input type="checkbox" value="'+dayofMonth[i]+'" id="dayofMonth">'+dayofMonth[i]
+								}						}
+							for(var i=0;i<month.length;i++){							
+								if(i!=10){
+									month_t+='<input type="checkbox" value="'+month[i]+'" id="month">'+month[i]
+								}
+								else{
+									month_t+='<p></p><input type="checkbox" value="'+month[i]+'" id="month">'+month[i]
+								}	
+							}
+							for(var i=0;i<hour.length;i++){
+								if(i!=11){
+									hour_t+='<input type="checkbox" value="'+hour[i]+'" id="hour">'+hour[i]
+								}
+								else{
+									hour_t+='<p></p><input type="checkbox" value="'+hour[i]+'" id="hour">'+hour[i]
+								}						}
+							for(var i=0;i<weekmonth.length;i++){
+								if(i!=10){
+									weekmonth_t+='<input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth">'+weekmonth[i]
+								}
+								else{
+									weekmonth_t+='<p></p><input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth">'+weekmonth[i]
+								}						}
+							for(var i=0;i<isWeekDay.length;i++){
+								if(i!=10){
+									isWeekDay_t+='<input type="checkbox" value="'+isWeekDay[i]+'" id="isWeekDay">'+isWeekDay[i]
+								}
+								else{
+									isWeekDay_t+='<p></p><input type="checkbox" value="'+isWeekDay[i]+'" id="isWeekDay">'+isWeekDay[i]
+								}						
+							}
+
+
+
+							year_t=('<ul>').concat(year_t)
+							daynight_t=('<ul>').concat(daynight_t)
+							dayofMonth_t=('<ul>').concat(dayofMonth_t)
+							day_t=('<ul>').concat(day_t)
+							month_t=('<ul>').concat(month_t)
+							hour_t=('<ul>').concat(hour_t)
+							weekmonth_t=('<ul>').concat(weekmonth_t)
+							isWeekDay_t=('<ul>').concat(isWeekDay_t)
+							year_t=year_t.concat('</ul>')
+							daynight_t=daynight_t.concat('</ul>')
+							dayofMonth_t=dayofMonth_t.concat('</ul>')
+							day_t=day_t.concat('</ul>')
+							month_t=month_t.concat('</ul>')
+							hour_t=hour_t.concat('</ul>')
+							weekmonth_t=weekmonth_t.concat('</ul>')
+							isWeekDay_t=isWeekDay_t.concat('</ul>')
+
+
+							
+							document.getElementById("temporal_id").innerHTML='<p><strong>COMPLETE DATA:            </strong><strong>'+complete_enable+'</strong></p>   <p><strong>Year:</strong></p>   '+year_t+'   <p></p>   <p><strong>Month:</strong></p>   '+month_t+'    <p></p>   <p><strong>Day:</strong></p>   '+dayofMonth_t+'    <p></p>    <p><strong>Day of the Week:</strong></p>   '+day_t+'    <p></p>   <p><strong>Hour:</strong></p>   '+hour_t+'    <p></p>   <p><strong>Day/Night:</strong></p>  '+daynight_t+'    <p></p>   <p><strong>Week Of The Month:</strong></p>   '+weekmonth_t+'    <p></p>   <p><strong>Is Weekday:</strong></p>  '+isWeekDay_t+'    <div id="list3" align="center"></div>    <div id="temporal"align="center"></div>'
+
+							document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
+
+
+							var allInputs = document.getElementsByTagName("input");
+							for (var i = 0, max = allInputs.length; i < max; i++){
+							    if (allInputs[i].type === 'checkbox' && !(allInputs[i].id=='complete'))
+							    	allInputs[i].checked = true;
+							    else
+							    	d3.select('#complete').property('disabled',true)
+							}					
+							
+							
+							$('button[id="complete"]').click(function() {				
+							    	
+						    	
+						    	container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );	
+						    	container.layoutManager.eventHub.emit( 'datosvisibles', completedata );	
+
+						    	for (var i = 0, max = allInputs.length; i < max; i++){
+							    if (allInputs[i].type === 'checkbox')
+							        allInputs[i].checked = true;	
+							        d3.select('#complete').property('disabled',true)	 
+							    }	
+
+							});
+
+										
+
+							$('input[id="year"]').click(function() {								
+							    if(!this.checked){							    		
+							    		datos=datos.filter(d => !(d['Year']==this.value))		
+							    		container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							    		container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
+							    		d3.select('#complete').property('disabled',false)	    		
+							    }	
+							    else{	
+							    	completedata.filter(d=>d['Year']==this.value).map(e=>datos.push(e))	
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );					    							    	
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)					    
+							});
+
+							$('input[id="daynight"]').click(function() {
+							    if(!this.checked){
+							            datos=datos.filter(d => d['DayNight']!==this.value)	
+							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
+							            d3.select('#complete').property('disabled',false)							            				            
+							    }
+							    else{
+							    	completedata.filter(d=>d['DayNight']==this.value).map(e=>datos.push(e))		
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="day"]').click(function() {
+							    if(!this.checked){
+							        datos=datos.filter(d => d['DayOfTheWeek']!==this.value)	
+							        container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							        container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							        d3.select('#complete').property('disabled',false)				            
+							    }
+							    else{
+							    	completedata.filter(d=>d['DayOfTheWeek']==this.value).map(e=>datos.push(e))
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );		
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="dayofMonth"]').click(function() {
+							    if(!this.checked){
+							           datos= datos.filter(d => !(d['Day']==this.value))	
+							           container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							           container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							           d3.select('#complete').property('disabled',false)						           					           
+							    }
+							    else{
+							    	completedata.filter(d=>d['Day']==this.value).map(e=>datos.push(e))	
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="month"]').click(function() {
+							    if(!this.checked){
+							            datos=datos.filter(d => !(d['Month']==this.value))
+							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							            d3.select('#complete').property('disabled',false)							            
+							    }
+							    else{
+							    	completedata.filter(d=>d['Month']==this.value).map(e=>datos.push(e))
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );							    
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="hour"]').click(function() {
+							    if(!this.checked){
+							           datos=datos.filter(d => !(d['Hours']==this.value))	
+							           container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );		
+							           container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
+							           d3.select('#complete').property('disabled',false)			           
+							    }
+							    else{
+							    	completedata.filter(d=>d['Hours']==this.value).map(e=>datos.push(e))
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );								    
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="weekmonth"]').click(function() {
+							    if(!this.checked){
+							            datos=datos.filter(d => d['WeekOfTheMonth']!==this.value)	
+							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							            d3.select('#complete').property('disabled',false)						            
+							    }
+							    else{
+							    	completedata.filter(d=>d['WeekOfTheMonth']==this.value).map(e=>datos.push(e))	
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );						    
+							    }
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+							$('input[id="isWeekDay"]').click(function() {
+							    if(!this.checked){
+							            datos=datos.filter(d => d['isWeekDay']!==this.value)
+							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							            d3.select('#complete').property('disabled',false)							            
+							    }
+							    else{
+							    	completedata.filter(d=>d['isWeekDay']==this.value).map(e=>datos.push(e))
+							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
+								}
+							    console.log("FILTRADOS")	
+								console.log(datos)	
+							});	
+
+
+							var temporal=function(yourVlSpec,datos){
+								d3.select("#attr3").on("change", function(){
+								  var attrSeq = this.value;
+								  var temporalvis = {
+								  "data": {"values":datos},
+								  "vconcat": [{
+								    "width": 700,
+								    "mark": "area",
+								    "encoding": {
+								      "x": {
+								        "field": "Date",
+								        "type": "temporal",
+								        "scale": {"domain": {"selection": "brush"}},
+								        "axis": {"title": ""}
+								      },
+								      "y": {"field": attrSeq,"type": "quantitative"}
+								    }
+								  }, {
+								    "width": 700,
+								    "height": 80,
+								    "mark": "area",
+								    "selection": {
+								      "brush": {"type": "interval", "encodings": ["x"],"zoom": "wheel!",
+								                  "mark": {"fill": "#333", "stroke": "green"}}
+								    },
+								    "encoding": {
+								      "x": {
+								        "field": "Date",
+								        "type": "temporal"
+								      },
+								      "y": {
+								        "field": attrSeq,
+								        "type": "quantitative",
+								        "axis": {"tickCount": 3, "grid": false}
+								      }
+								    }
+								  }, yourVlSpec]
+								}
+								  vegaEmbed("#temporal", temporalvis);
+								});
+							}
+							temporal(yourVlSpec,datos)
+
+							console.log(datos)
+						}
+						else{
+							document.getElementById("list3").innerHTML = '<strong> THERE ARE NOT TEMPORAL ATTRIBUTES THAT PERMITS ANY TEMPORAL ANALYSIS </strong>'
+						}
+					});
+				});
+			});
+		});
+	}])
+
+	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {	
+
+
+		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
+			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
+
+
+					if(datos[0].hasOwnProperty("Year")){
+						document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols				
+
+						function onlyUnique(value, index, self) { 
+						    return self.indexOf(value) === index;
+						}
+
+						var years_temp=[]
+							var years = datos.map(function(d){
+								years_temp.push(parseInt(d.Date.getFullYear()))				
+							})
+
+						var months_temp=[]
+							var months = datos.map(function(d){
+								months_temp.push(parseInt(d.Date.getMonth()))				
+							})
+
+						var years_temp_array = years_temp.filter(onlyUnique)
+
+						var months_temp_array = months_temp.filter(onlyUnique)
+
+						d3.select("#attr4").on("change", function(){
+
+							document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="COMPLETE DATA"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'
+
+							var attr4 = this.value;
+							console.log("Selected Value Attr4: "+attr4)		
+
+
+							var data=[]
+
+							var colors = ['rgb(93, 164, 214, 0.5)', 'rgb(255, 144, 14, 0.5)', 'rgb(44, 160, 101, 0.5)', 'rgb(255, 65, 54, 0.5)', 'rgb(207, 114, 255, 0.5)', 'rgb(127, 96, 0, 0.5)', 'rgb(255, 140, 184, 0.5)', 'rgb(79, 90, 117, 0.5)', 'rgb(222, 223, 0, 0.5)','rgb(0,128,128)','rgb(214,12,140)','rgb(128, 0, 0)','rgb(255,255,0)','rgb(128,128,0)','rgb(0,255,255)','rgb(0,0,255)','rgb(255,0,255)','rgb(107,174,214)','rgb(128,0,128)'];
+
+							var new_colors=[];
+							if(colors.length>years_temp_array.length){
+								new_colors=colors.slice(0,years_temp_array.length+1)
+							}				
+
+							for(var i=0;i<years_temp_array.length;i++){	
+							
+								if (i!=0){				
+									new_colors.pop()
+								}
+
+								var temp_array_int=[]
+								datos.filter(d=>parseInt(d.Date.getFullYear())==years_temp_array[i]).map(function(d){
+									temp_array_int.push(parseInt(d[attr4]))
+								})
+
+								console.log(temp_array_int)
+
+								for(var j=0;j<new_colors.length;j++){
+
+									data[i]={
+									  y: temp_array_int,
+									  type: 'box',
+									  name: "Year:  "+years_temp_array[i],
+									  marker: {
+									    color: new_colors[j],
+									    outliercolor: 'rgb(219, 64, 82, 0.6)',
+									    line: {
+									      outliercolor: 'rgb(219, 64, 82, 1.0)',
+									      outlierwidth: 2
+									    }
+									  },
+									  boxpoints: 'all'
+									};
+								}
+								
+							}
+
+							var layout = {
+							  title: 'Representation: Box Plot'
+							};
+
+							Plotly.newPlot('boxplot', data, layout);
+
+							d3.select("#attr5").on("change", function(){
+								var attr5 = this.value;
+								var valores=[];
+								returnData.map(function(d){								
+									valores.push(parseInt(d[attr4]))								
+									valores.sort(function(a, b){return a-b});
+									console.log(valores)
+								})
+
+								function isOdd(num) { return num % 2;}
+
+								function calcShowPercentiles(datos,returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max){
+									var data_filter=[]
+
+									if(attr5=='25th-50th Percentile [Q1 <-> Q2 (Median)]'){
+										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<value_median).map(function(d){					
+											data_filter.push(d)										
+										})
+
+										if(data_filter!=null || data_filter!=undefined){
+											datos=data_filter
+											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
+										}	
+
+									}
+									if(attr5=='0-25th Percentile [MIN <-> Q1]'){
+										returnData.filter(d=>parseInt(d[attr4])>=value_min && parseInt(d[attr4])<value_Q1).map(function(d){					
+											data_filter.push(d)										
+										})
+
+										if(data_filter!=null || data_filter!=undefined){
+											datos=data_filter
+											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 0-25th Percentile [MIN <-> Q1] </strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
+										}
+									}
+									if(attr5=='50th-75th Percentile [Q2 (Median) <-> Q3]'){
+										returnData.filter(d=>parseInt(d[attr4])>=value_median && parseInt(d[attr4])<value_Q3).map(function(d){					
+											data_filter.push(d)										
+										})
+
+										if(data_filter!=null || data_filter!=undefined){
+											datos=data_filter
+											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 50th-75th Percentile [Q2 (Median) <-> Q3] </strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
+										}	
+
+									}
+									if(attr5=='75th-100th Percentile [Q3 <-> MAX]'){
+										returnData.filter(d=>parseInt(d[attr4])>=value_Q3 && parseInt(d[attr4])<value_max).map(function(d){					
+											data_filter.push(d)										
+										})
+
+										if(data_filter!=null || data_filter!=undefined){
+											datos=data_filter
+											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 75th-100th Percentile [Q3 <-> MAX] </strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
+										}	
+
+									}
+									if(attr5=='Interquartile Range'){
+										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_Q3).map(function(d){					
+											data_filter.push(d)										
+										})
+
+										if(data_filter!=null || data_filter!=undefined){
+											datos=data_filter
+											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> Interquartile Range </strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );												
+										}
+
+									}
+									if(attr5=='Outliers'){
+										returnData.filter(d=>parseInt(d[attr4])<value_min && parseInt(d[attr4])>value_max).map(function(d){					
+											data_filter.push(d)										
+										})
+
+										if(data_filter.length>0){
+											datos=data_filter
+											document.getElementById("counter").innerHTML = '<strong> From '+returnData.length+' original values\n'+datos.length+' were filtered\nas Outliers </strong>'
+											returnData=data_filter
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
+										}
+										else{
+											setTimeout(function(){
+												alert("There are not -Ouliers- in your Selection")
+											},400)
+										}	
+									}
+									if(attr5=='COMPLETE DATA'){	
+										console.log(returnData)									
+										datos=returnData;
+										document.getElementById("counter").innerHTML = '<strong> SHOWING\n'+datos.length+' from the original loaded data </strong>'	
+										//returnData=data_filter
+										container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+										container.layoutManager.eventHub.emit( 'datosvisibles', datos );																		
+									}
+								}
+									
+								console.log("valores:   "+valores)
+								console.log("tamaño:    "+ valores.length)
+
+								var value_median=math.median(valores)
+
+								var _firstHalf = valores.filter(function(f){ return f < value_median })
+    							var _secondHalf = valores.filter(function(f){ return f >= value_median })
+
+    							var _25percent = math.median(_firstHalf);
+    								console.log("Q1:   "+_25percent)
+    							var _50percent = value_median;
+    								console.log("MEDIAN:  "+_50percent)
+    							var _75percent = math.median(_secondHalf);
+    								console.log("Q3:    "+_75percent)  						
+   							
+								var interquartile_range = _75percent - _25percent;
+									console.log("Interquartile Range:  "+interquartile_range)
+
+								var value_min= _25percent - (1.5*interquartile_range)
+									console.log("Min Value:  "+value_min)
+
+								var value_max= _75percent + (1.5*interquartile_range)
+									console.log("Max Value:  "+value_max)									
+
+								
+								calcShowPercentiles(datos,returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)			
+
+							})
+
+						})
+					}
+					else{
+						document.getElementById("list4").innerHTML = '<strong> THERE ARE NOT ANY TEMPORAL ATTRIBUTES THAT PERMITS THE PRELIMINARY STATISTICAL ANALYSIS </strong>'
+					}
+				})	
+			})
+		})
+	}])
+
+	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
+
+			var mymap=null;	
+			container.layoutManager.eventHub.on( 'completedata', function( completedata ){
+			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){	
+
+			var new_data=[]
+				
+			datos.map(function(d){
+				if(d.hasOwnProperty('Latitude') && d.hasOwnProperty('Longitude')){	
+					var prom_latitudes=[];
+					var prom_longitudes=[];
+					var lat=[];
+					var long=[];
+					var previous_counter=0;	
+					var counter=1;
+
+
+					var list_markers=[]
+					var list_remaining=[]
+
+					function drawMap(datos, mymap,anterior,actual,new_data){
+
+						var markers = new L.LayerGroup().addTo(mymap);
+
+						L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+							maxZoom: 18,
+							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+								'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+								'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+							id: 'mapbox.streets'
+						}).addTo(mymap);
+
+						var years =[];
+						var lista=[];
+
+						var colors = ['black','green','orange','blue','red','fuchsia','cyan','purple','teal'];	
+
+						datos.map(function(d){
+							years.push(d.Year)
+							years=years.filter(function(item, pos){
+								return years.indexOf(item)== pos; 
+							});
+						})		
+
+						if(datos[0].hasOwnProperty('Year')){
+
+							for(var k=0;k<years.length;k++){	
+
+								if (k!=0){										
+									colors.pop()	
+								}				
+
+								var latitudes = [];
+								var longitudes=[];							
+
+								var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){	
+
+									if(d.Latitude!="" && d.Longitude!=""){					
+										latitudes.push(parseFloat(d.Latitude))
+										longitudes.push(parseFloat(d.Longitude))								
+									}
+								})									
+													
+								for(var i=0;i<datos_filter.length;i++){
+									
+									var coord = [latitudes[i],longitudes[i]];
+									lista.push(coord)
+									counter=counter+1;
+								}	
+
+								var identificators=[]
+								datos.map(function(d){
+									identificators.push(d['ID'])
+								})
+
+								var dates=[]
+								datos.map(function(d){
+									dates.push(d['Month']+" / "+d['Day']+" / "+d['Year']+"  ("+d['DayOfTheWeek']+")")
+								})							
+
+								for(var b=previous_counter;b<counter;b++){								
+
+										if(b==counter-1){
+											previous_counter=counter										
+										}
+										else{
+											if(lista[b]!=undefined || lista[b]!=null){
+										 		var marker= new L.circleMarker(lista[b],{fillOpacity:0.5,color:colors[k]}).addTo(markers).bindPopup("The coordinates of the current point are:\n\n<b>["+lista[b]+"]</b>\n\n\n <b>Identificator: "+identificators[b]+"</b> from the <b>Date: "+dates[b]+"</b>");//.addTo(mymap)
+												//
+												list_markers.push(marker)
+											}									
+										}																										
+									}
+								}	
+									
+							
+							setInterval(function(){ mymap.invalidateSize()}, 400);								
+						}
+						else{
+
+							var latitudes = [];
+							var longitudes=[];					
+
+							datos.map(function(d){
+								if(d.Latitude!="" && d.Longitude!=""){					
+									latitudes.push(parseFloat(d.Latitude))
+									longitudes.push(parseFloat(d.Longitude))								
+								}
+							})
+
+							for(var i=0;i<datos.length;i++){									
+									var coord = [latitudes[i],longitudes[i]];
+									lista.push(coord)
+							}
+							console.log(lista)
+
+							var identificators=[]
+							datos.map(function(d){
+								identificators.push(d['ID'])
+							})
+
+							for(var i=0;i<lista.length;i++){
+								var marker=new L.circleMarker(lista[i],{fillOpacity:0.5,color:'blue'}).addTo(markers).bindPopup("The coordinates of the current point are:\n\n<b>["+lista[i]+"]</b>\n\n\n <b>Identificator: "+identificators[i]+"</b>");	//.addTo(mymap)
+								//.bindPopup("The coordinates of the current point are:\n\n<b>["+lista[i]+"]</b>\n\n\n <b>Identificator: "+identificators[i]+"</b>");		
+								list_markers.push(marker)							
+							}																	
+							setInterval(function(){ mymap.invalidateSize()}, 400);	
+						}
+
+						new L.Control.Draw({
+						    draw: {
+						        marker   : false,
+						        polygon  : true,
+						        polyline : false,
+						        rectangle: true,
+						        circle   : {
+						            metric: 'metric'
+						        }
+						    },
+						    edit: false
+						}).addTo(mymap);
+
+
+						L.easyButton('<img src="https://cdn.onlinewebfonts.com/svg/img_351337.png" style="width:20px">',function(btn,map){
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );
+							container.layoutManager.eventHub.emit( 'datosvisibles', completedata );
+						}).addTo(mymap)
+
+						L.Polygon.include({
+						    contains: function (latLng) {
+						        return turf.inside(new L.circleMarker(latLng).toGeoJSON(), this.toGeoJSON());
+						    } 
+						});
+
+						L.Rectangle.include({
+						    contains: function (latLng) {
+						        return this.getBounds().contains(latLng);
+						    }
+						});
+
+						L.Circle.include({
+						    contains: function (latLng) {
+						        return this.getLatLng().distanceTo(latLng) < this.getRadius();
+						    }
+						});
+
+
+
+						mymap.on(L.Draw.Event.CREATED, function (e) {
+							new_data=[]
+							list_remaining=[]
+						    markers.eachLayer(function (marker) {
+						        if (!e.layer.contains(marker.getLatLng())) {
+						            marker.remove();						            
+									id_tag = marker,
+									position = list_markers.indexOf(id_tag);
+
+									if ( ~position ) list_markers.splice(position, 1);		
+
+
+						        }
+						    });						  
+
+						   
+
+						    for(var i=0;i<list_markers.length;i++){
+						    	if(!list_remaining.includes(list_markers[i]['_popup']['_content'].split('Identificator: ')[1].split('</b>')[0])){
+						    		list_remaining.push(list_markers[i]['_popup']['_content'].split('Identificator: ')[1].split('</b>')[0])		
+						    	}						    					    	
+						    }
+						    
+						   	console.log(list_remaining)
+						   	
+						   	
+						   	datos.map(function(d){
+
+							   	for(var i=0;i<list_remaining.length;i++){
+							   		if(d['ID']==list_remaining[i]){
+							   			new_data.push(d)
+							   		}
+							   	}
+
+							   	datos=new_data
+							   	console.log(datos)							   	
+						   	})
+
+						   	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						});		
+	
+					}
+					
+					datos.map(function(d){
+
+						long.push(d.Longitude)
+						lat.push(d.Latitude)
+					
+						var max_latitudes=Math.max.apply(Math,lat)
+						var min_latitudes=Math.min.apply(Math,lat)
+						var max_longitudes=Math.max.apply(Math,long)
+						var min_longitudes=Math.min.apply(Math,long)
+
+						prom_latitudes= (max_latitudes+min_latitudes)/2;
+						prom_longitudes=(max_longitudes+min_longitudes)/2;
+					
+					})
+					
+					/*if(mymap==null){	
+									
+						mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
+
+					}
+					else{
+						mymap.remove()
+						//mymap=null;
+
+						if(mymap==null){									
+							mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
+							drawMap(datos, mymap,previous_counter,counter,new_data)
+						}
+					}*/
+
+					if (mymap != undefined) { mymap.remove(); }
+					mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
+					drawMap(datos, mymap,previous_counter,counter,new_data)						
+
+					}
+					else{
+					document.getElementById("mapid").innerHTML = '<strong> THERE ARE NOT ANY SPATIAL ATTRIBUTES THAT PERMITS THE DISPLAY OF THE MAP </strong>'
+				}
+				})
+
+			})	
+		})		
+	}])
+
+	splomApp.controller('splomController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
+		
+		
+		container.layoutManager.eventHub.on( 'completedata', function( completedata ){	
+		container.layoutManager.eventHub.on( 'dateParseEvent', function( datPa ){
+			container.layoutManager.eventHub.on( 'categoricsEvent', function( cat ){	
+				container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){
+					container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){	
+						
+					
+					var x=[]
+					var lista ='';
+					var lista_seq=[]
+
+					for(var i =0;i<cat.length;i++){
+						if(!(cat[i]=='__i'||cat[i]=='__seqId'||cat[i]=='visible')){
+							lista_seq.push('<option value="'+cat[i]+'">')	
+						}
+					}
+
+					lista=lista_seq.join('')					
+
+					document.getElementById("list6").innerHTML = '<strong>Select a Categoric Attribute to segment the loaded data: </strong> <input list="attrs6" type="text" id="attr6"><datalist id="attrs6">'+lista	
+
+					d3.select("#attr6").on("change", function(){
+						var attr6 = this.value;
+
+					    function unpack(rows, key) {
+					        return rows.map(function(row) { return row[key.replace('.',' ')]; });
+					    }
+
+					    colors = []	
+
+						var values=unpack(rows, attr6).filter((value, index, self) => self.indexOf(value) === index)
+						var pl_colorscale= ['rgb(93, 164, 214, 0.5)', 'rgb(255, 144, 14, 0.5)', 'rgb(44, 160, 101, 0.5)', 'rgb(255, 65, 54, 0.5)', 'rgb(207, 114, 255, 0.5)', 'rgb(127, 96, 0, 0.5)', 'rgb(255, 140, 184, 0.5)', 'rgb(79, 90, 117, 0.5)', 'rgb(222, 223, 0, 0.5)','rgb(0,128,128)','rgb(214,12,140)','rgb(128, 0, 0)','rgb(255,255,0)','rgb(128,128,0)','rgb(0,255,255)','rgb(0,0,255)','rgb(255,0,255)','rgb(107,174,214)','rgb(128,0,128)'];
+						
+						var c=0;
+						var attributes=[];
+						for (k=0; k < values.length; k++) {
+							for (i=0; i < unpack(rows, attr6).length; i++) {	
+
+								if(unpack(rows, attr6)[i]==values[k]){
+									c=c+1/values.length
+									console.log(unpack(rows, attr6)[i] + "         "+values[k] + "     "+pl_colorscale[k])									
+									colors.push(pl_colorscale[k])
+									attributes.push(values[k])
+								}								
+							}						
+						}  
+
+						attributes=attributes.filter((value, index, self) => self.indexOf(value) === index)
+
+						var att =[];
+						
+
+						for(var i =0;i<attributes.length;i++){							
+								att.push('<option value="'+attributes[i]+'">')							
+						}
+
+						att.push('<option value="COMPLETE DATA ('+completedata.length+' values)">')
+
+
+						var att_text= att.join('')
+
+						document.getElementById("list7").innerHTML = '<strong>Do you want to FILTER any of these current values of your selected attribute?\nSelect a value to filter: </strong> <input list="attrs7" type="text" id="attr7"><datalist id="attrs7">'+att_text					
+
+						d3.select("#attr7").on("change", function(){
+							var attr7 = this.value;
+							var filtered=[]
+							rows.map(function(d){
+								if(attr7=='COMPLETE DATA ('+completedata.length+' values)'){									
+									filtered=completedata
+								}
+								else{
+									if(d[attr6]==attr7){
+										filtered.push(d)
+									}
+									
+								}
+							})
+							console.log(filtered)
+
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', filtered );
+							container.layoutManager.eventHub.emit( 'datosvisibles', filtered );
+						})
+
+
+
+					    var axis = () => ({
+					      showline:false,
+					      zeroline:false,
+					      gridcolor:'#ffff',
+					      ticklen:5
+					    })
+
+					    var cols = Object.keys(rows[0]);
+
+					    if(x.length>0){
+					    	x=[]
+					    }
+						for(var i=0;i<cols.length;i++){
+							if(!(cols[i]=='__i'||cols[i]=='__seqId'||cols[i]=='visible'||cols[i]=='Year'||cols[i]=='Minutes'||cols[i]=='Latitude'||cols[i]=='Longitude'||cols[i]=='Seconds'||cols[i]=='ID'||datPa.includes(cols[i])||cat.includes(cols[i]))){
+								x.push({label:cols[i], values:unpack(rows,cols[i])})
+							}
+						}
+
+						console.log(x)
+
+					    var data = [{
+					      type: 'splom',
+					      dimensions: x,
+					      text: unpack(rows, attr6),
+					      marker: {
+					        color: colors,
+					        colorscale:pl_colorscale,
+					        line: {
+					          color: 'white',
+					          width: 0.5
+					        }
+
+					      }
+					    }]
+
+					    var layout = {
+					      title:'SPLOM Graphic - [Scatter Plot Matrix / Correlations]',
+					      height: container.height + 1000,
+					      width: container.width + 1000,
+					      autosize: true,
+					      hovermode:'closest',
+					      dragmode:'select',
+					      plot_bgcolor:'rgba(240,240,240, 0.95)',
+					      xaxis:axis(),
+					      yaxis:axis(),
+					      xaxis2:axis(),
+					      xaxis3:axis(),
+					      xaxis4:axis(),
+					      xaxis5:axis(),
+					      yaxis2:axis(),
+					      yaxis3:axis(),
+					      yaxis4:axis(),
+					      yaxis5:axis()
+					    }
+
+					    Plotly.newPlot('splomGraph', data, layout)	
+					})
+					})
+					})
+				})
+			})
+		})			
+	}])
+
+	regressionApp.controller('regressionController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
+
+		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){	
+			container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
+
+					document.getElementById("list8").innerHTML = '<strong>Select a Quantitative Attribute to segment the loaded data: </strong> <input list="attrs8" type="text" id="attr8"><datalist id="attrs8">'+cols
+					document.getElementById("list9").innerHTML = '<strong>Select a Quantitative Attribute to segment the loaded data: </strong> <input list="attrs9" type="text" id="attr9"><datalist id="attrs9">'+cols											
+					
+					$("#regressionGraph").empty()
+					d3.select("#attr8").on("change", function(){	
+						var attr8 = this.value;
+						d3.select("#attr9").on("change", function(){							
+							$("#regressionGraph").empty()							
+							var attr9 = this.value;		
+							var datos_raw=[]
+							var datos_raw2=[]
+							returnData.map(function(d){									
+								datos_raw2.push([d[attr8],d[attr9]])
+								datos_raw.push([parseFloat(d[attr8]),parseFloat(d[attr9])])
+							})
+
+							console.log(datos_raw)
+							console.log(datos_raw2)
+
+							var rawData = datos_raw;
+
+						
+							var result = regression('linear', rawData);
+
+							var coeff = result.equation;							
+
+							anychart.onDocumentReady(function () {
+
+							  var data_1 = rawData;
+							  var data_2 = setTheoryData(rawData);
+
+							  chart = anychart.scatter();
+
+							  chart.title("The calculated formula: " + result.string + "\nThe coefficient of determination (R2): " + result.r2.toPrecision(2));
+
+							  chart.legend(true);
+
+							  var series1 = chart.marker(data_1);
+							  series1.name("Experimental data");
+
+							  var series2 = chart.line(data_2);
+							  series2.name("Theoretically calculated data");
+							  series2.markers(true);
+
+							  chart.container("regressionGraph");
+							  chart.draw();
+							});
+
+							function formula(coeff, x) {
+							  var result = null;
+							  for (var i = 0, j = coeff.length - 1; i < coeff.length; i++, j--) {
+							    result += coeff[i] * Math.pow(x, j);
+							  }
+							  return result;
+							}
+
+							function setTheoryData(rawData) {
+							  var theoryData = [];
+							  for (var i = 0; i < rawData.length; i++) {
+							    theoryData[i] = [rawData[i][0], formula(coeff, rawData[i][0])];
+							  }
+							  return theoryData;
+							}		
+						})
+					})					
+				})
+			})
+		})						
+	}])
+
+
+	var app1El = document.getElementById('fileselector');
+	var app2El = document.getElementById('navio');
+	var app3El = document.getElementById('spatialviz');
+	var app4El = document.getElementById('temporalviz');
+	var app5El = document.getElementById('boxplot');
+	var app6El = document.getElementById('map');
+	var app7El = document.getElementById('splom');
+	var app8El = document.getElementById('regression');
+
+
+	angular.bootstrap(app1El, ['fileselector', 'test-service']);
+	angular.bootstrap(app2El, ['navio', 'test-service']);
+	angular.bootstrap(app3El, ['spatialviz', 'test-service']);
+	angular.bootstrap(app4El, ['temporalviz', 'test-service']);
+	angular.bootstrap(app5El, ['boxplot', 'test-service']);
+	angular.bootstrap(app6El, ['map', 'test-service']);
+	angular.bootstrap(app7El, ['splom', 'test-service']);
+	angular.bootstrap(app8El, ['regression', 'test-service']);
+
+	var AngularModuleComponent = function( container, state ) {
+	    var html = $( '#' + state.templateId ).html(),
+	        element = container.getElement();
+	    
+	    element.html( html );
+	 
+
+	    angular
+	        .module( state.module )
+	        .value( 'container', container )
+	        .value( 'state', state );
+
+	    angular.bootstrap( element[ 0 ], [ state.module ] );
+	};
+
+	var myLayout = new GoldenLayout({
+	    content:[{
+	        type: 'row',
+	        content: [{
+	        	type: 'column',
+	      		content: [{
+		            width: 20,
+		            title: 'File Picker',
+		            type: 'component',
+		            componentName: 'angularModule',
+		            componentState: {
+		                module: 'fileselector',
+		                templateId: 'fileselectorTemplate',
+		            }
+	        },{
+	            type: 'component',
+	            title: 'WHAT - Widget: Navio',
+	            componentName: 'angularModule',
+	            componentState: {
+	                module: 'navio',
+	                templateId: 'navioTemplate'
+	            }
+	        }]},{
+	        type: 'column',
+	        content: [{
+                type: 'component',
+                title: 'Geo-Referentiation',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'map',
+                    templateId: 'mapTemplate'
+                }
+            },{
+            	 type: 'stack',
+	       		 content: [{
+	                type: 'component',
+	                title: 'Box Plot',
+	                componentName: 'angularModule',
+	                componentState: {
+	                    module: 'boxplot',
+	                    templateId: 'boxplotTemplate'	             
+             		}
+         		},{
+                type: 'component',
+                title: 'Correlations -SPLOM',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'splom',
+                    templateId: 'splomTemplate'
+             }
+	       },{
+                type: 'component',
+                title: 'Regressions',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'regression',
+                    templateId: 'regressionTemplate'
+             }
+	       }]
+           }]
+	   },{
+	        type: 'column',
+	        content: [{
+                type: 'component',
+                title: 'WHERE',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'spatialviz',
+                    templateId: 'spatioTemplate'
+                }
+            },{
+                type: 'component',
+                title: 'WHEN',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'temporalviz',
+                    templateId: 'temporalTemplate'
+             }
+           }]
+	   }]
+	   }]
+	});
+
+	myLayout.registerComponent( 'angularModule', AngularModuleComponent );
+	myLayout.init();
+</script>

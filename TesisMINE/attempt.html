@@ -1,4 +1,3 @@
-
 <!--  DEPENDENCIES / STYLES   -->
 <link rel="shortcut icon" href="favicon.ico">
 <script type="text/javascript" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -169,18 +168,12 @@
 	var mapApp = angular.module('map', ['test-service'] );
 	var splomApp = angular.module('splom', ['test-service'] );
 	var regressionApp = angular.module('regression', ['test-service'] );
-
-
 	angular.module('test-service', []).service('TestService', function($rootScope, $window){
-
 	  var datos= null;
 	  var seq= null;
 	  var cat= null;
-
-
 	  $window.rootScopes = $window.rootScopes || [];
 	    $window.rootScopes.push($rootScope);
-
 	   if (!!$window.sharedService){
 	      return $window.sharedService;
 	    }
@@ -196,8 +189,6 @@
 				console.log(event.target.files[0].name)
 				var tmppath = URL.createObjectURL(event.target.files[0]);
 				console.log(tmppath)
-
-
 				var fmt1 = d3.timeParse("%m/%d/%Y %H:%M:%S %p");
 				var fmt2 = d3.timeParse("%m/%d/%Y %H:%M:%S ");
 				var fmt3 = d3.timeParse("%m/%d/%Y %H:%M");
@@ -216,7 +207,6 @@
 				var fmt16 = d3.timeParse("%Y-%m-%d %H:%M:%S %p");
 				var fmt17 = d3.timeParse("%Y-%m-%d %H:%M:%S ");
 				var fmt18 = d3.timeParse("%Y-%m-%d %H:%M");
-
 				function parsing(d){					
 							if (d.hasOwnProperty("Latitud")){
 							     d["Latitude"] = +d["Latitud"];
@@ -261,7 +251,6 @@
 							  }
 							 }
 							}
-
 							if (d.hasOwnProperty("Fecha")){
 							d["Date"] = d["Fecha"];
 							delete d["Fecha"];
@@ -284,7 +273,6 @@
 							d.Date = d.Date.replace(/[p]{1}\.?( )[m]{1}\./, "PM");
 							} 
 							}
-
 							// This function is applied to each row of the dataset
 							if(fmt1(d.Date)!=null){
 							  d.Date = fmt1(d.Date);
@@ -341,7 +329,6 @@
 							  d.Date = fmt18(d.Date);
 							}
 							
-
 							var weekday = new Array(7);
 							weekday[0] =  "Sunday";
 							weekday[1] = "Monday";
@@ -350,8 +337,6 @@
 							weekday[4] = "Thursday";
 							weekday[5] = "Friday";
 							weekday[6] = "Saturday";
-
-
 							var month = new Array(12);
 							month[0] = "January";
 							month[1] = "February";
@@ -365,19 +350,15 @@
 							month[9] = "October";
 							month[10] = "November";
 							month[11] = "December";
-
-
 							function weekMonth(date) {						    
 							    var prefixes = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
 							    return prefixes[Math.floor(date.getDate() / 7)];
 							}
-
 							function isWeekDay(date){
 								if(date.getDay()!=0 || date.getDay()!=6){
 									return true
 								}
 							}
-
 							if (d.hasOwnProperty("Date")){
 								d.Hours = d.Date.getHours();
 								d.Minutes = d.Date.getMinutes();
@@ -390,43 +371,32 @@
 								d.Month = month[d.Date.getMonth()];
 								d.Day = d.Date.getDate();
 							}
-
 							return d;
 				}
-
 				if(event.target.files[0].name.includes(".xlsx") || event.target.files[0].name.includes(".xls")){
-
 					/* set up XMLHttpRequest */
 					var url = tmppath;
 					var oReq = new XMLHttpRequest();
 					oReq.open("GET", url, true);
 					oReq.responseType = "arraybuffer";
-
 					oReq.onload = function(e) {
 					  var arraybuffer = oReq.response;
-
 					  /* convert data to binary string */
 					  var data = new Uint8Array(arraybuffer);
 					  var arr = new Array();
 					  for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
 					  var bstr = arr.join("");
-
 					  /* Call XLSX */
 					  var workbook = XLSX.read(bstr, {type:"binary"});
-
 					  /* DO SOMETHING WITH workbook HERE */
 					  var first_sheet_name = workbook.SheetNames[0];
 					  /* Get worksheet */
 					  var worksheet = workbook.Sheets[first_sheet_name];
-
 					  var dats= XLSX.utils.sheet_to_json(worksheet,{raw:true});
-
 					  var cols = Object.keys(dats[0]);
 					  console.log(cols.indexOf('Time'))
 					  
 					  cols=cols.slice(0,cols.indexOf('Time'))
-
-
 					var dats_callback=[]
 						for(var i=0;i<dats.length;i++){	
 							  	if(dats[i].hasOwnProperty('Time')){
@@ -444,20 +414,15 @@
 							  			dats[i]['Shape']=dats[i]['Time'].split(']')[0].split('[')[1]
 							  		}
 							  		
-
 							  		delete dats[i]['Time'];				  		
 							  		
 							  	}
-
 							  	dats_callback.push(parsing(dats[i]))
 					   }
 					
 					 			
-
 					  callback(dats_callback);
-
 				}
-
 					oReq.send();
 				}
 				else if(event.target.files[0].name.includes(".csv")){
@@ -465,7 +430,6 @@
 					d3.csv(tmppath, function (d) { 
 							parsing(d)
 							return d;
-
 							},  function (err, data) {	
 							 	dat=data;								 					 	
 							 	callback(dat);							 	
@@ -502,39 +466,28 @@
 	        });
 	        return cat;
 	      }
-
 	    }
-
 	    return $window.sharedService;
 	})
-
 	fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"container","state","TestService",function($scope,$timeout,container,state, TestService) {	
 		
 			$scope.dat= state.dat || null;
 			$scope.datos= state.datos || null;
 			$scope.dataFinal= state.dataFinal || null;
-
 			$scope.seq= state.seq || null;
 			$scope.seqColumns= state.seqColumns || null;
 			$scope.seqColumnsFinal= state.seqColumnsFinal || null;
-
 			$scope.cat= state.cat || null;
 			$scope.catColumns= state.catColumns || null;
 			$scope.catColumnsFinal= state.catColumnsFinal || null;
-
 			TestService.getData(function(d){
-
 				$scope.dat =d;
 				container.layoutManager.eventHub.emit( 'completedata', $scope.dat );
-
 				var parse=[];
 		    	var dateparse=[];
 		   		var categoric=[];
-
 				function json2table(json, classes) {
-
 				var cols = Object.keys(json[0]);
-
 				console.log(cols)
 				  
 				var headerRow = '';
@@ -545,7 +498,6 @@
 				var columns=[];
 				  
 				classes = classes || '';
-
 				function capitalizeFirstLetter(string) {
 				    return string.charAt(0).toUpperCase() + string.slice(1);
 				}
@@ -559,7 +511,6 @@
 				    })
 					bodyRows += '</tr>';
 				});
-
 				for (i = 0; i < cols.length; i++){
 				    if(/^[+-]?([0-9]*[.])?[0-9]+$/.test(columns[i]))
 				    { 
@@ -569,7 +520,6 @@
 				    {
 				      dateparse.push(cols[i])
 				    } 
-
 				    else if(/[GMT-]{4}[0-9]{4}/.test(columns[i]))
 				    {
 				      dateparse.push(cols[i])
@@ -579,42 +529,26 @@
 				      categoric.push(cols[i])
 				    }
 				}
-
 				if(parse.includes('Year') && categoric.includes('Year')){
-
 				    var value = 'Year'
-
 				    parse=parse.filter(function(item) { 
 				    return item !== value
 				 })}
-
 				$scope.seq=parse.filter((value, index, self) => self.indexOf(value) === index);		
-
-
 				
-
 				for (var i=0;i<dateparse.length;i++){
 				       $scope.seq.push(dateparse[i])      
-
 				  }
-
 				container.layoutManager.eventHub.emit( 'dateParseEvent', dateparse );
-
 				$scope.cat=categoric.filter((value, index, self) => self.indexOf(value) === index);
-
 				container.layoutManager.eventHub.emit( 'categoricsEvent', $scope.cat );
-
 				cols.map(function(col) {
 				headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
-
 				columnas += '<option value="'+col+'">'
 				});	
-
-
 				console.log(dateparse)
 				
 				$scope.seq.map(function(col) {							
-
 							if (!(col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col=="Hours" || col=="Seconds" || col=='__seqId'||dateparse.includes(col))){
 									if(!($scope.cat).includes(col)){
 										console.log(col)									
@@ -623,25 +557,18 @@
 							}		
 									
 						columnsSequential=columnsSequential.filter((value, index, self) => self.indexOf(value) === index)
-
 						columnasSeq=columnsSequential.join('')	
-
 					});
 				
-
-
 				//console.log(columnasSeq)
-
 				container.layoutManager.eventHub.emit( 'columnas_list', columnas );
 				container.layoutManager.eventHub.emit( 'columnasSeq_list', columnasSeq );
-
 				return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
 				     headerRow +
 				     '</tr></thead><tbody>' +
 				     bodyRows +
 				     '</tbody></table>';
 				}
-
 				document.getElementById('tableGoesHere').innerHTML = json2table($scope.dat, 'table');
 				$(document).ready(function() {
 					$('#data').DataTable( {  
@@ -649,7 +576,6 @@
 		    			"scrollX": true
 		    		} );
 				} );
-
 				
 				function loadScript(src) {
 				       var script = document.createElement("script");
@@ -664,7 +590,6 @@
 				       document.getElementById("tableGoesHere").appendChild(script);
 				       script.href = src;
 				}
-
 				$(document).ready(function() {
 				$('#data').DataTable( {
 					destroy: true,
@@ -676,7 +601,6 @@
 		    		"scrollX": true
 				} );
 				} );
-
 				loadStyle('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css')
 				loadStyle('https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css')
 				loadScript('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js')
@@ -687,14 +611,10 @@
 				loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js')
 				loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js')
 				loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js')
-
 				var script = document.createElement("script");
 				script.text="var table; $(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'lBfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
 				document.getElementById("tableGoesHere").appendChild(script);
-
 				otherfunction();
-
-
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function(returnData){					
 					console.log(returnData)
 					document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
@@ -709,79 +629,57 @@
 			    			"scrollX": true
 			    		} );
 					});				
-
 					
 				})
 			})
-
 			function otherfunction(){
 				$scope.datos=$scope.dat
 				$scope.seqColumns=$scope.seq
 				$scope.catColumns=$scope.cat
-
 				container.layoutManager.eventHub.emit( 'datosiniciales', $scope.datos );
 				container.layoutManager.eventHub.emit( 'seqiniciales', $scope.seqColumns );
 				container.layoutManager.eventHub.emit( 'catiniciales', $scope.catColumns );
-
 			}
-
 			container.layoutManager.eventHub.on( 'datosiniciales', function( datosiniciales ){
 				container.layoutManager.eventHub.on( 'seqiniciales', function( seqiniciales ){
 					container.layoutManager.eventHub.on( 'catiniciales', function( catiniciales ){
-
-
 				$scope.data=jQuery.extend(true, [], datosiniciales);
 				$scope.dataFinal=TestService.changeData($scope.data)
 				$scope.dataFinal=TestService.get();
-
 				$scope.seqCols=jQuery.extend(true, [], seqiniciales);
 				$scope.seqColumnsFinal=TestService.changeSeqColumns($scope.seqCols)
 				$scope.seqColumnsFinal=TestService.getSeqColumns();
-
-
 				$scope.catCols=jQuery.extend(true, [], catiniciales);
 				$scope.catColumnsFinal=TestService.changeCatColumns($scope.catCols)
 				$scope.catColumnsFinal=TestService.getCatColumns();		
-
 				container.layoutManager.eventHub.emit( 'datos', $scope.dataFinal );
 				container.layoutManager.eventHub.emit( 'seqColumns', $scope.seqColumnsFinal );
 				container.layoutManager.eventHub.emit( 'catColumns', $scope.catColumnsFinal );
-
 						})
 					})
 				})			
 	}])
-
 	navioApp.controller('navioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		
 		console.log("entro aca")	
-
 		container.layoutManager.eventHub.on( 'datos', function( data ){
 				container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
 					container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
-
 						nv=navio(d3.select("#navio"), 600);
-
 							catColumns.forEach((c) => nv.addCategoricalAttrib(c));
 							seqColumns.forEach((c) => nv.addSequentialAttrib(c));
 							
 							nv.data(data);
-
 							visible = nv.getVisible();						
 							
 							container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
 							container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
-
 							console.log(data)
-
-
 							nv.updateCallback(function(){
 								visible = nv.getVisible();
 								container.layoutManager.eventHub.emit( 'datosvisibles', visible );
 								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
-
 								console.log(visible)
-
 								container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
 									console.log(attr1)
 									container.layoutManager.eventHub.on( 'change-attr2', function( attr2 ){
@@ -796,7 +694,6 @@
 			});
 		});	
 	}])
-
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
 		
 		container.layoutManager.eventHub.on( 'completedata', function( completedata ){				
@@ -805,23 +702,17 @@
 						container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
 							container.layoutManager.eventHub.on( 'datosvisibles', function( datosvisibles ){
 							container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){
-
 								if(datos[0].hasOwnProperty('Latitude') && datos[0].hasOwnProperty('Longitude')){
 									document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
 									document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+cols
 									document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+cols
-
 									document.getElementById("btn1").innerHTML='<button type="button" id="complete_t"> <strong>SHOW ('+completedata.length+' VALUES)</strong></button>'
-
-
 									$('button[id="complete_t"]').click(function() {								    	
 										
 										container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );	
 										container.layoutManager.eventHub.emit( 'datosvisibles', completedata );			   	
 									   
-
 									});
-
 									function drawViz(seqColumns,catColumns,attr1,attr2,visible)
 									{
 										if(datos[0].hasOwnProperty('Year')){
@@ -866,7 +757,6 @@
 											}
 											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
 											spatial(yourVlSpec,visible)
-
 											}
 											else if(catColumns.includes(attr1) && catColumns.includes(attr2)){
 											setTimeout(function(){
@@ -914,7 +804,6 @@
 											}
 											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
 											spatial(yourVlSpec,visible)
-
 											}
 											else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
 											var yourVlSpec = {
@@ -957,12 +846,9 @@
 											}
 											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
 											spatial(yourVlSpec,visible)
-
 											}
 											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
-
 											console.log("ENTRÓ ACÁ")
-
 											var yourVlSpec = {
 											  "width": 1000,
 											  "height": 300,
@@ -981,10 +867,8 @@
 											}
 											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
 											spatial(yourVlSpec,visible)
-
 											}
 											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
-
 											var yourVlSpec = {
 											  "width": 1000,
 											  "height": 300,
@@ -1003,11 +887,9 @@
 											}
 											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
 											spatial(yourVlSpec,visible)
-
 											}
 										}
 										else{
-
 											if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1!='Date' && attr2!='Date')){
 											var yourVlSpec = {
 												"width": 1000,
@@ -1027,7 +909,6 @@
 											}
 											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );	
 											spatial(yourVlSpec,visible)
-
 											}
 											else if(catColumns.includes(attr1) && catColumns.includes(attr2)){
 											setTimeout(function(){
@@ -1053,7 +934,6 @@
 											}
 											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
 											spatial(yourVlSpec,visible)
-
 											}
 											else if(seqColumns.includes(attr1) && catColumns.includes(attr2)){
 											var yourVlSpec = {
@@ -1074,12 +954,9 @@
 											}
 											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
 											spatial(yourVlSpec,visible)
-
 											}
 											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr1=='Date')){
-
 											console.log("ENTRÓ ACÁ")
-
 											var yourVlSpec = {
 											  "width": 1000,
 											  "height": 300,
@@ -1098,10 +975,8 @@
 											}
 											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
 											spatial(yourVlSpec,visible)
-
 											}
 											else if(seqColumns.includes(attr1) && seqColumns.includes(attr2) && (attr2=='Date')){
-
 											var yourVlSpec = {
 											  "width": 1000,
 											  "height": 300,
@@ -1120,11 +995,9 @@
 											}
 											container.layoutManager.eventHub.emit( 'yourVlSpec', yourVlSpec );
 											spatial(yourVlSpec,visible)
-
 											}
 										}
 									}
-
 									var spatial=function(yourVlSpec,visible)
 									{
 											var spatialvis = {
@@ -1152,35 +1025,26 @@
 											              }
 											            }, yourVlSpec]
 											          }									
-
 											vegaEmbed("#spatial", spatialvis);
-
 									}
-
 									var vis = function(attr1,attr2,seqColumns,catColumns,visible){
 										
 										d3.select("#attr1").on("change", function(){
 											attr1 = this.value;
 											container.layoutManager.eventHub.emit( 'change-attr1', attr1 );	
 										  	//console.log(attr1)
-
 											drawViz(seqColumns,catColumns,attr1,attr2,visible)	
 											
 										})
-
 										d3.select("#attr2").on("change", function(){
 										  	attr2 = this.value;
 										  	container.layoutManager.eventHub.emit( 'change-attr2', attr2 );		
-
 										  	//console.log(attr2)
-
 										  	drawViz(seqColumns,catColumns,attr1,attr2,visible)
 										})				
-
 									}
 									container.layoutManager.eventHub.emit( 'vis', vis(attr1,attr2,seqColumns,catColumns,datos) );
 								}		
-
 								else{
 									document.getElementById("text").innerHTML='<p><strong>THERE ARE NOT SPATIAL ATTRIBUTES THAT PERMITS ANY SPATIAL ANALYSIS</strong></p>'
 								}					
@@ -1191,16 +1055,12 @@
 			})
 		})	
 	}])
-
 	temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
-
 		container.layoutManager.eventHub.on( 'completedata', function( completedata ){
 			container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){				
 					container.layoutManager.eventHub.on( 'yourVlSpec', function(yourVlSpec){
-
 						document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
-
 						var year=[]
 						var daynight=[]
 						var dayofMonth=[]
@@ -1209,7 +1069,6 @@
 						var hour=[]
 						var weekmonth=[]
 						var isWeekDay=[]
-
 						var year_t=''
 						var daynight_t=''
 						var dayofMonth_t=''
@@ -1218,9 +1077,7 @@
 						var hour_t=''
 						var weekmonth_t=''
 						var isWeekDay_t=''
-
 						if(datos[0].hasOwnProperty("Year")){
-
 							datos.map(function(d){
 								year.push(d['Year'])
 								daynight.push(d['DayNight'])
@@ -1231,11 +1088,9 @@
 								weekmonth.push(d['WeekOfTheMonth'])
 								isWeekDay.push(d['isWeekDay'])
 							})
-
 							function sortNumber(a,b) {
 						        return a - b;
 						    }
-
 							year=year.filter((value, index, self) => self.indexOf(value) === index).sort(sortNumber)
 							daynight=daynight.filter((value, index, self) => self.indexOf(value) === index).sort()
 							day=day.filter((value, index, self) => self.indexOf(value) === index).sort().sort(sortNumber)
@@ -1244,8 +1099,6 @@
 							hour=hour.filter((value, index, self) => self.indexOf(value) === index).sort(sortNumber)
 							weekmonth=weekmonth.filter((value, index, self) => self.indexOf(value) === index).sort()
 							isWeekDay=isWeekDay.filter((value, index, self) => self.indexOf(value) === index)
-
-
 							var complete_enable='<button type="button" id="complete"> Show ('+completedata.length+' values)</button>'
 							for(var i=0;i<year.length;i++){
 								if(i!=10){
@@ -1305,9 +1158,6 @@
 									isWeekDay_t+='<p></p><input type="checkbox" value="'+isWeekDay[i]+'" id="isWeekDay">'+isWeekDay[i]
 								}						
 							}
-
-
-
 							year_t=('<ul>').concat(year_t)
 							daynight_t=('<ul>').concat(daynight_t)
 							dayofMonth_t=('<ul>').concat(dayofMonth_t)
@@ -1324,14 +1174,9 @@
 							hour_t=hour_t.concat('</ul>')
 							weekmonth_t=weekmonth_t.concat('</ul>')
 							isWeekDay_t=isWeekDay_t.concat('</ul>')
-
-
 							
 							document.getElementById("temporal_id").innerHTML='<p><strong>COMPLETE DATA:            </strong><strong>'+complete_enable+'</strong></p>   <p><strong>Year:</strong></p>   '+year_t+'   <p></p>   <p><strong>Month:</strong></p>   '+month_t+'    <p></p>   <p><strong>Day:</strong></p>   '+dayofMonth_t+'    <p></p>    <p><strong>Day of the Week:</strong></p>   '+day_t+'    <p></p>   <p><strong>Hour:</strong></p>   '+hour_t+'    <p></p>   <p><strong>Day/Night:</strong></p>  '+daynight_t+'    <p></p>   <p><strong>Week Of The Month:</strong></p>   '+weekmonth_t+'    <p></p>   <p><strong>Is Weekday:</strong></p>  '+isWeekDay_t+'    <div id="list3" align="center"></div>    <div id="temporal"align="center"></div>'
-
 							document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
-
-
 							var allInputs = document.getElementsByTagName("input");
 							for (var i = 0, max = allInputs.length; i < max; i++){
 							    if (allInputs[i].type === 'checkbox' && !(allInputs[i].id=='complete'))
@@ -1346,17 +1191,13 @@
 						    	
 						    	container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );	
 						    	container.layoutManager.eventHub.emit( 'datosvisibles', completedata );	
-
 						    	for (var i = 0, max = allInputs.length; i < max; i++){
 							    if (allInputs[i].type === 'checkbox')
 							        allInputs[i].checked = true;	
 							        d3.select('#complete').property('disabled',true)	 
 							    }	
-
 							});
-
 										
-
 							$('input[id="year"]').click(function() {								
 							    if(!this.checked){							    		
 							    		datos=datos.filter(d => !(d['Year']==this.value))		
@@ -1372,7 +1213,6 @@
 							    console.log("FILTRADOS")	
 								console.log(datos)					    
 							});
-
 							$('input[id="daynight"]').click(function() {
 							    if(!this.checked){
 							            datos=datos.filter(d => d['DayNight']!==this.value)	
@@ -1414,7 +1254,6 @@
 							    	completedata.filter(d=>d['Day']==this.value).map(e=>datos.push(e))	
 							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
 							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-
 							    }
 							    console.log("FILTRADOS")	
 								console.log(datos)	
@@ -1479,8 +1318,6 @@
 							    console.log("FILTRADOS")	
 								console.log(datos)	
 							});	
-
-
 							var temporal=function(yourVlSpec,datos){
 								d3.select("#attr3").on("change", function(){
 								  var attrSeq = this.value;
@@ -1523,7 +1360,6 @@
 								});
 							}
 							temporal(yourVlSpec,datos)
-
 							console.log(datos)
 						}
 						else{
@@ -1534,68 +1370,46 @@
 			});
 		});
 	}])
-
 	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {	
-
-
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
-
-
 					if(datos[0].hasOwnProperty("Year")){
 						document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols				
-
 						function onlyUnique(value, index, self) { 
 						    return self.indexOf(value) === index;
 						}
-
 						var years_temp=[]
 							var years = datos.map(function(d){
 								years_temp.push(parseInt(d.Date.getFullYear()))				
 							})
-
 						var months_temp=[]
 							var months = datos.map(function(d){
 								months_temp.push(parseInt(d.Date.getMonth()))				
 							})
-
 						var years_temp_array = years_temp.filter(onlyUnique)
-
 						var months_temp_array = months_temp.filter(onlyUnique)
-
 						d3.select("#attr4").on("change", function(){
-
 							document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="COMPLETE DATA"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'
-
 							var attr4 = this.value;
 							console.log("Selected Value Attr4: "+attr4)		
-
-
 							var data=[]
-
 							var colors = ['rgb(93, 164, 214, 0.5)', 'rgb(255, 144, 14, 0.5)', 'rgb(44, 160, 101, 0.5)', 'rgb(255, 65, 54, 0.5)', 'rgb(207, 114, 255, 0.5)', 'rgb(127, 96, 0, 0.5)', 'rgb(255, 140, 184, 0.5)', 'rgb(79, 90, 117, 0.5)', 'rgb(222, 223, 0, 0.5)','rgb(0,128,128)','rgb(214,12,140)','rgb(128, 0, 0)','rgb(255,255,0)','rgb(128,128,0)','rgb(0,255,255)','rgb(0,0,255)','rgb(255,0,255)','rgb(107,174,214)','rgb(128,0,128)'];
-
 							var new_colors=[];
 							if(colors.length>years_temp_array.length){
 								new_colors=colors.slice(0,years_temp_array.length+1)
 							}				
-
 							for(var i=0;i<years_temp_array.length;i++){	
 							
 								if (i!=0){				
 									new_colors.pop()
 								}
-
 								var temp_array_int=[]
 								datos.filter(d=>parseInt(d.Date.getFullYear())==years_temp_array[i]).map(function(d){
 									temp_array_int.push(parseInt(d[attr4]))
 								})
-
 								console.log(temp_array_int)
-
 								for(var j=0;j<new_colors.length;j++){
-
 									data[i]={
 									  y: temp_array_int,
 									  type: 'box',
@@ -1613,13 +1427,10 @@
 								}
 								
 							}
-
 							var layout = {
 							  title: 'Representation: Box Plot'
 							};
-
 							Plotly.newPlot('boxplot', data, layout);
-
 							d3.select("#attr5").on("change", function(){
 								var attr5 = this.value;
 								var valores=[];
@@ -1628,17 +1439,13 @@
 									valores.sort(function(a, b){return a-b});
 									console.log(valores)
 								})
-
 								function isOdd(num) { return num % 2;}
-
 								function calcShowPercentiles(datos,returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max){
 									var data_filter=[]
-
 									if(attr5=='25th-50th Percentile [Q1 <-> Q2 (Median)]'){
 										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<value_median).map(function(d){					
 											data_filter.push(d)										
 										})
-
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
@@ -1646,13 +1453,11 @@
 											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
 										}	
-
 									}
 									if(attr5=='0-25th Percentile [MIN <-> Q1]'){
 										returnData.filter(d=>parseInt(d[attr4])>=value_min && parseInt(d[attr4])<value_Q1).map(function(d){					
 											data_filter.push(d)										
 										})
-
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 0-25th Percentile [MIN <-> Q1] </strong>'
@@ -1665,7 +1470,6 @@
 										returnData.filter(d=>parseInt(d[attr4])>=value_median && parseInt(d[attr4])<value_Q3).map(function(d){					
 											data_filter.push(d)										
 										})
-
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 50th-75th Percentile [Q2 (Median) <-> Q3] </strong>'
@@ -1673,13 +1477,11 @@
 											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
 										}	
-
 									}
 									if(attr5=='75th-100th Percentile [Q3 <-> MAX]'){
 										returnData.filter(d=>parseInt(d[attr4])>=value_Q3 && parseInt(d[attr4])<value_max).map(function(d){					
 											data_filter.push(d)										
 										})
-
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 75th-100th Percentile [Q3 <-> MAX] </strong>'
@@ -1687,13 +1489,11 @@
 											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
 										}	
-
 									}
 									if(attr5=='Interquartile Range'){
 										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_Q3).map(function(d){					
 											data_filter.push(d)										
 										})
-
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> Interquartile Range </strong>'
@@ -1701,13 +1501,11 @@
 											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );												
 										}
-
 									}
 									if(attr5=='Outliers'){
 										returnData.filter(d=>parseInt(d[attr4])<value_min && parseInt(d[attr4])>value_max).map(function(d){					
 											data_filter.push(d)										
 										})
-
 										if(data_filter.length>0){
 											datos=data_filter
 											document.getElementById("counter").innerHTML = '<strong> From '+returnData.length+' original values\n'+datos.length+' were filtered\nas Outliers </strong>'
@@ -1733,12 +1531,9 @@
 									
 								console.log("valores:   "+valores)
 								console.log("tamaño:    "+ valores.length)
-
 								var value_median=math.median(valores)
-
 								var _firstHalf = valores.filter(function(f){ return f < value_median })
     							var _secondHalf = valores.filter(function(f){ return f >= value_median })
-
     							var _25percent = math.median(_firstHalf);
     								console.log("Q1:   "+_25percent)
     							var _50percent = value_median;
@@ -1748,18 +1543,13 @@
    							
 								var interquartile_range = _75percent - _25percent;
 									console.log("Interquartile Range:  "+interquartile_range)
-
 								var value_min= _25percent - (1.5*interquartile_range)
 									console.log("Min Value:  "+value_min)
-
 								var value_max= _75percent + (1.5*interquartile_range)
 									console.log("Max Value:  "+value_max)									
-
 								
 								calcShowPercentiles(datos,returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)			
-
 							})
-
 						})
 					}
 					else{
@@ -1769,13 +1559,10 @@
 			})
 		})
 	}])
-
 	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
-
 			var mymap=null;	
 			container.layoutManager.eventHub.on( 'completedata', function( completedata ){
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){	
-
 			var new_data=[]
 				
 			datos.map(function(d){
@@ -1786,15 +1573,10 @@
 					var long=[];
 					var previous_counter=0;	
 					var counter=1;
-
-
 					var list_markers=[]
 					var list_remaining=[]
-
 					function drawMap(datos, mymap,anterior,actual,new_data){
-
 						var markers = new L.LayerGroup().addTo(mymap);
-
 						L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 							maxZoom: 18,
 							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -1802,32 +1584,23 @@
 								'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 							id: 'mapbox.streets'
 						}).addTo(mymap);
-
 						var years =[];
 						var lista=[];
-
 						var colors = ['black','green','orange','blue','red','fuchsia','cyan','purple','teal'];	
-
 						datos.map(function(d){
 							years.push(d.Year)
 							years=years.filter(function(item, pos){
 								return years.indexOf(item)== pos; 
 							});
 						})		
-
 						if(datos[0].hasOwnProperty('Year')){
-
 							for(var k=0;k<years.length;k++){	
-
 								if (k!=0){										
 									colors.pop()	
 								}				
-
 								var latitudes = [];
 								var longitudes=[];							
-
 								var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){	
-
 									if(d.Latitude!="" && d.Longitude!=""){					
 										latitudes.push(parseFloat(d.Latitude))
 										longitudes.push(parseFloat(d.Longitude))								
@@ -1840,19 +1613,15 @@
 									lista.push(coord)
 									counter=counter+1;
 								}	
-
 								var identificators=[]
 								datos.map(function(d){
 									identificators.push(d['ID'])
 								})
-
 								var dates=[]
 								datos.map(function(d){
 									dates.push(d['Month']+" / "+d['Day']+" / "+d['Year']+"  ("+d['DayOfTheWeek']+")")
 								})							
-
 								for(var b=previous_counter;b<counter;b++){								
-
 										if(b==counter-1){
 											previous_counter=counter										
 										}
@@ -1870,28 +1639,23 @@
 							setInterval(function(){ mymap.invalidateSize()}, 400);								
 						}
 						else{
-
 							var latitudes = [];
 							var longitudes=[];					
-
 							datos.map(function(d){
 								if(d.Latitude!="" && d.Longitude!=""){					
 									latitudes.push(parseFloat(d.Latitude))
 									longitudes.push(parseFloat(d.Longitude))								
 								}
 							})
-
 							for(var i=0;i<datos.length;i++){									
 									var coord = [latitudes[i],longitudes[i]];
 									lista.push(coord)
 							}
 							console.log(lista)
-
 							var identificators=[]
 							datos.map(function(d){
 								identificators.push(d['ID'])
 							})
-
 							for(var i=0;i<lista.length;i++){
 								var marker=new L.circleMarker(lista[i],{fillOpacity:0.5,color:'blue'}).addTo(markers).bindPopup("The coordinates of the current point are:\n\n<b>["+lista[i]+"]</b>\n\n\n <b>Identificator: "+identificators[i]+"</b>");	//.addTo(mymap)
 								//.bindPopup("The coordinates of the current point are:\n\n<b>["+lista[i]+"]</b>\n\n\n <b>Identificator: "+identificators[i]+"</b>");		
@@ -1899,7 +1663,6 @@
 							}																	
 							setInterval(function(){ mymap.invalidateSize()}, 400);	
 						}
-
 						new L.Control.Draw({
 						    draw: {
 						        marker   : false,
@@ -1912,33 +1675,25 @@
 						    },
 						    edit: false
 						}).addTo(mymap);
-
-
 						L.easyButton('<img src="https://cdn.onlinewebfonts.com/svg/img_351337.png" style="width:20px">',function(btn,map){
 							container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );
 							container.layoutManager.eventHub.emit( 'datosvisibles', completedata );
 						}).addTo(mymap)
-
 						L.Polygon.include({
 						    contains: function (latLng) {
 						        return turf.inside(new L.circleMarker(latLng).toGeoJSON(), this.toGeoJSON());
 						    } 
 						});
-
 						L.Rectangle.include({
 						    contains: function (latLng) {
 						        return this.getBounds().contains(latLng);
 						    }
 						});
-
 						L.Circle.include({
 						    contains: function (latLng) {
 						        return this.getLatLng().distanceTo(latLng) < this.getRadius();
 						    }
 						});
-
-
-
 						mymap.on(L.Draw.Event.CREATED, function (e) {
 							new_data=[]
 							list_remaining=[]
@@ -1947,15 +1702,10 @@
 						            marker.remove();						            
 									id_tag = marker,
 									position = list_markers.indexOf(id_tag);
-
 									if ( ~position ) list_markers.splice(position, 1);		
-
-
 						        }
 						    });						  
-
 						   
-
 						    for(var i=0;i<list_markers.length;i++){
 						    	if(!list_remaining.includes(list_markers[i]['_popup']['_content'].split('Identificator: ')[1].split('</b>')[0])){
 						    		list_remaining.push(list_markers[i]['_popup']['_content'].split('Identificator: ')[1].split('</b>')[0])		
@@ -1966,26 +1716,21 @@
 						   	
 						   	
 						   	datos.map(function(d){
-
 							   	for(var i=0;i<list_remaining.length;i++){
 							   		if(d['ID']==list_remaining[i]){
 							   			new_data.push(d)
 							   		}
 							   	}
-
 							   	datos=new_data
 							   	console.log(datos)							   	
 						   	})
-
 						   	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
 							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-
 						});		
 	
 					}
 					
 					datos.map(function(d){
-
 						long.push(d.Longitude)
 						lat.push(d.Latitude)
 					
@@ -1993,7 +1738,6 @@
 						var min_latitudes=Math.min.apply(Math,lat)
 						var max_longitudes=Math.max.apply(Math,long)
 						var min_longitudes=Math.min.apply(Math,long)
-
 						prom_latitudes= (max_latitudes+min_latitudes)/2;
 						prom_longitudes=(max_longitudes+min_longitudes)/2;
 					
@@ -2002,32 +1746,26 @@
 					/*if(mymap==null){	
 									
 						mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
-
 					}
 					else{
 						mymap.remove()
 						//mymap=null;
-
 						if(mymap==null){									
 							mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
 							drawMap(datos, mymap,previous_counter,counter,new_data)
 						}
 					}*/
-
 					if (mymap != undefined) { mymap.remove(); }
 					mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
 					drawMap(datos, mymap,previous_counter,counter,new_data)						
-
 					}
 					else{
 					document.getElementById("mapid").innerHTML = '<strong> THERE ARE NOT ANY SPATIAL ATTRIBUTES THAT PERMITS THE DISPLAY OF THE MAP </strong>'
 				}
 				})
-
 			})	
 		})		
 	}])
-
 	splomApp.controller('splomController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 		
 		
@@ -2041,26 +1779,19 @@
 					var x=[]
 					var lista ='';
 					var lista_seq=[]
-
 					for(var i =0;i<cat.length;i++){
 						if(!(cat[i]=='__i'||cat[i]=='__seqId'||cat[i]=='visible')){
 							lista_seq.push('<option value="'+cat[i]+'">')	
 						}
 					}
-
 					lista=lista_seq.join('')					
-
 					document.getElementById("list6").innerHTML = '<strong>Select a Categoric Attribute to segment the loaded data: </strong> <input list="attrs6" type="text" id="attr6"><datalist id="attrs6">'+lista	
-
 					d3.select("#attr6").on("change", function(){
 						var attr6 = this.value;
-
 					    function unpack(rows, key) {
 					        return rows.map(function(row) { return row[key.replace('.',' ')]; });
 					    }
-
 					    colors = []	
-
 						var values=unpack(rows, attr6).filter((value, index, self) => self.indexOf(value) === index)
 						var pl_colorscale= ['rgb(93, 164, 214, 0.5)', 'rgb(255, 144, 14, 0.5)', 'rgb(44, 160, 101, 0.5)', 'rgb(255, 65, 54, 0.5)', 'rgb(207, 114, 255, 0.5)', 'rgb(127, 96, 0, 0.5)', 'rgb(255, 140, 184, 0.5)', 'rgb(79, 90, 117, 0.5)', 'rgb(222, 223, 0, 0.5)','rgb(0,128,128)','rgb(214,12,140)','rgb(128, 0, 0)','rgb(255,255,0)','rgb(128,128,0)','rgb(0,255,255)','rgb(0,0,255)','rgb(255,0,255)','rgb(107,174,214)','rgb(128,0,128)'];
 						
@@ -2068,7 +1799,6 @@
 						var attributes=[];
 						for (k=0; k < values.length; k++) {
 							for (i=0; i < unpack(rows, attr6).length; i++) {	
-
 								if(unpack(rows, attr6)[i]==values[k]){
 									c=c+1/values.length
 									console.log(unpack(rows, attr6)[i] + "         "+values[k] + "     "+pl_colorscale[k])									
@@ -2077,23 +1807,15 @@
 								}								
 							}						
 						}  
-
 						attributes=attributes.filter((value, index, self) => self.indexOf(value) === index)
-
 						var att =[];
 						
-
 						for(var i =0;i<attributes.length;i++){							
 								att.push('<option value="'+attributes[i]+'">')							
 						}
-
 						att.push('<option value="COMPLETE DATA ('+completedata.length+' values)">')
-
-
 						var att_text= att.join('')
-
 						document.getElementById("list7").innerHTML = '<strong>Do you want to FILTER any of these current values of your selected attribute?\nSelect a value to filter: </strong> <input list="attrs7" type="text" id="attr7"><datalist id="attrs7">'+att_text					
-
 						d3.select("#attr7").on("change", function(){
 							var attr7 = this.value;
 							var filtered=[]
@@ -2109,22 +1831,16 @@
 								}
 							})
 							console.log(filtered)
-
 							container.layoutManager.eventHub.emit( 'redrawVisibleData', filtered );
 							container.layoutManager.eventHub.emit( 'datosvisibles', filtered );
 						})
-
-
-
 					    var axis = () => ({
 					      showline:false,
 					      zeroline:false,
 					      gridcolor:'#ffff',
 					      ticklen:5
 					    })
-
 					    var cols = Object.keys(rows[0]);
-
 					    if(x.length>0){
 					    	x=[]
 					    }
@@ -2133,9 +1849,7 @@
 								x.push({label:cols[i], values:unpack(rows,cols[i])})
 							}
 						}
-
 						console.log(x)
-
 					    var data = [{
 					      type: 'splom',
 					      dimensions: x,
@@ -2147,10 +1861,8 @@
 					          color: 'white',
 					          width: 0.5
 					        }
-
 					      }
 					    }]
-
 					    var layout = {
 					      title:'SPLOM Graphic - [Scatter Plot Matrix / Correlations]',
 					      height: container.height + 1000,
@@ -2170,7 +1882,6 @@
 					      yaxis4:axis(),
 					      yaxis5:axis()
 					    }
-
 					    Plotly.newPlot('splomGraph', data, layout)	
 					})
 					})
@@ -2179,13 +1890,10 @@
 			})
 		})			
 	}])
-
 	regressionApp.controller('regressionController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
-
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){	
 			container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
-
 					document.getElementById("list8").innerHTML = '<strong>Select a Quantitative Attribute to segment the loaded data: </strong> <input list="attrs8" type="text" id="attr8"><datalist id="attrs8">'+cols
 					document.getElementById("list9").innerHTML = '<strong>Select a Quantitative Attribute to segment the loaded data: </strong> <input list="attrs9" type="text" id="attr9"><datalist id="attrs9">'+cols											
 					
@@ -2201,39 +1909,26 @@
 								datos_raw2.push([d[attr8],d[attr9]])
 								datos_raw.push([parseFloat(d[attr8]),parseFloat(d[attr9])])
 							})
-
 							console.log(datos_raw)
 							console.log(datos_raw2)
-
 							var rawData = datos_raw;
-
 						
 							var result = regression('linear', rawData);
-
 							var coeff = result.equation;							
-
 							anychart.onDocumentReady(function () {
-
 							  var data_1 = rawData;
 							  var data_2 = setTheoryData(rawData);
-
 							  chart = anychart.scatter();
-
 							  chart.title("The calculated formula: " + result.string + "\nThe coefficient of determination (R2): " + result.r2.toPrecision(2));
-
 							  chart.legend(true);
-
 							  var series1 = chart.marker(data_1);
 							  series1.name("Experimental data");
-
 							  var series2 = chart.line(data_2);
 							  series2.name("Theoretically calculated data");
 							  series2.markers(true);
-
 							  chart.container("regressionGraph");
 							  chart.draw();
 							});
-
 							function formula(coeff, x) {
 							  var result = null;
 							  for (var i = 0, j = coeff.length - 1; i < coeff.length; i++, j--) {
@@ -2241,7 +1936,6 @@
 							  }
 							  return result;
 							}
-
 							function setTheoryData(rawData) {
 							  var theoryData = [];
 							  for (var i = 0; i < rawData.length; i++) {
@@ -2255,8 +1949,6 @@
 			})
 		})						
 	}])
-
-
 	var app1El = document.getElementById('fileselector');
 	var app2El = document.getElementById('navio');
 	var app3El = document.getElementById('spatialviz');
@@ -2265,8 +1957,6 @@
 	var app6El = document.getElementById('map');
 	var app7El = document.getElementById('splom');
 	var app8El = document.getElementById('regression');
-
-
 	angular.bootstrap(app1El, ['fileselector', 'test-service']);
 	angular.bootstrap(app2El, ['navio', 'test-service']);
 	angular.bootstrap(app3El, ['spatialviz', 'test-service']);
@@ -2275,22 +1965,18 @@
 	angular.bootstrap(app6El, ['map', 'test-service']);
 	angular.bootstrap(app7El, ['splom', 'test-service']);
 	angular.bootstrap(app8El, ['regression', 'test-service']);
-
 	var AngularModuleComponent = function( container, state ) {
 	    var html = $( '#' + state.templateId ).html(),
 	        element = container.getElement();
 	    
 	    element.html( html );
 	 
-
 	    angular
 	        .module( state.module )
 	        .value( 'container', container )
 	        .value( 'state', state );
-
 	    angular.bootstrap( element[ 0 ], [ state.module ] );
 	};
-
 	var myLayout = new GoldenLayout({
 	    content:[{
 	        type: 'row',
@@ -2373,7 +2059,6 @@
 	   }]
 	   }]
 	});
-
 	myLayout.registerComponent( 'angularModule', AngularModuleComponent );
 	myLayout.init();
 </script>
