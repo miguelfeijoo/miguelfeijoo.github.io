@@ -121,7 +121,6 @@
 		 <body class="claro">
 		    <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false" style="width:100%; height:100%;">
 		      <div data-dojo-type="dijit/layout/ContentPane" id="rightPane" data-dojo-props="region:'right'">
-		        <div style='padding-left:4px;'>
 		          <p>
 		            Add a zipped shapefile to the map.</p><p>Visit the
 		            <a target='_blank' href="https://doc.arcgis.com/en/arcgis-online/reference/shapefiles.htm">Shapefiles</a> help topic for information and limitations.</p>
@@ -135,7 +134,6 @@
 		              </form>
 		              <span class="file-upload-status" style="opacity:1;" id="upload-status"></span>
 		              <div id="fileInfo">&nbsp;</div>
-		        </div>
 		    </div>
 		    <div id="mapCanvas" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" align='center'></div>
 		  </div>
@@ -191,7 +189,7 @@
 	#spatial_id { margin: 15px; height: 100%; width: 100% }
 	#navio { margin: 15px; height: 100%; width: 100% }
 	#selector { margin: 15px; height: 100%; width: 100% }
-	#mapESRI { margin: 15px; height: 100%; width: 100% }
+	#mapESRIid { margin: 0px; height: 100%; width: 100% }
 </style>
 
 
@@ -541,17 +539,33 @@
 							  	if(json[i].hasOwnProperty('Time')){
 							  		json[i]['Name']=json[i]['Time'].split(']')[0].split('[')[0]							  		
 							  		if((json[i]['Time'].split(',')).length ==3){
-							  			json[i]['Shape']=json[i]['Time'].split(']')[0].split('[')[1].split(',')[0]
+							  			if(json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1].length>1){
+							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+							  			}
+							  			else{
+							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+							  			}
+							  			
 							  			json[i]['Status']=json[i]['Time'].split(',')[2].split(']')[0]
 							  			json[i]['Type']=json[i]['Time'].split(',')[1]  	
 							  			
 							  		}
 							  		if((json[i]['Time'].split(',')).length ==2){
-						  				json[i]['Shape']=json[i]['Time'].split(',')[0].split('[')[1]
+						  				if(json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1].length>1){
+							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+							  			}
+							  			else{
+							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+							  			}
 						  				json[i]['Type']=json[i]['Time'].split(',')[1].split(']')[0]			  								  			
 							  		}
 							  		if((json[i]['Time'].split(',')).length ==1){
-							  			json[i]['Shape']=json[i]['Time'].split(']')[0].split('[')[1]
+							  			if(json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1].length>1){
+							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+							  			}
+							  			else{
+							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+							  			}
 							  		}	  									  		
 							  								  		
 							  		delete json[i]['Time'];				  		
@@ -627,6 +641,8 @@
 		    	var dateparse=[];
 		   		var categoric=[];
 				function json2table(json, classes) {
+
+				console.log(json)
 				var cols = Object.keys(json[0]);
 				console.log(cols)
 				  
@@ -797,7 +813,199 @@
 				container.layoutManager.eventHub.emit( 'catColumns', $scope.catColumnsFinal );
 						})
 					})
+				})	
+
+
+			container.layoutManager.eventHub.on( 'datos', function( data ){
+				container.layoutManager.eventHub.on( 'argis_attributes', function( argis_attributes ){
+						var new_datos=[]
+						var argis_at=[]
+						var current_at=[]
+						var cols_esri = Object.keys(argis_attributes[0]);
+						console.log(cols_esri)
+						data.map(function(d){
+							argis_attributes.map(function(arc){														
+								if(parseInt(arc['FID']) === parseInt(d['Shape'].split('-')[1])){	
+
+									
+									for(var i=0;i<cols_esri.length;i++){
+										d[cols_esri[i]]= arc[cols_esri[i]]
+									}
+
+									new_datos.push(d)
+									//console.log(JSON.stringify(arc) +"          "+JSON.stringify(d))
+								}						
+							})
+						})
+
+						new_datos.map(function(d){
+							delete d['FID']
+							delete d['__seqId']
+							delete d['__i']
+							delete d['Visible']
+						})
+						console.log(new_datos)
+
+						var parse=[];
+				    	var dateparse=[];
+				   		var categoric=[];
+						function json2table(json, classes) {
+							console.log(json)
+							var cols = Object.keys(json[0]);
+							console.log(cols)
+							  
+							var headerRow = '';
+							var bodyRows = '';
+							var columnas='';
+							var columnasSeq='';
+							var columnsSequential=[];
+							var columns=[];
+							  
+							classes = classes || '';
+							function capitalizeFirstLetter(string) {
+								return string.charAt(0).toUpperCase() + string.slice(1);
+							}
+							  
+							json.map(function(row) {
+								bodyRows += '<tr>';
+								cols.map(function(colName) {
+								  bodyRows += '<td>' + row[colName] + '</td>';
+								  columns.push(row[colName])
+								  //console.log(cols.length)
+								})
+								bodyRows += '</tr>';
+							});
+							for (i = 0; i < cols.length; i++){
+								if(/^[+-]?([0-9]*[.])?[0-9]+$/.test(columns[i]))
+								{ 
+								 parse.push(cols[i])
+								}
+								else if(/([0-9]{0,4})([0-9]{0,4})?(\/)([0-9]{0,4})([0-9]{0,4})?(\/)(\d{0,4})/.test(columns[i]))
+								{
+								  dateparse.push(cols[i])
+								} 
+								else if(/[GMT-]{4}[0-9]{4}/.test(columns[i]))
+								{
+								  dateparse.push(cols[i])
+								}  
+								else
+								{
+								  categoric.push(cols[i])
+								}
+							}
+							if(parse.includes('Year') && categoric.includes('Year')){
+								var value = 'Year'
+								parse=parse.filter(function(item) { 
+								return item !== value
+							 })}
+							var seq_new=parse.filter((value, index, self) => self.indexOf(value) === index);		
+							
+							for (var i=0;i<dateparse.length;i++){
+								   seq_new.push(dateparse[i])      
+							  }
+							container.layoutManager.eventHub.emit( 'dateParseEvent', dateparse );
+							var cat_new=categoric.filter((value, index, self) => self.indexOf(value) === index);
+							container.layoutManager.eventHub.emit( 'categoricsEvent', cat_new );
+							cols.map(function(col) {
+							headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
+							columnas += '<option value="'+col+'">'
+							});	
+							console.log(dateparse)
+							
+							seq_new.map(function(col) {							
+										if (!(col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col=="Hours" || col=="Seconds" || col=='__seqId'||dateparse.includes(col))){
+												if(!(cat_new).includes(col)){
+													console.log(col)									
+													columnsSequential.push('<option value="'+col+'">')	
+												}
+										}		
+												
+									columnsSequential=columnsSequential.filter((value, index, self) => self.indexOf(value) === index)
+									columnasSeq=columnsSequential.join('')	
+								});
+
+							container.layoutManager.eventHub.emit( 'seq_argis', seq_new );
+							container.layoutManager.eventHub.emit( 'cat_argis', cat_new );
+							
+							//console.log(columnasSeq)
+							container.layoutManager.eventHub.emit( 'columnas_list', columnas );
+							container.layoutManager.eventHub.emit( 'columnasSeq_list', columnasSeq );
+							return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
+								 headerRow +
+								 '</tr></thead><tbody>' +
+								 bodyRows +
+								 '</tbody></table>';
+						}
+
+						//console.log("-----------------------**********************-------------------------")
+						//console.log(new_datos)
+
+						container.layoutManager.eventHub.emit( 'datachanged', new_datos );
+
+						document.getElementById('tableGoesHere').innerHTML = json2table(new_datos, 'table');
+						$(document).ready(function() {
+							$('#data').DataTable( {  
+								"scrollY": 300,
+								"scrollX": true
+							});
+						});
+
+						function loadScript(src) {
+						       var script = document.createElement("script");
+						       script.type = "text/javascript";
+						       document.getElementById("tableGoesHere").appendChild(script);
+						       script.src = src;		      
+						}
+						function loadStyle(src) {
+						       var script = document.createElement("link");
+						       script.rel = 'stylesheet'
+						       script.type = "text/css";
+						       document.getElementById("tableGoesHere").appendChild(script);
+						       script.href = src;
+						}
+						$(document).ready(function() {
+							$('#data').DataTable( {
+								destroy: true,
+							    dom: 'lBfrtip',
+							    buttons: [
+							        'copy', 'csv', 'excel', 'pdf', 'print'
+							    ],
+							    "scrollY": 300,
+					    		"scrollX": true
+							});
+						});		
+
+						loadStyle('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css')
+						loadStyle('https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css')
+						loadScript('https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js')
+						loadScript('https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js')
+						loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js')
+						loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js')
+						loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js')
+						loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js')
+						loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js')
+						loadScript('https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js')				
+
+						var script = document.createElement("script");
+						script.text="var table; $(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'lBfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
+						document.getElementById("tableGoesHere").appendChild(script);
+
+
+						
+						
+				
+
+
 				})			
+			})
+
+			
+
+
+
+
+
+
 	}])
 	navioApp.controller('navioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		
@@ -833,6 +1041,45 @@
 				});
 			});
 		});	
+		container.layoutManager.eventHub.on( 'datachanged', function( data ){
+				//console.log(data)
+				$("#navio").remove();
+				document.getElementById("navio_widget").innerHTML = '<p></p> <div id="navio"></div>'
+
+				container.layoutManager.eventHub.on( 'seq_argis', function( seqColumns ){
+					container.layoutManager.eventHub.on( 'cat_argis', function( catColumns ){
+						nv=navio(d3.select("#navio"), 600);
+
+						console.log(seqColumns)
+						console.log(catColumns)
+							catColumns.forEach((c) => nv.addCategoricalAttrib(c));
+							seqColumns.forEach((c) => nv.addSequentialAttrib(c));
+							
+							nv.data(data);
+							visible = nv.getVisible();						
+							
+							container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
+							console.log(data)
+							nv.updateCallback(function(){
+								visible = nv.getVisible();
+								container.layoutManager.eventHub.emit( 'datosvisibles', visible );
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
+								console.log(visible)
+								container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
+									console.log(attr1)
+									container.layoutManager.eventHub.on( 'change-attr2', function( attr2 ){
+										console.log(attr2)
+										container.layoutManager.eventHub.on( 'vis', function( vis ){
+											vis(attr1,attr2,seqColumns,catColumns,visible)
+										})
+									})
+								})
+							})	
+				});
+			});
+		});
+		
 	}])
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
 		
@@ -1551,8 +1798,7 @@
 						}
 					});
 				});
-			});
-		
+			});		
 	}])
 	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {	
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
@@ -2260,14 +2506,27 @@
 		    var layers = [];
 
 		    arrayUtils.forEach(featureCollection.layers, function (layer) {
-		      var infoTemplate = new InfoTemplate("Details", "${*}");
+		      var infoTemplate = new InfoTemplate("Details", "${*}");		     
 		      var featureLayer = new FeatureLayer(layer, {
 		        infoTemplate: infoTemplate
 		      });
-		      //associate the feature with the popup on click to enable highlight and zoom to
+
+		     var argis_attributes=[]
+		     for(var i=0;i<layer.featureSet.features.length;i++){
+		     	argis_attributes.push(layer.featureSet.features[i].attributes)
+		     }
+
+		     container.layoutManager.eventHub.emit( 'argis_attributes', argis_attributes );
+
+		     console.log(argis_attributes)
+		     
+		     
+
+		     //associate the feature with the popup on click to enable highlight and zoom to
 		      featureLayer.on('click', function (event) {
-		        map.infoWindow.setFeatures([event.graphic]);
+		        map.infoWindow.setFeatures([event.graphic]);	     
 		      });
+
 		      //change default symbol if desired. Comment this out and the layer will draw with the default symbology
 		      changeRenderer(featureLayer);
 		      fullExtent = fullExtent ?
