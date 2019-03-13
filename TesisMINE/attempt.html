@@ -118,11 +118,11 @@
 
 <template type="text/html" id="mapESRITemplate">
 	<div id='mapESRIid' ng-controller="mapESRIController" class="mapESRI" align='center'>	
-		 <body class="claro">
-		    <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false" style="width:100%; height:100%;">
-		      <div data-dojo-type="dijit/layout/ContentPane" id="rightPane" data-dojo-props="region:'right'">
+		 <body>
+		    <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false">
+		      <div data-dojo-type="dijit/layout/ContentPane" id="rightPane" data-dojo-props="region:'left'">
 		          <p>
-		            Add a zipped shapefile to the map.</p><p>Visit the
+		            <strong>First select a file in the container "FILE PICKER"</strong></p><p>Then add a <strong>"zipped shapefile"</strong> to the map that has relation with the shapes of your relational file.</p><p>Visit the
 		            <a target='_blank' href="https://doc.arcgis.com/en/arcgis-online/reference/shapefiles.htm">Shapefiles</a> help topic for information and limitations.</p>
 		              <form enctype="multipart/form-data" method="post" id="uploadForm">
 		              <div class="field">
@@ -137,7 +137,8 @@
 		    </div>
 		    <div id="mapCanvas" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" align='center'></div>
 		  </div>
-		</body>		
+		  </body>
+				
 	</div>
 </template>
 
@@ -189,7 +190,9 @@
 	#spatial_id { margin: 15px; height: 100%; width: 100% }
 	#navio { margin: 15px; height: 100%; width: 100% }
 	#selector { margin: 15px; height: 100%; width: 100% }
-	#mapESRIid { margin: 0px; height: 100%; width: 100% }
+	#mainWindow { margin: 0px; height: 97vh; width: 97vw }
+	#mapCanvas{ margin: 0px; height: 97vh; width: 97vw }
+
 </style>
 
 
@@ -814,10 +817,11 @@
 						})
 					})
 				})	
-
-
+		
 			container.layoutManager.eventHub.on( 'datos', function( data ){
-				container.layoutManager.eventHub.on( 'argis_attributes', function( argis_attributes ){
+				data.map(function(d){
+					if(d.hasOwnProperty('Shape')){
+						container.layoutManager.eventHub.on( 'argis_attributes', function( argis_attributes ){
 						var new_datos=[]
 						var argis_at=[]
 						var current_at=[]
@@ -989,23 +993,10 @@
 						var script = document.createElement("script");
 						script.text="var table; $(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'lBfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
 						document.getElementById("tableGoesHere").appendChild(script);
-
-
-						
-						
-				
-
-
-				})			
+				})	
+					}
+				})
 			})
-
-			
-
-
-
-
-
-
 	}])
 	navioApp.controller('navioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		
@@ -1079,7 +1070,6 @@
 				});
 			});
 		});
-		
 	}])
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
 		
@@ -2380,6 +2370,8 @@
 		})						
 	}])
 	mapESRIApp.controller('mapESRIController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
+
+
 		var map;
 
 		require([
@@ -2411,6 +2403,7 @@
 		dom, JSON, on, parser, sniff, arrayUtils, Color, lang
 		) {
 
+			console.log(dom)
 		  parser.parse();
 
 		  var portalUrl = "https://www.arcgis.com";
@@ -2524,7 +2517,8 @@
 
 		     //associate the feature with the popup on click to enable highlight and zoom to
 		      featureLayer.on('click', function (event) {
-		        map.infoWindow.setFeatures([event.graphic]);	     
+		        map.infoWindow.setFeatures([event.graphic]);
+		        console.log(event.graphic.attributes.UPZ)	     
 		      });
 
 		      //change default symbol if desired. Comment this out and the layer will draw with the default symbology
@@ -2566,8 +2560,10 @@
 		    }
 		  }
 		});
-	}])
+ 		
 
+		
+	}])
 
 	var app1El = document.getElementById('fileselector');
 	var app2El = document.getElementById('navio');
@@ -2627,19 +2623,19 @@
 	        	 type: 'stack',
 	       		 content: [{
                 type: 'component',
-                title: 'Geo-Referentiation',
-                componentName: 'angularModule',
-                componentState: {
-                    module: 'map',
-                    templateId: 'mapTemplate'
-                }
-            },{
-                type: 'component',
                 title: 'ESRI Map',
                 componentName: 'angularModule',
                 componentState: {
                     module: 'mapESRI',
                     templateId: 'mapESRITemplate'
+                }
+            },{
+                type: 'component',
+                title: 'Geo-Referentiation',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'map',
+                    templateId: 'mapTemplate'
                 }
             }]
             },{
