@@ -60,10 +60,10 @@
 <!--  TEMPLATE FOR EACH MODULE/VIEW   -->
 <template type="text/html" id="fileselectorTemplate">
   <div id='selector' ng-controller="fileselectorController" class="fileselector">
-		<p><strong>Select a file of your interest to analyze its current attributes </strong>(Accepted Extensions: <i>.csv, .xls, .xlsx</i> )</p>
+		<p><strong><font size="3">Select a file of your interest to analyze its current attributes </font></strong><p></p>(Accepted Extensions: <i>.csv, .xls, .xlsx</i> )</p>
 		<p></p>
 		<input ng-model='shared.current_data' type="file" accept=".csv,.xlsx,.xls" id="files" name="file" />
-
+		<div id='buttonComplete' align='center'></div>
 		<div id="tableGoesHere"align="center"></div>				
 </template>	
 
@@ -122,8 +122,8 @@
 		    <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false">
 		      <div data-dojo-type="dijit/layout/ContentPane" id="rightPane" data-dojo-props="region:'top'">
 		          <span style=" float:left; padding-left:2%;">
-		          <p align='left'><strong>First select a file in the container "FILE PICKER"</strong></p><p align='left'>Then, add a <strong>"ZIPPED SHAPEFILE"</strong> on the map, consistent with the file previously loaded.</p><p align='left'>Visit the
-		            <a target='_blank' href="https://doc.arcgis.com/en/arcgis-online/reference/shapefiles.htm">Shapefiles</a> help topic for information and limitations.</p>
+		          <font size="3"><p align='left'><strong>First select a file in the container "FILE PICKER"</strong></p><p align='left'>Then, add a <strong>"ZIPPED SHAPEFILE"</strong> on the map</p><p align='left'>Visit the
+		            <a target='_blank' href="https://doc.arcgis.com/en/arcgis-online/reference/shapefiles.htm">Shapefiles</a> help topic for information and limitations.</p></font>
 		              <form enctype="multipart/form-data" method="post" id="uploadForm"  align='left'>
 		              <div class="field">
 		                  <label class="file-upload">
@@ -627,7 +627,7 @@
 	    }
 	    return $window.sharedService;
 	})
-	fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"container","state","TestService",function($scope,$timeout,container,state, TestService) {	
+	fileselectorApp.controller('fileselectorController', ["$scope",'$timeout',"container","state","TestService",function($scope,$timeout,container,state, TestService) {			
 		
 			$scope.dat= state.dat || null;
 			$scope.datos= state.datos || null;
@@ -641,6 +641,12 @@
 			TestService.getData(function(d){
 				$scope.dat =d;
 				container.layoutManager.eventHub.emit( 'completedata', $scope.dat );
+
+
+
+
+
+
 				var parse=[];
 		    	var dateparse=[];
 		   		var categoric=[];
@@ -811,6 +817,19 @@
 					
 				})
 			})
+
+			container.layoutManager.eventHub.on( 'completedata', function( completedata ){
+				document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+completedata.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
+				$('button[id="complete_data_btn"]').click(function() {  	
+										
+					container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );	
+					container.layoutManager.eventHub.emit( 'datosvisibles', completedata );			   	
+									   
+				});		
+			})
+
+
+
 			function otherfunction(){
 				$scope.datos=$scope.dat
 				$scope.seqColumns=$scope.seq
@@ -837,6 +856,8 @@
 						})
 					})
 				})	
+
+
 		
 			container.layoutManager.eventHub.on( 'datos', function( data ){
 				var new_datos=[]
@@ -1485,7 +1506,7 @@
 									container.layoutManager.eventHub.emit( 'vis', vis(attr1,attr2,seqColumns,catColumns,datos) );
 								}		
 								else{
-									document.getElementById("text").innerHTML='<p><strong>THERE ARE NOT SPATIAL ATTRIBUTES THAT PERMITS ANY SPATIAL ANALYSIS</strong></p>'
+									document.getElementById("text").innerHTML='<p><strong><font size="3">THERE ARE NOT SPATIAL ATTRIBUTES THAT PERMITS ANY SPATIAL ANALYSIS</font></strong></p>'
 								}					
 							})
 						})
@@ -1626,31 +1647,31 @@
 								texto+=	'<p><strong>COMPLETE DATA:            </strong><strong>'+complete_enable+'</strong></p>'								
 							}
 							if(!(year_t.includes(undefined))){
-								texto+=	'<p><strong>Year:</strong></p>   '+year_t+'   <p></p>'								
+								texto+=	'<p><font size="5"><strong>Year:</strong></font></p> <font size="3">  '+year_t+'</font>   <p></p>'								
 							}
 
 							if(!(month_t.includes(undefined))){
-								texto+=	'<p><strong>Month:</strong></p>   '+month_t+'    <p></p>'								
+								texto+=	'<p><font size="5"><strong>Month:</strong></font</p>   <font size="3">'+month_t+' </font>   <p></p>'								
 							}
 							if(!(dayofMonth_t.includes(undefined))){
-								texto+=	'<p><strong>Day:</strong></p>   '+dayofMonth_t+'    <p></p>'								
+								texto+=	'<p><font size="5"><strong>Day:</strong</font></p>  <font size="3"> '+dayofMonth_t+' </font>   <p></p>'								
 							}
 							if(!(day_t.includes(undefined))){
-								texto+=	'<p><strong>Day of the Week:</strong></p>   '+day_t+'    <p></p>'								
+								texto+=	'<p><font size="5"><strong>Day of the Week:</strong></font</p>   <font size="3">'+day_t+'</font>    <p></p>'								
 							}
 
 							if(!(hour_t.includes(undefined))){
-								texto+=	'<p><strong>Hour:</strong></p>   '+hour_t+'    <p></p>'								
+								texto+=	'<p><font size="5"><strong>Hour:</strong></font</p>  <font size="3"> '+hour_t+' </font>   <p></p>'								
 							}
 							if(!(daynight_t.includes(undefined))){
-								texto+=	'<p><strong>Day/Night:</strong></p>  '+daynight_t+'    <p></p>'								
+								texto+=	'<p><font size="5"><strong>Day/Night:</strong></font</p>  <font size="3">'+daynight_t+' </font>   <p></p>'								
 							}
 							if(!(weekmonth_t.includes(undefined))){
-								texto+=	'<p><strong>Week Of The Month:</strong></p>   '+weekmonth_t+'    <p></p>'								
+								texto+=	'<p><font size="5"><strong>Week Of The Month:</strong></font</p>   <font size="3">'+weekmonth_t+'</font>    <p></p>'								
 							}
 
 							if(!(isWeekDay_t.includes(undefined))){
-								texto+=	'<p><strong>Is Weekday:</strong></p>  '+isWeekDay_t								
+								texto+=	'<p><font size="5"><strong>Is Weekday:</strong></font></p>  <font size="3">'+isWeekDay_t+'</font>'							
 							}
 
 							texto+='<div id="list3" align="center"></div>    <div id="temporal"align="center"></div>'
@@ -1659,7 +1680,7 @@
 							document.getElementById("temporal_id").innerHTML=texto
 							
 							
-							document.getElementById("list3").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
+							document.getElementById("list3").innerHTML = '<strong><font size="3">Select Quantitative Value: </font></strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
 							var allInputs = document.getElementsByTagName("input");
 							for (var i = 0, max = allInputs.length; i < max; i++){
 							    if (allInputs[i].type === 'checkbox' && !(allInputs[i].id=='complete'))
@@ -1848,7 +1869,7 @@
 							console.log(datos)
 						}
 						else{
-							document.getElementById("list3").innerHTML = '<strong> THERE ARE NOT TEMPORAL ATTRIBUTES THAT PERMITS ANY TEMPORAL ANALYSIS </strong>'
+							document.getElementById("list3").innerHTML = '<strong> <font size="3">THERE ARE NOT TEMPORAL ATTRIBUTES THAT PERMITS ANY TEMPORAL ANALYSIS </font></strong>'
 						}
 					});
 				});
@@ -2037,7 +2058,7 @@
 						})
 					}
 					else{
-						document.getElementById("list4").innerHTML = '<strong> THERE ARE NOT ANY TEMPORAL ATTRIBUTES THAT PERMITS THE PRELIMINARY STATISTICAL ANALYSIS </strong>'
+						document.getElementById("list4").innerHTML = '<strong><font size="3"> THERE ARE NOT ANY TEMPORAL ATTRIBUTES THAT PERMITS THE PRELIMINARY STATISTICAL ANALYSIS </font></strong>'
 					}
 				})	
 			})
@@ -2244,7 +2265,7 @@
 					drawMap(datos, mymap,previous_counter,counter,new_data)						
 					}
 					else{
-					document.getElementById("mapid").innerHTML = '<strong> THERE ARE NOT ANY SPATIAL ATTRIBUTES THAT PERMITS THE DISPLAY OF THE MAP </strong>'
+					document.getElementById("mapid").innerHTML = '<p></p><strong> <font size="3">THERE ARE NOT SPATIAL ATTRIBUTES THAT PERMITS THE DISPLAY OF THE MAP </font></strong>'
 				}
 				})
 			})	
