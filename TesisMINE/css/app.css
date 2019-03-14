@@ -8,7 +8,7 @@
         background-color: #FFFFFF;
         color: #333333;
         font-family:"Helvetica Neue", Helvetica, "Trebuchet MS", Arial, sans-serif;
-        font-size: 14px;
+        font-size: 12px;
         overflow: hidden;
       }
       a {
@@ -28,7 +28,7 @@
         border:1px solid #222;
         margin: 0;
         padding: 0;
-        width: 280px;
+        width: 25px;
       }
       #mapCanvas {
         border:1px solid #222;
