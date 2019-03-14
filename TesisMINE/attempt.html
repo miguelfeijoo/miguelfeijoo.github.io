@@ -775,6 +775,25 @@
 				script.text="var table; $(document).ready(function() {$('#visible').DataTable( {destroy: true,paging: true, searching: true, dom: 'lBfrtip', buttons: ['copy', 'csv', 'excel', 'pdf', 'print']} );} );"
 				document.getElementById("tableGoesHere").appendChild(script);
 				otherfunction();
+
+				
+					container.layoutManager.eventHub.on( 'redrawVisibleData',function(returnData){
+						container.layoutManager.eventHub.on( 'datosvisibles',function(datosvisibles){
+							container.layoutManager.eventHub.on( 'actual_upz',function(actual_upz){
+
+								if(returnData.filter(x=> parseInt(x.UPZ) === parseInt(actual_upz)).length>0){
+									returnData=returnData.filter(x=> parseInt(x.UPZ) === parseInt(actual_upz))
+									container.layoutManager.eventHub.emit('redrawVisibleData',returnData)			
+									//container.layoutManager.eventHub.emit('datosvisibles',returnData)	
+								}
+								else{
+									alert('The selected UPZ value has no data reported in the other views.\nCheck your loaded file.')
+								}
+								
+							})
+						})
+					})
+
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function(returnData){					
 					console.log(returnData)
 					document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
@@ -1496,6 +1515,8 @@
 						var hour_t=''
 						var weekmonth_t=''
 						var isWeekDay_t=''
+
+						
 						if(datos[0].hasOwnProperty("Year")){
 							datos.map(function(d){
 								year.push(d['Year'])
@@ -2474,10 +2495,6 @@
 		  });
 
 
-
-
-
-
 		  function generateFeatureCollection (fileName) {
 		    var name = fileName.split(".");
 		    //Chrome and IE add c:\fakepath to the value - we need to remove it
@@ -2561,12 +2578,13 @@
      		 
      		  //argis_attributes.push(layer.featureSet.features[i].attributes)
 		     
-		     var actual_upz=null;
+		     
 		     //associate the feature with the popup on click to enable highlight and zoom to
 		      featureLayer.on('click', function (event) {
-		        map.infoWindow.setFeatures([event.graphic]);
-		        console.log(event.graphic.attributes.UPZ)	
-
+		      	var actual_upz=null;
+		      	map.infoWindow.setFeatures([event.graphic]);
+		        actual_upz=event.graphic.attributes.UPZ
+				container.layoutManager.eventHub.emit( 'actual_upz', actual_upz );
 		      });
 
 
@@ -2578,7 +2596,6 @@
 		      layers.push(featureLayer);
 		    });   
 					   
-		   // container.layoutManager.eventHub.emit( 'argis_attributes', argis_attributes );
 		    map.addLayers(layers);
 		    map.setExtent(fullExtent.expand(1.25), true);
 
