@@ -49,12 +49,17 @@
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=yes">
 <title>ExploryBoxesTool</title>
 
-<link rel="stylesheet" href="https://js.arcgis.com/3.26/dijit/themes/claro/claro.css">
+<link rel="stylesheet" href="https://js.arcgis.com/3.27/dijit/themes/claro/claro.css">
 <link rel="stylesheet" href="css/app.css">
 <link rel="stylesheet" href="css/fileupload.css">
-<link rel="stylesheet" href="https://js.arcgis.com/3.26/esri/css/esri.css">
+<link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/css/esri.css">
 
-<script src="https://js.arcgis.com/3.26/"></script>
+<link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/themes/calcite/dijit/calcite.css">
+<link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/themes/calcite/esri/esri.css">
+
+
+
+<script src="https://js.arcgis.com/3.27/"></script>
 
 
 <!--  TEMPLATE FOR EACH MODULE/VIEW   -->
@@ -118,7 +123,7 @@
 
 <template type="text/html" id="mapESRITemplate">
 	<div id='mapESRIid' ng-controller="mapESRIController" class="mapESRI" align='center'>	
-		 <body>
+		 <body class="calcite">
 		    <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false">
 		      <div data-dojo-type="dijit/layout/ContentPane" id="rightPane" data-dojo-props="region:'top'">
 		          <span style=" float:left; padding-left:2%;">
@@ -136,7 +141,36 @@
 		              <div id="fileInfo">&nbsp;</div>
 		     	</span>
 		    </div>
-		    <div id="mapCanvas" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" align='center'></div>
+		    <div id="mapCanvas" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" align='center'>
+				<div id="info">
+				<div><strong>Select one of the following shapes and then draw on map to add graphic as desired:</strong></div>					
+					<p></p>
+					<button id="Point">Point</button>
+					<p></p>
+					<button id="Multipoint">Multipoint</button>
+					<p></p>
+					<button id="Line">Line</button>
+					<p></p>
+					<button id="Polyline">Polyline</button>
+					<p></p>
+					<button id="FreehandPolyline">Freehand Polyline</button>
+					<p></p>
+					<button id="Triangle">Triangle</button>
+					<p></p>
+					<button id="Extent">Rectangle</button>
+					<p></p>
+					<button id="Circle">Circle</button>
+					<p></p>
+					<button id="Ellipse">Ellipse</button>
+					<p></p>
+					<button id="Polygon">Polygon</button>
+					<p></p>
+					<button id="FreehandPolygon">Freehand Polygon</button>
+					<p></p>
+				</div>
+		    	<div id="search"></div>
+		    </div>
+
 		  </div>
 		  </body>
 				
@@ -641,12 +675,6 @@
 			TestService.getData(function(d){
 				$scope.dat =d;
 				container.layoutManager.eventHub.emit( 'completedata', $scope.dat );
-
-
-
-
-
-
 				var parse=[];
 		    	var dateparse=[];
 		   		var categoric=[];
@@ -783,24 +811,21 @@
 				otherfunction();
 
 				
-					container.layoutManager.eventHub.on( 'redrawVisibleData',function(returnData){
-						container.layoutManager.eventHub.on( 'datosvisibles',function(datosvisibles){
-							container.layoutManager.eventHub.on( 'actual_upz',function(actual_upz){
-
-								if(returnData.filter(x=> parseInt(x.UPZ) === parseInt(actual_upz)).length>0){
-									returnData=returnData.filter(x=> parseInt(x.UPZ) === parseInt(actual_upz))
-									container.layoutManager.eventHub.emit('redrawVisibleData',returnData)			
-									//container.layoutManager.eventHub.emit('datosvisibles',returnData)	
-								}
-								else{
-									alert('The selected UPZ value has no data reported in the other views.\nCheck your loaded file.')
-								}
-								
-							})
+					container.layoutManager.eventHub.on( 'datachanged', function(returnData){
+					container.layoutManager.eventHub.on( 'actual_upz',function(actual_upz){
+						console.log(actual_upz)						
+							if(returnData.filter(x=> parseInt(x.UPZ) === parseInt(actual_upz)).length>0){
+								returnData=returnData.filter(x=> parseInt(x.UPZ) === parseInt(actual_upz))		
+								container.layoutManager.eventHub.emit('redrawVisibleData',returnData)	
+							}
+							else{
+								alert('The selected UPZ value has no data reported in the other views.\nCheck your loaded file.')
+							}
 						})
 					})
 
-				container.layoutManager.eventHub.on( 'redrawVisibleData', function(returnData){					
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function(returnData){		
+
 					console.log(returnData)
 					document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
 					$(document).ready(function() {
@@ -816,19 +841,7 @@
 					});				
 					
 				})
-			})
-
-			container.layoutManager.eventHub.on( 'completedata', function( completedata ){
-				document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+completedata.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
-				$('button[id="complete_data_btn"]').click(function() {  	
-										
-					container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );	
-					container.layoutManager.eventHub.emit( 'datosvisibles', completedata );			   	
-									   
-				});		
-			})
-
-
+			})	
 
 			function otherfunction(){
 				$scope.datos=$scope.dat
@@ -863,7 +876,10 @@
 				var new_datos=[]
 				var parse=[];
 		    	var dateparse=[];
-		   		var categoric=[];				
+		   		var categoric=[];	
+							
+			
+
 				container.layoutManager.eventHub.on( 'argis_attributes', function( arc ){
 					var cols_esri = Object.keys(arc[0]);				
 					
@@ -883,7 +899,18 @@
 						})
 					})	
 
-					container.layoutManager.eventHub.emit('datachanged',new_datos)									
+					container.layoutManager.eventHub.emit('datachanged',new_datos)		
+
+					document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
+					$('button[id="complete_data_btn"]').click(function() {  	
+											
+						container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
+						container.layoutManager.eventHub.emit( 'datosvisibles', data );	
+						container.layoutManager.eventHub.emit( 'datos', data );		   	
+										   
+					});			
+
+
 
 				function json2table(json, classes) {
 					console.log(json)
@@ -962,9 +989,9 @@
 							columnsSequential=columnsSequential.filter((value, index, self) => self.indexOf(value) === index)
 							columnasSeq=columnsSequential.join('')	
 					});					
+						
 					
-					
-					
+
 					container.layoutManager.eventHub.emit( 'seqColumns', seq_new );
 					container.layoutManager.eventHub.emit( 'catColumns', cat_new );
 					
@@ -978,7 +1005,9 @@
 						 '</tr></thead><tbody>' +
 						 bodyRows +
 						 '</tbody></table>';
-				}				
+				}	
+
+
 
 				document.getElementById('tableGoesHere').innerHTML = json2table(new_datos, 'table');
 				
@@ -1036,7 +1065,7 @@
 		
 		console.log("entro aca")	
 		container.layoutManager.eventHub.on( 'datos', function( data ){
-				console.log(data)
+				console.log("66666666444444444455555555555")
 				container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
 					container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
 						nv=navio(d3.select("#navio"), 600);
@@ -1047,7 +1076,7 @@
 							visible = nv.getVisible();						
 							
 							container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', data );
 							console.log(data)
 							nv.updateCallback(function(){
 								visible = nv.getVisible();
@@ -1069,10 +1098,11 @@
 		});	
 
 		container.layoutManager.eventHub.on( 'datachanged', function( data ){
-				$("#navio").remove();
-				document.getElementById("navio_widget").innerHTML = '<p></p> <div id="navio"></div>'
-				container.layoutManager.eventHub.on( 'seq_argis', function( seqColumns ){
-					container.layoutManager.eventHub.on( 'cat_argis', function( catColumns ){
+			console.log("ENTROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+				container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
+					container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
+
+						console.log("ENTROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
 						nv=navio(d3.select("#navio"), 600);
 							catColumns.forEach((c) => nv.addCategoricalAttrib(c));
 							seqColumns.forEach((c) => nv.addSequentialAttrib(c));
@@ -1081,12 +1111,15 @@
 							visible = nv.getVisible();						
 							
 							container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );	
+							container.layoutManager.eventHub.emit( 'datachanged', visible );													
+
 							console.log(data)
 							nv.updateCallback(function(){
 								visible = nv.getVisible();
 								container.layoutManager.eventHub.emit( 'datosvisibles', visible );
 								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
+								container.layoutManager.eventHub.emit( 'datachanged', visible );
 								console.log(visible)
 								container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
 									console.log(attr1)
@@ -1100,63 +1133,12 @@
 							})	
 				});
 			});
-		});	
-
-		/*container.layoutManager.eventHub.on( 'datachanged', function( data ){
-				//console.log(data)
-				$("#navio").remove();
-				document.getElementById("navio_widget").innerHTML = '<p></p> <div id="navio"></div>'
-
-				container.layoutManager.eventHub.on( 'seq_argis', function( sC ){					
-					container.layoutManager.eventHub.on( 'cat_argis', function( cC ){
-						nv=navio(d3.select("#navio"), 600);
-
-						console.log(sC)
-						console.log(cC)
-
-							for(var i=0;i<cC.length;i++){
-								console.log(cC[i])
-								nv.addCategoricalAttrib(cC[i])
-							}
-							for(var i=0;i<sC.length;i++){
-								console.log(sC[i])
-								nv.addSequentialAttrib(sC[i])
-							}
-
-						
-							
-							console.log(data)
-
-
-
-							nv.data(data);
-							visible = nv.getVisible();						
-							
-							container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
-							console.log(data)
-							nv.updateCallback(function(){
-								visible = nv.getVisible();
-								container.layoutManager.eventHub.emit( 'datosvisibles', visible );
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
-								console.log(visible)
-								container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
-									console.log(attr1)
-									container.layoutManager.eventHub.on( 'change-attr2', function( attr2 ){
-										console.log(attr2)
-										container.layoutManager.eventHub.on( 'vis', function( vis ){
-											vis(attr1,attr2,sC,cC,visible)
-										})
-									})
-								})
-							})	
-				});
-			});
-		});*/
+		});
+		
 	}])
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
 		
-		container.layoutManager.eventHub.on( 'completedata', function( completedata ){				
+		container.layoutManager.eventHub.on( 'datos', function( completedata ){				
 				container.layoutManager.eventHub.on( 'columnas_list', function( cols ){			
 					container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
 						container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
@@ -1516,7 +1498,7 @@
 		})	
 	}])
 	temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
-		container.layoutManager.eventHub.on( 'completedata', function( completedata ){
+		container.layoutManager.eventHub.on( 'datos', function( completedata ){
 			container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){				
 						document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
@@ -2477,6 +2459,11 @@
 		"dojo/_base/array",
 		"esri/Color",
 		"dojo/_base/lang",
+		"esri/dijit/Search",
+		"esri/toolbars/draw",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/symbols/PictureFillSymbol", "esri/symbols/CartographicLineSymbol", 
+        "esri/graphic",         
 		"dijit/layout/BorderContainer",
 		"dijit/layout/ContentPane",
 		"dojo/domReady!"
@@ -2484,7 +2471,8 @@
 		function (
 		esriConfig, InfoTemplate, Map, request, scaleUtils, FeatureLayer,
 		SimpleRenderer, PictureMarkerSymbol, SimpleFillSymbol, SimpleLineSymbol,
-		dom, JSON, on, parser, sniff, arrayUtils, Color, lang
+		dom, JSON, on, parser, sniff, arrayUtils, Color, lang, Search,  Draw,
+        SimpleMarkerSymbol, PictureFillSymbol, CartographicLineSymbol,Graphic        
 		) {
 
 		  parser.parse();
@@ -2509,11 +2497,78 @@
 		  });
 
 		  map = new Map("mapCanvas", {
-		    basemap: "gray",
+		    basemap: "streets-navigation-vector",
 		    center: [-41.647, 36.41],
 		    zoom: 3,
 		    slider: false
 		  });
+
+		  map.on("load", initToolbar);
+
+		  var markerSymbol = new SimpleMarkerSymbol();
+        markerSymbol.setPath("M16,4.938c-7.732,0-14,4.701-14,10.5c0,1.981,0.741,3.833,2.016,5.414L2,25.272l5.613-1.44c2.339,1.316,5.237,2.106,8.387,2.106c7.732,0,14-4.701,14-10.5S23.732,4.938,16,4.938zM16.868,21.375h-1.969v-1.889h1.969V21.375zM16.772,18.094h-1.777l-0.176-8.083h2.113L16.772,18.094z");
+        markerSymbol.setColor(new Color("#00FFFF"));
+
+        var lineSymbol = new CartographicLineSymbol(
+          CartographicLineSymbol.STYLE_SOLID,
+          new Color([0,0,0]), 3, 
+          CartographicLineSymbol.CAP_ROUND,
+          CartographicLineSymbol.JOIN_MITER, 3
+        );
+
+
+        var fillSymbol = new PictureFillSymbol(
+          "images/mangrove.png",
+          new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_SOLID,
+            new Color('#000'), 
+            1
+          ), 
+          42, 
+          42
+        );
+
+
+        function initToolbar() {
+          tb = new Draw(map);
+          tb.on("draw-end", addGraphic);
+
+          // event delegation so a click handler is not
+          // needed for each individual button
+          on(dom.byId("info"), "click", function(evt) {
+            if ( evt.target.id === "info" ) {
+              return;
+            }
+            var tool = evt.target.id.toLowerCase();
+            map.disableMapNavigation();
+            tb.activate(tool);
+          });
+        }
+
+        function addGraphic(evt) {
+          //deactivate the toolbar and clear existing graphics 
+          tb.deactivate(); 
+          map.enableMapNavigation();
+
+          // figure out which symbol to use
+          var symbol;
+          if ( evt.geometry.type === "point" || evt.geometry.type === "multipoint") {
+            symbol = markerSymbol;
+          } else if ( evt.geometry.type === "line" || evt.geometry.type === "polyline") {
+            symbol = lineSymbol;
+          }
+          else {
+            symbol = fillSymbol;
+          }
+
+          map.graphics.add(new Graphic(evt.geometry, symbol));
+        }
+
+			var search = new Search({
+				map: map
+			}, "search");
+
+			search.startup();
 
 
 		  function generateFeatureCollection (fileName) {
@@ -2605,6 +2660,7 @@
 		      	var actual_upz=null;
 		      	map.infoWindow.setFeatures([event.graphic]);
 		        actual_upz=event.graphic.attributes.UPZ
+		       	console.log(actual_upz)
 				container.layoutManager.eventHub.emit( 'actual_upz', actual_upz );
 		      });
 
