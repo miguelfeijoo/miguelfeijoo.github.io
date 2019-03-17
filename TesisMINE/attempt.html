@@ -19,6 +19,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
 <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster-src.js"></script>
+
 <script src='https://code.jquery.com/jquery-1.12.4.js'></script>
 <script src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
@@ -47,7 +49,7 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=yes">
-<title>ExploryBoxesTool</title>
+<title>S-PLOR-T</title>
 
 <link rel="stylesheet" href="https://js.arcgis.com/3.27/dijit/themes/claro/claro.css">
 <link rel="stylesheet" href="css/app.css">
@@ -65,11 +67,13 @@
 <!--  TEMPLATE FOR EACH MODULE/VIEW   -->
 <template type="text/html" id="fileselectorTemplate">
   <div id='selector' ng-controller="fileselectorController" class="fileselector">
+  		<span style=" float:left; padding-left:2%;">
 		<p><strong><font size="3">Select a file of your interest to analyze its current attributes </font></strong><p></p>(Accepted Extensions: <i>.csv, .xls, .xlsx</i> )</p>
 		<p></p>
 		<input ng-model='shared.current_data' type="file" accept=".csv,.xlsx,.xls" id="files" name="file" />
 		<div id='buttonComplete' align='center'></div>
-		<div id="tableGoesHere"align="center"></div>				
+		<div id="tableGoesHere"align="center"></div>	
+		</span>			
 </template>	
 
 <template type="text/html" id="navioTemplate">
@@ -81,38 +85,44 @@
 
 <template type="text/html" id="spatioTemplate">
     <div id='spatial_id' ng-controller="spatioController" class="spatialviz">
+    	<span style=" float:left; padding-left:2%;">
 		<p></p>
-		<div id="text" align="center"></div>
+		<div id="text" align="left"></div>
 		<p></p>
-		<div id="list" align="center"></div>
+		<div id="list" align="left"></div>
 		<p></p>
-		<div id="list2" align="center"></div>
+		<div id="list2" align="left"></div>
 		<p></p>
 		<p></p>
-		<div id="btn1" align="center"></div>
+		<div id="btn1" align="left"></div>
 		<p></p>
 		<p></p>
 		<div id="spatial"align="center"></div>
+	</span>
     </div>
 </template>	
 
 <template type="text/html" id="temporalTemplate">
-	<div id='temporal_id' ng-controller="temporalController" class="temporalviz">   
+	<div id='temporal_id' ng-controller="temporalController" class="temporalviz">
+		<span style=" float:left; padding-left:2%;"> 
 	 	<p></p>
-	 	<div id="list3" align="center"></div>
+	 	<div id="list3" align="left"></div>
+	 </span>
 		<p></p>
     </div>
 </template>	
 
 <template type="text/html" id="boxplotTemplate">
 	<div id='boxplotid' ng-controller="boxplotController" class="boxplot">
+		<span style=" float:left; padding-left:2%;"> 
 		<p></p>
-		<div id="list4" align="center"></div>		
+		<div id="list4" align="left"></div>		
 		<div id="boxplot"></div>
 		<p></p>
-		<div id="list5" align="center"></div>	
+		<div id="list5" align="left"></div>	
 		<p></p>				
-		<div id="counter" align="center"></div>	
+		<div id="counter" align="left"></div>	
+	</span>
 	</div>
 </template>
 
@@ -179,32 +189,36 @@
 
 <template type="text/html" id="splomTemplate">	
 	<div id='splomid' ng-controller="splomController" class="splom">
+		<span style=" float:left; padding-left:2%;">
 		<p></p>
-		<div id="list6" align="center"></div>
+		<div id="list6" align="cenleftter"></div>
 		<p></p>
-		<div id="list7" align="center"></div>
+		<div id="list7" align="left"></div>
 		<p></p>
 		<div id="splomGraph"align="center"></div>
+	</span>
 	</div>
 </template>
 
 <template type="text/html" id="regressionTemplate">	
 	<div id='regressionid' ng-controller="regressionController" class="regression">
+		<span style=" float:left; padding-left:2%;">
 		<p></p>
-		<div id="list8" align="center"></div>
+		<div id="list8" align="left"></div>
 		<p></p>
-		<div id="list9" align="center"></div>
+		<div id="list9" align="left"></div>
 		<p></p>
 		<div id="regressionGraph"align="center"></div>
+	</span>
 	</div>
 </template>
 
 <template type="text/html" id="StatisticsTemplate">	
 	<div id='statisticsid' ng-controller="statisticsController" class="statistics">
 		<p></p>
-		<div id="list8" align="center"></div>
+		<div id="list8" align="left"></div>
 		<p></p>
-		<div id="list9" align="center"></div>
+		<div id="list9" align="left"></div>
 		<p></p>
 		<div id="regressionGraph"align="center"></div>
 	</div>
@@ -217,16 +231,18 @@
 	body .lm_content{
 	  overflow: scroll;
 	}	
-	#mapid { margin: 0px; height: 100%; width: 100% }
-	#boxplotid { margin: 0px; height: 100%; width: 100% }
-	#splomid { margin: 0px; height: 100%; width: 100% }
-	#regressionid { margin: 0px; height: 100%; width: 100% }
-	#temporal_id { margin: 15px; height: 100%; width: 100% }
-	#spatial_id { margin: 15px; height: 100%; width: 100% }
-	#navio { margin: 15px; height: 100%; width: 100% }
+	#mapid { margin: 0px; height: 100vh; width: 100vw }
+	#boxplotid { margin: 0px; height: 100%; width: 100vw }
+	#splomid { margin: 0px; height: 100vh; width: 100vw }
+	#regressionid { margin: 0px; height: 100%; width: 100vw }
+	#temporal_id { margin: 15px; height: 100vh; width: 100vw }
+	#spatial_id { margin: 15px; height: 100vh; width: 100vw }
+	#navio { margin: 15px; height: 100vh; width: 100vw }
 	#selector { margin: 15px; height: 100%; width: 100% }
-	#mainWindow { margin: 0px; height: 97vh; width: 97vh }
-	#mapCanvas{ margin: 0px; height: 97vh; width: 97vh }
+	#mainWindow { margin: 0px; height: 97vh; width: 97vw }
+	#mapCanvas{ margin: 0px; height: 97vh; width: 97vw }
+	#boxplot { margin: 0px; width: 100vw }
+	#regressionGraph { margin: 0px; width: 100vw }
 
 </style>
 
@@ -1656,7 +1672,7 @@
 								texto+=	'<p><font size="5"><strong>Is Weekday:</strong></font></p>  <font size="3">'+isWeekDay_t+'</font>'							
 							}
 
-							texto+='<div id="list3" align="center"></div>    <div id="temporal"align="center"></div>'
+							texto+='<div id="list3" align="left"></div>    <div id="temporal"align="center"></div>'
 
 
 							document.getElementById("temporal_id").innerHTML=texto
@@ -1861,7 +1877,7 @@
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
-					if(datos[0].hasOwnProperty("Date")){
+					if(datos[0].hasOwnProperty("Year")){
 						document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols				
 						function onlyUnique(value, index, self) { 
 						    return self.indexOf(value) === index;
@@ -1870,29 +1886,38 @@
 							var years = datos.map(function(d){
 								years_temp.push(parseInt(d.Year))				
 							})
-						var months_temp=[]
-							var months = datos.map(function(d){
-								months_temp.push(parseInt(d.Date.getMonth()))				
-							})
 						var years_temp_array = years_temp.filter(onlyUnique)
-						var months_temp_array = months_temp.filter(onlyUnique)
+						if(datos[0].hasOwnProperty("Month")){
+							var months_temp=[]
+								var months = datos.map(function(d){
+									months_temp.push(parseInt(d.Date.getMonth()))				
+								})
+							var months_temp_array = months_temp.filter(onlyUnique)
+						}
+						
 						d3.select("#attr4").on("change", function(){
 							document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="COMPLETE DATA"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'
 							var attr4 = this.value;
 							console.log("Selected Value Attr4: "+attr4)		
 							var data=[]
-							var colors = ['rgb(93, 164, 214, 0.5)', 'rgb(255, 144, 14, 0.5)', 'rgb(44, 160, 101, 0.5)', 'rgb(255, 65, 54, 0.5)', 'rgb(207, 114, 255, 0.5)', 'rgb(127, 96, 0, 0.5)', 'rgb(255, 140, 184, 0.5)', 'rgb(79, 90, 117, 0.5)', 'rgb(222, 223, 0, 0.5)','rgb(0,128,128)','rgb(214,12,140)','rgb(128, 0, 0)','rgb(255,255,0)','rgb(128,128,0)','rgb(0,255,255)','rgb(0,0,255)','rgb(255,0,255)','rgb(107,174,214)','rgb(128,0,128)'];
+							var colors = [];
+							while (colors.length < 100) {
+							    do {
+							        var color = Math.floor((Math.random()*1000000)+1);
+							    } while (colors.indexOf(color) >= 0);
+							    colors.push("#" + ("000000" + color.toString(16)).slice(-6));
+							}							
 							var new_colors=[];
 							if(colors.length>years_temp_array.length){
 								new_colors=colors.slice(0,years_temp_array.length+1)
-							}				
+							}	
+
 							for(var i=0;i<years_temp_array.length;i++){	
-							
 								if (i!=0){				
 									new_colors.pop()
 								}
 								var temp_array_int=[]
-								datos.filter(d=>parseInt(d.Date.getFullYear())==years_temp_array[i]).map(function(d){
+								datos.filter(d=>parseInt(d.Year)==years_temp_array[i]).map(function(d){
 									temp_array_int.push(parseInt(d[attr4]))
 								})
 								console.log(temp_array_int)
@@ -1993,6 +2018,7 @@
 										returnData.filter(d=>parseInt(d[attr4])<value_min && parseInt(d[attr4])>value_max).map(function(d){					
 											data_filter.push(d)										
 										})
+
 										if(data_filter.length>0){
 											datos=data_filter
 											document.getElementById("counter").innerHTML = '<strong> From '+returnData.length+' original values\n'+datos.length+' were filtered\nas Outliers </strong>'
@@ -2063,13 +2089,18 @@
 					var list_markers=[]
 					var list_remaining=[]
 					function drawMap(datos, mymap,anterior,actual,new_data){
-						var markers = new L.LayerGroup().addTo(mymap);
+						
 						L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 							maxZoom: 18,
 							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
 								'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 								'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 							id: 'mapbox.streets'
+						}).addTo(mymap);
+						var markers = new L.MarkerClusterGroup({
+							iconCreateFunction: function(cluster) {
+								return L.divIcon({ html: '<b><font size="5">' + cluster.getChildCount() + '</font></b>',iconSize: new L.Point(40, 40) });
+							}							
 						}).addTo(mymap);
 						var years =[];
 						var lista=[];
@@ -2256,13 +2287,13 @@
 	splomApp.controller('splomController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 		
 		
-		container.layoutManager.eventHub.on( 'completedata', function( completedata ){	
+		container.layoutManager.eventHub.on( 'datos', function( completedata ){	
 		container.layoutManager.eventHub.on( 'dateParseEvent', function( datPa ){
 			container.layoutManager.eventHub.on( 'categoricsEvent', function( cat ){	
 				container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){
 					container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){	
-						
-					
+
+										
 					var x=[]
 					var lista ='';
 					var lista_seq=[]
@@ -2279,16 +2310,23 @@
 					        return rows.map(function(row) { return row[key.replace('.',' ')]; });
 					    }
 					    colors = []	
-						var values=unpack(rows, attr6).filter((value, index, self) => self.indexOf(value) === index)
-						var pl_colorscale= ['rgb(93, 164, 214, 0.5)', 'rgb(255, 144, 14, 0.5)', 'rgb(44, 160, 101, 0.5)', 'rgb(255, 65, 54, 0.5)', 'rgb(207, 114, 255, 0.5)', 'rgb(127, 96, 0, 0.5)', 'rgb(255, 140, 184, 0.5)', 'rgb(79, 90, 117, 0.5)', 'rgb(222, 223, 0, 0.5)','rgb(0,128,128)','rgb(214,12,140)','rgb(128, 0, 0)','rgb(255,255,0)','rgb(128,128,0)','rgb(0,255,255)','rgb(0,0,255)','rgb(255,0,255)','rgb(107,174,214)','rgb(128,0,128)'];
+					    console.log(unpack(returnData, attr6))
+						var values=unpack(returnData, attr6).filter((value, index, self) => self.indexOf(value) === index)
+						var pl_colorscale= [];
+						while (pl_colorscale.length < 100) {
+						    do {
+						        var color = Math.floor((Math.random()*1000000)+1);
+						    } while (pl_colorscale.indexOf(color) >= 0);
+						    pl_colorscale.push("#" + ("000000" + color.toString(16)).slice(-6));
+						}
 						
 						var c=0;
 						var attributes=[];
 						for (k=0; k < values.length; k++) {
-							for (i=0; i < unpack(rows, attr6).length; i++) {	
+							for (i=0; i < unpack(returnData, attr6).length; i++) {	
 								if(unpack(rows, attr6)[i]==values[k]){
 									c=c+1/values.length
-									console.log(unpack(rows, attr6)[i] + "         "+values[k] + "     "+pl_colorscale[k])									
+									console.log(unpack(returnData, attr6)[i] + "         "+values[k] + "     "+pl_colorscale[k])									
 									colors.push(pl_colorscale[k])
 									attributes.push(values[k])
 								}								
@@ -2306,20 +2344,27 @@
 						d3.select("#attr7").on("change", function(){
 							var attr7 = this.value;
 							var filtered=[]
+							console.log(rows)
 							rows.map(function(d){
 								if(attr7=='COMPLETE DATA ('+completedata.length+' values)'){									
 									filtered=completedata
 								}
 								else{
-									if(d[attr6]==attr7){
-										filtered.push(d)
-									}
-									
+										var new_rows=rows.filter(e=>e[attr6]==attr7)
+										console.log(new_rows)
+										new_rows.map(function(a){
+											if(!filtered.includes(a)){
+												filtered.push(a)
+											}
+											
+										})								
 								}
 							})
 							console.log(filtered)
+							
 							container.layoutManager.eventHub.emit( 'redrawVisibleData', filtered );
 							container.layoutManager.eventHub.emit( 'datosvisibles', filtered );
+							
 						})
 					    var axis = () => ({
 					      showline:false,
