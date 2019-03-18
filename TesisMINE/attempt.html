@@ -235,8 +235,8 @@
 	#boxplotid { margin: 0px; height: 100%; width: 100vw }
 	#splomid { margin: 0px; height: 100vh; width: 100vw }
 	#regressionid { margin: 0px; height: 100%; width: 100vw }
-	#temporal_id { margin: 15px; height: 100vh; width: 100vw }
-	#spatial_id { margin: 15px; height: 100vh; width: 100vw }
+	#temporal_id { margin: 15px; height: 100vh; width: 100% }
+	#spatial_id { margin: 15px; height: 100vh; width: 100% }
 	#navio { margin: 15px; height: 100vh; width: 100vw }
 	#selector { margin: 15px; height: 100%; width: 100% }
 	#mainWindow { margin: 0px; height: 97vh; width: 97vw }
@@ -773,6 +773,7 @@
 				//console.log(columnasSeq)
 				container.layoutManager.eventHub.emit( 'columnas_list', columnas );
 				container.layoutManager.eventHub.emit( 'columnasSeq_list', columnasSeq );
+
 				return '<table id="data" class="display nowrap" style="width:100%">'+'<thead><tr>' +
 				     headerRow +
 				     '</tr></thead><tbody>' +
@@ -889,6 +890,7 @@
 
 		
 			container.layoutManager.eventHub.on( 'datos', function( data ){
+
 				var new_datos=[]
 				var parse=[];
 		    	var dateparse=[];
@@ -1154,12 +1156,21 @@
 	}])
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
 		
-		container.layoutManager.eventHub.on( 'datos', function( completedata ){				
-				container.layoutManager.eventHub.on( 'columnas_list', function( cols ){			
+		
+
+
+
+		container.layoutManager.eventHub.on( 'columnas_list', function( cols ){		
+				console.log(cols)
+		container.layoutManager.eventHub.on( 'datos', function( completedata ){	
+				console.log(completedata)			
+					
 					container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
+						console.log(seqColumns)
+						container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){
 						container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
-							container.layoutManager.eventHub.on( 'datosvisibles', function( datosvisibles ){
-							container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){
+							console.log(catColumns)
+							
 								if(datos[0].hasOwnProperty('Latitude') && datos[0].hasOwnProperty('Longitude')){
 									document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
 									document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+cols
@@ -1511,12 +1522,18 @@
 					})
 				})	
 			})
-		})	
+			
 	}])
 	temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
-		container.layoutManager.eventHub.on( 'datos', function( completedata ){
-			container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
-				container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){				
+			
+
+
+container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
+			container.layoutManager.eventHub.on( 'datos', function( completedata ){
+			
+				console.log(cols)
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){	
+						console.log(datos)			
 						document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
 						var year=[]
 						var daynight=[]
@@ -2261,20 +2278,10 @@
 					
 					})
 					
-					/*if(mymap==null){	
-									
-						mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
-					}
-					else{
-						mymap.remove()
-						//mymap=null;
-						if(mymap==null){									
-							mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
-							drawMap(datos, mymap,previous_counter,counter,new_data)
-						}
-					}*/
+					
 					if (mymap != undefined) { mymap.remove(); }
 					mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);
+
 					drawMap(datos, mymap,previous_counter,counter,new_data)						
 					}
 					else{
