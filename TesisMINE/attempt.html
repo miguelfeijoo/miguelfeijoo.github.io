@@ -18,9 +18,7 @@
 <script type="application/javascript" src="//unpkg.com/@turf/turf@latest/turf.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
 <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster-src.js"></script>
-
 <script src='https://code.jquery.com/jquery-1.12.4.js'></script>
 <script src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js'></script>
@@ -39,28 +37,22 @@
 <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/navio/dist/navio.min.js"></script>
-
-
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.min.map"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/regression/1.4.0/regression.min.js"></script>
 <script type="text/javascript" src="https://cdn.anychart.com/releases/8.5.0/js/anychart-base.min.js"></script>
-
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=yes">
 <title>S-PLOR-T</title>
-
 <link rel="stylesheet" href="https://js.arcgis.com/3.27/dijit/themes/claro/claro.css">
 <link rel="stylesheet" href="css/app.css">
 <link rel="stylesheet" href="css/fileupload.css">
 <link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/css/esri.css">
-
 <link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/themes/calcite/dijit/calcite.css">
 <link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/themes/calcite/esri/esri.css">
-
-
-
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://js.arcgis.com/3.27/"></script>
 
 
@@ -171,9 +163,7 @@
 					<button id="Extent">Rectangle</button>
 					<p></p>
 					<button id="Circle">Circle</button>
-					<p></p>
-					<button id="Ellipse">Ellipse</button>
-					<p></p>
+					<p></p>					
 					<button id="Polygon">Polygon</button>
 					<p></p>
 					<button id="FreehandPolygon">Freehand Polygon</button>
@@ -192,9 +182,11 @@
 	<div id='splomid' ng-controller="splomController" class="splom">
 		<span style=" float:left; padding-left:2%;">
 		<p></p>
-		<div id="list6" align="cenleftter"></div>
+		<div id="list6" align="left"></div>
 		<p></p>
 		<div id="list7" align="left"></div>
+		<p></p>
+		<div id="btn_complete_splom" align="left"></div>
 		<p></p>
 		<div id="splomGraph"align="center"></div>
 	</span>
@@ -209,20 +201,20 @@
 		<p></p>
 		<div id="list9" align="left"></div>
 		<p></p>
-		<div id="regressionGraph"align="center"></div>
+		
 	</span>
 	</div>
 </template>
 
-<template type="text/html" id="StatisticsTemplate">	
-	<div id='statisticsid' ng-controller="statisticsController" class="statistics">
+<template type="text/html" id="bubbleTemplate">	
+	<span style=" float:left; padding-left:2%;">
+	<div id='bubbleid' ng-controller="bubbleController" class="bubble">			
 		<p></p>
-		<div id="list8" align="left"></div>
+		<div id="list10" align="left"></div>
 		<p></p>
-		<div id="list9" align="left"></div>
-		<p></p>
-		<div id="regressionGraph"align="center"></div>
+		<div id="bubbleGraph"align="center"></div>
 	</div>
+</span>
 </template>
 
 
@@ -244,6 +236,7 @@
 	#mapCanvas{ margin: 0px; height: 97vh; width: 97vw }
 	#boxplot { margin: 0px; width: 100vw }
 	#regressionGraph { margin: 0px; width: 100vw }
+	#bubbleid { margin: 0px; height: 100%; width: 100vw }
 
 </style>
 
@@ -258,6 +251,7 @@
 	var splomApp = angular.module('splom', ['test-service'] );
 	var regressionApp = angular.module('regression', ['test-service'] );
 	var mapESRIApp = angular.module('mapESRI', ['test-service'] );
+	var bubbleApp = angular.module('bubble', ['test-service'] );
 	angular.module('test-service', []).service('TestService', function($rootScope, $window){
 	  var datos= null;
 	  var seq= null;
@@ -835,10 +829,7 @@
 							if(returnData.filter(x=> parseInt(x.UPZ) === parseInt(actual_upz)).length>0){
 								returnData=returnData.filter(x=> parseInt(x.UPZ) === parseInt(actual_upz))		
 								container.layoutManager.eventHub.emit('redrawVisibleData',returnData)	
-							}
-							else{
-								alert('The selected UPZ value has no data reported in the other views.\nCheck your loaded file.')
-							}
+							}							
 						})
 					})
 
@@ -1523,7 +1514,6 @@
 					})
 				})	
 			})
-			
 	}])
 	temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
@@ -2294,23 +2284,15 @@
 				}	
 			})
 		})
-
-
-				
 	}])
-				
-
-			
 	splomApp.controller('splomController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
-		
-		
-		container.layoutManager.eventHub.on( 'datos', function( completedata ){	
 		container.layoutManager.eventHub.on( 'dateParseEvent', function( datPa ){
 			container.layoutManager.eventHub.on( 'categoricsEvent', function( cat ){	
-				container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){
-					container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){	
-
-										
+				container.layoutManager.eventHub.on( 'datos', function( completedata ){	
+					container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){
+						container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){	
+					console.log(rows)
+				
 					var x=[]
 					var lista ='';
 					var lista_seq=[]
@@ -2358,9 +2340,10 @@
 						att.push('<option value="COMPLETE DATA ('+completedata.length+' values)">')
 						var att_text= att.join('')
 						document.getElementById("list7").innerHTML = '<strong>Do you want to FILTER any of these current values of your selected attribute?\nSelect a value to filter: </strong> <input list="attrs7" type="text" id="attr7"><datalist id="attrs7">'+att_text					
+						var filtered=[]
 						d3.select("#attr7").on("change", function(){
 							var attr7 = this.value;
-							var filtered=[]
+							filtered=[]
 							console.log(rows)
 							rows.map(function(d){
 								if(attr7=='COMPLETE DATA ('+completedata.length+' values)'){									
@@ -2377,10 +2360,28 @@
 										})								
 								}
 							})
-							console.log(filtered)
+							console.log(filtered)							
+
+
+					document.getElementById('btn_complete_splom').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn_splom"> <strong>SHOW ('+completedata.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
+					$('button[id="complete_data_btn_splom"]').click(function() {  	
+
+						filtered=[]
+
+						filtered=completedata
+						rows=filtered
+											
+						container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );	
+						container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+						container.layoutManager.eventHub.emit( 'datos', rows );		   	
+										   
+					});
 							
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', filtered );
-							container.layoutManager.eventHub.emit( 'datosvisibles', filtered );
+							
+							rows=filtered
+							console.log(rows)
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+							container.layoutManager.eventHub.emit( 'datosvisibles', rows );
 							
 						})
 					    var axis = () => ({
@@ -2528,13 +2529,15 @@
         "esri/graphic",         
 		"dijit/layout/BorderContainer",
 		"dijit/layout/ContentPane",
+		"esri/layers/GraphicsLayer",
+		"esri/geometry/Point",
 		"dojo/domReady!"
 		],
 		function (
 		esriConfig, InfoTemplate, Map, request, scaleUtils, FeatureLayer,
 		SimpleRenderer, PictureMarkerSymbol, SimpleFillSymbol, SimpleLineSymbol,
 		dom, JSON, on, parser, sniff, arrayUtils, Color, lang, Search,  Draw,
-        SimpleMarkerSymbol, PictureFillSymbol, CartographicLineSymbol,Graphic        
+        SimpleMarkerSymbol, PictureFillSymbol, CartographicLineSymbol,Graphic,GraphicsLayer,Point 
 		) {
 
 		  parser.parse();
@@ -2565,7 +2568,8 @@
 		    slider: false
 		  });
 
-		  map.on("load", initToolbar);
+
+			map.on("load", initToolbar);		
 
 		  var markerSymbol = new SimpleMarkerSymbol();
         markerSymbol.setPath("M16,4.938c-7.732,0-14,4.701-14,10.5c0,1.981,0.741,3.833,2.016,5.414L2,25.272l5.613-1.44c2.339,1.316,5.237,2.106,8.387,2.106c7.732,0,14-4.701,14-10.5S23.732,4.938,16,4.938zM16.868,21.375h-1.969v-1.889h1.969V21.375zM16.772,18.094h-1.777l-0.176-8.083h2.113L16.772,18.094z");
@@ -2719,12 +2723,14 @@
 		     
 		     //associate the feature with the popup on click to enable highlight and zoom to
 		      featureLayer.on('click', function (event) {
+		      	map.infoWindow.setFeatures([event.graphic]);	
 		      	var actual_upz=null;
-		      	map.infoWindow.setFeatures([event.graphic]);
 		        actual_upz=event.graphic.attributes.UPZ
 		       	console.log(actual_upz)
-				container.layoutManager.eventHub.emit( 'actual_upz', actual_upz );
+				container.layoutManager.eventHub.emit( 'actual_upz', actual_upz );	        
 		      });
+
+		    
 
 
 
@@ -2770,6 +2776,71 @@
 		  }
 		}); 	
 	}])
+	bubbleApp.controller('bubbleController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
+
+		setTimeout(function(){	
+
+			container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
+				container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){		
+
+					if(rows[0].hasOwnProperty('Latitude') && rows[0].hasOwnProperty('Longitude')){
+
+						document.getElementById("list10").innerHTML='<p></p><strong>Select Quantitative Value: </strong> <input list="attrs10" type="text" id="attr10"><datalist id="attrs10">'+cols		
+						d3.select("#attr10").on("change", function(){
+							var attr10 = this.value;
+							var serie=[]
+							rows.map(function(d){
+								serie.push([d.Longitude, d.Latitude,parseInt(d[attr10])])								
+							})
+
+							console.log(serie)
+
+							var chart =Highcharts.chart('bubbleGraph', {
+
+							    chart: {
+							        type: 'bubble',
+							        plotBorderWidth: 1,
+							        zoomType: 'xy'
+							    },
+
+							    title: {
+							        text: 'Spatial BubbleChart'
+							    },
+
+							    xAxis: {
+							        gridLineWidth: 1
+							    },
+
+							    yAxis: {
+							        startOnTick: false,
+							        endOnTick: false
+							    },
+
+							    plotOptions: {
+							        bubble: {
+							            minSize: 3,
+							            maxSize: 50
+							        }
+							    },
+
+							    series: [{
+							        data: serie
+							    }]
+
+							});
+						chart.series[0].update({name:attr10}, false);
+						chart.redraw();
+						})
+
+					}
+					else{
+						document.getElementById('bubbleid').innerHTML='<p></p><strong> <font size="3">YOUR DATA DOES NOT HAVE EXPLICIT SPATIAL COORDINATES [LATITUDE , LONGITUDE] TO DISPLAY THIS VISUALIZATION</font></strong>'
+					}
+				});	
+			});	
+		},500)		
+	}])
+	
 
 	var app1El = document.getElementById('fileselector');
 	var app2El = document.getElementById('navio');
@@ -2780,6 +2851,7 @@
 	var app7El = document.getElementById('splom');
 	var app8El = document.getElementById('regression');
 	var app9El = document.getElementById('mapESRI');
+	var app10El = document.getElementById('bubble');
 	angular.bootstrap(app1El, ['fileselector', 'test-service']);
 	angular.bootstrap(app2El, ['navio', 'test-service']);
 	angular.bootstrap(app3El, ['spatialviz', 'test-service']);
@@ -2789,6 +2861,7 @@
 	angular.bootstrap(app7El, ['splom', 'test-service']);
 	angular.bootstrap(app8El, ['regression', 'test-service']);
 	angular.bootstrap(app9El, ['mapESRI', 'test-service']);
+	angular.bootstrap(app10El, ['bubble', 'test-service']);
 	var AngularModuleComponent = function( container, state ) {
 	    var html = $( '#' + state.templateId ).html(),
 	        element = container.getElement();
@@ -2842,6 +2915,14 @@
                 componentState: {
                     module: 'map',
                     templateId: 'mapTemplate'
+                }
+            },{
+                type: 'component',
+                title: 'Spatial BubbleChart',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'bubble',
+                    templateId: 'bubbleTemplate'
                 }
             }]
             },{
