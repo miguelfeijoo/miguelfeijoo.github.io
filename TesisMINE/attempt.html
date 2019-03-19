@@ -232,7 +232,7 @@
 	body .lm_content{
 	  overflow: scroll;
 	}	
-	#mapid { margin: 0px; height: 100vh; width: 100vw }
+	#mapid { margin: 0px; height: 100%; width: 100% }
 	#boxplotid { margin: 0px; height: 100%; width: 100vw }
 	#splomid { margin: 0px; height: 100vh; width: 100vw }
 	#regressionid { margin: 0px; height: 100%; width: 100vw }
@@ -2096,7 +2096,7 @@
 				markers = new L.MarkerClusterGroup({
 					iconCreateFunction: function(cluster) {
 						var childCounter= parseInt(cluster.getChildCount()+1)
-						return L.divIcon({ html: '<b><font size="5">' + childCounter.toString() + '</font></b>',iconSize: new L.Point(40, 40) });
+						return L.divIcon({ html: '<b><font size="5">' + cluster.getChildCount() + '</font></b>',iconSize: new L.Point(40, 40) });
 					}	
 				}).addTo(mymap);
 
@@ -2104,7 +2104,32 @@
 					attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 					}).addTo(mymap);
 
-				mymap.setView([0, 0], 11);	
+				new L.Control.Draw({
+						    draw: {
+						        marker   : false,
+						        polygon  : true,
+						        polyline : false,
+						        rectangle: true,
+						        circle   : {
+						            metric: 'metric'
+						        }
+						    },
+						    edit: false
+						}).addTo(mymap);
+
+				
+		container.layoutManager.eventHub.on( 'completedata', function( completedata ){
+				L.easyButton('<img src="https://cdn.onlinewebfonts.com/svg/img_351337.png" style="width:20px">',function(btn,map){
+					
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );
+							container.layoutManager.eventHub.emit( 'datosvisibles', completedata );				
+					
+				}).addTo(mymap)
+		})
+
+
+
+				
 
 		},500)
 
@@ -2114,20 +2139,41 @@
 			
 		container.layoutManager.eventHub.on( 'completedata', function( completedata ){
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
-				if(datos[0].hasOwnProperty('Latitude') && datos[0].hasOwnProperty('Longitude')){
-					function init(){							 					
-						 draw(markers);
+				var list_markers=[]
+				var list_remaining=[]
+				console.log(datos)
+				if(completedata[0].hasOwnProperty('Latitude') && completedata[0].hasOwnProperty('Longitude')){
+					function init(){
+
+						var long=[]
+						var lat=[]	
+
+						datos.map(function(d){
+							long.push(d.Longitude)
+							lat.push(d.Latitude)
+						
+							var max_latitudes=Math.max.apply(Math,lat)
+							var min_latitudes=Math.min.apply(Math,lat)
+							var max_longitudes=Math.max.apply(Math,long)
+							var min_longitudes=Math.min.apply(Math,long)
+							prom_latitudes= (max_latitudes+min_latitudes)/2;
+							prom_longitudes=(max_longitudes+min_longitudes)/2;
+						
+						})
+
+						mymap.setView([prom_latitudes, prom_longitudes], 7);							 					
+						draw(markers);
 					}
 
+					
 					function draw(markers){	
 						var prom_latitudes=[];
 						var prom_longitudes=[];
 						var lat=[];
 						var long=[];
 						var previous_counter=0;	
-						var counter=1;
-						var list_markers=[]
-						var list_remaining=[]
+						var counter=1;						
+						
 
 							markers.clearLayers();	
 							if(datos[0].hasOwnProperty('Year')){
@@ -2166,7 +2212,8 @@
 									var dates=[]
 									datos.map(function(d){
 										dates.push(d['Month']+" / "+d['Day']+" / "+d['Year']+"  ("+d['DayOfTheWeek']+")")
-									})							
+									})	
+									list_markers=[]				
 									for(var b=previous_counter;b<counter;b++){								
 										if(b==counter-1){
 											previous_counter=counter										
@@ -2178,290 +2225,78 @@
 												list_markers.push(marker)
 											}									
 										}																										
-									}
-
+									}		
 								}									
-							}
-
-						var customControl = new L.Control.Custom();
-
-						console.log(customControl._map); // undefined
-										
-						new L.Control.Draw({
-						    draw: {
-						        marker   : false,
-						        polygon  : true,
-						        polyline : false,
-						        rectangle: true,
-						        circle   : {
-						            metric: 'metric'
-						        }
-						    },
-						    edit: false
-						}).addTo(mymap);
-
-						L.easyButton('<img src="https://cdn.onlinewebfonts.com/svg/img_351337.png" style="width:20px">',function(btn,map){
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );
-							container.layoutManager.eventHub.emit( 'datosvisibles', completedata );
-						}).addTo(mymap)
-						L.Polygon.include({
-						    contains: function (latLng) {
-						        return turf.inside(new L.circleMarker(latLng).toGeoJSON(), this.toGeoJSON());
-						    } 
-						});
-						L.Rectangle.include({
-						    contains: function (latLng) {
-						        return this.getBounds().contains(latLng);
-						    }
-						});
-						L.Circle.include({
-						    contains: function (latLng) {
-						        return this.getLatLng().distanceTo(latLng) < this.getRadius();
-						    }
-						});
-						mymap.on(L.Draw.Event.CREATED, function (e) {
-							new_data=[]
-							list_remaining=[]
-						    markers.eachLayer(function (marker) {
-						        if (!e.layer.contains(marker.getLatLng())) {
-						            marker.remove();						            
-									id_tag = marker,
-									position = list_markers.indexOf(id_tag);
-									if ( ~position ) list_markers.splice(position, 1);		
-						        }
-						    });
-
-
-							for(var i=0;i<list_markers.length;i++){
-								if(!list_remaining.includes(list_markers[i]['_popup']['_content'].split('Identificator: ')[1].split('</b>')[0])){
-									list_remaining.push(list_markers[i]['_popup']['_content'].split('Identificator: ')[1].split('</b>')[0])		
-								}						    					    	
-							}
-
-							console.log(list_remaining)
-
-
-							datos.map(function(d){
-								for(var i=0;i<list_remaining.length;i++){
-									if(d['ID']==list_remaining[i]){
-										new_data.push(d)
-									}
-								}
-								datos=new_data
-								console.log(datos)							   	
-							})
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-						});													
-
+							}			
+						
 
 						setInterval(function(){ mymap.invalidateSize()}, 400);
-					}
+					}													
+
 					init();
+					/*L.easyButton('<img src="https://cdn.onlinewebfonts.com/svg/img_351337.png" style="width:20px">',function(btn,map){
+						container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );
+						container.layoutManager.eventHub.emit( 'datosvisibles', completedata );
+					}).addTo(mymap)*/
+					L.Polygon.include({
+					contains: function (latLng) {
+					    return turf.inside(new L.circleMarker(latLng).toGeoJSON(), this.toGeoJSON());
+					} 
+					});
+					L.Rectangle.include({
+					contains: function (latLng) {
+					    return this.getBounds().contains(latLng);
+					}
+					});
+					L.Circle.include({
+					contains: function (latLng) {
+					    return this.getLatLng().distanceTo(latLng) < this.getRadius();
+					}
+					});
+					mymap.on(L.Draw.Event.CREATED, function (e) {	
+						console.log(markers)
+						draw(markers)
+						new_data=[]
+						list_remaining=[]
+						markers.eachLayer(function (marker) {
+							console.log(marker)
+						    if (!e.layer.contains(marker.getLatLng())) {
+						        marker.remove();						            
+								id_tag = marker,
+								position = list_markers.indexOf(id_tag);
+								if ( ~position ) list_markers.splice(position, 1);										
+						    }
+						});
+
+						for(var i=0;i<list_markers.length;i++){
+							if(!list_remaining.includes(list_markers[i]['_popup']['_content'].split('Identificator: ')[1].split('</b>')[0])){
+								list_remaining.push(list_markers[i]['_popup']['_content'].split('Identificator: ')[1].split('</b>')[0])		
+							}						    					    	
+						}
+
+						console.log(list_remaining)
+
+
+						datos.map(function(d){
+							for(var i=0;i<list_remaining.length;i++){
+								if(d['ID']==list_remaining[i]){
+									new_data.push(d)
+								}
+							}
+							datos=new_data
+							console.log(datos)							   	
+						})
+						container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
+						container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+						container.layoutManager.eventHub.emit( 'datos', datos );
+					});	
+
 				}	
 			})
 		})
 
 
-		/*container.layoutManager.eventHub.on( 'completedata', function( completedata ){
-			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
-				var new_data=[]	
-				datos.map(function(d){
-					if(d.hasOwnProperty('Latitude') && d.hasOwnProperty('Longitude')){	
-						var prom_latitudes=[];
-						var prom_longitudes=[];
-						var lat=[];
-						var long=[];
-						var previous_counter=0;	
-						var counter=1;
-						var list_markers=[]
-						var list_remaining=[]
-						function drawMap(datos, mymap,anterior,actual,new_data){
-
-							if(markers != undefined || markers!=null){
-								markers.clearLayers();
-							}
-							
-							 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-							attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-							}).addTo(mymap);
-							var markers = new L.MarkerClusterGroup({
-								iconCreateFunction: function(cluster) {
-									return L.divIcon({ html: '<b><font size="5">' + cluster.getChildCount() + '</font></b>',iconSize: new L.Point(40, 40) });
-								}							
-							}).addTo(mymap);
-							var years =[];
-							var lista=[];
-							var colors = ['black','green','orange','blue','red','fuchsia','cyan','purple','teal'];	
-							datos.map(function(d){
-								years.push(d.Year)
-								years=years.filter(function(item, pos){
-									return years.indexOf(item)== pos; 
-								});
-							})		
-							if(datos[0].hasOwnProperty('Year')){
-								for(var k=0;k<years.length;k++){	
-									if (k!=0){										
-										colors.pop()	
-									}				
-									var latitudes = [];
-									var longitudes=[];							
-									var datos_filter=datos.filter(d=>d.Year==years[k]).map(function(d){	
-										if(d.Latitude!="" && d.Longitude!=""){					
-											latitudes.push(parseFloat(d.Latitude))
-											longitudes.push(parseFloat(d.Longitude))								
-										}
-									})									
-														
-									for(var i=0;i<datos_filter.length;i++){
-										
-										var coord = [latitudes[i],longitudes[i]];
-										lista.push(coord)
-										counter=counter+1;
-									}	
-									var identificators=[]
-									datos.map(function(d){
-										identificators.push(d['ID'])
-									})
-									var dates=[]
-									datos.map(function(d){
-										dates.push(d['Month']+" / "+d['Day']+" / "+d['Year']+"  ("+d['DayOfTheWeek']+")")
-									})							
-									for(var b=previous_counter;b<counter;b++){								
-											if(b==counter-1){
-												previous_counter=counter										
-											}
-											else{
-												if(lista[b]!=undefined || lista[b]!=null){
-											 		var marker= new L.circleMarker(lista[b],{fillOpacity:0.5,color:colors[k]}).addTo(markers).bindPopup("The coordinates of the current point are:\n\n<b>["+lista[b]+"]</b>\n\n\n <b>Identificator: "+identificators[b]+"</b> from the <b>Date: "+dates[b]+"</b>");//.addTo(mymap)
-													//
-													list_markers.push(marker)
-												}									
-											}																										
-										}
-									}									
-								
-
-							}
-							else{
-								var latitudes = [];
-								var longitudes=[];					
-								datos.map(function(d){
-									if(d.Latitude!="" && d.Longitude!=""){					
-										latitudes.push(parseFloat(d.Latitude))
-										longitudes.push(parseFloat(d.Longitude))								
-									}
-								})
-								for(var i=0;i<datos.length;i++){									
-										var coord = [latitudes[i],longitudes[i]];
-										lista.push(coord)
-								}
-								console.log(lista)
-								var identificators=[]
-								datos.map(function(d){
-									identificators.push(d['ID'])
-								})
-								for(var i=0;i<lista.length;i++){
-									var marker=new L.circleMarker(lista[i],{fillOpacity:0.5,color:'blue'}).addTo(markers).bindPopup("The coordinates of the current point are:\n\n<b>["+lista[i]+"]</b>\n\n\n <b>Identificator: "+identificators[i]+"</b>");	//.addTo(mymap)
-									//.bindPopup("The coordinates of the current point are:\n\n<b>["+lista[i]+"]</b>\n\n\n <b>Identificator: "+identificators[i]+"</b>");		
-									list_markers.push(marker)							
-								}																	
-							}
-							new L.Control.Draw({
-							    draw: {
-							        marker   : false,
-							        polygon  : true,
-							        polyline : false,
-							        rectangle: true,
-							        circle   : {
-							            metric: 'metric'
-							        }
-							    },
-							    edit: false
-							}).addTo(mymap);
-							L.easyButton('<img src="https://cdn.onlinewebfonts.com/svg/img_351337.png" style="width:20px">',function(btn,map){
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );
-								container.layoutManager.eventHub.emit( 'datosvisibles', completedata );
-							}).addTo(mymap)
-							L.Polygon.include({
-							    contains: function (latLng) {
-							        return turf.inside(new L.circleMarker(latLng).toGeoJSON(), this.toGeoJSON());
-							    } 
-							});
-							L.Rectangle.include({
-							    contains: function (latLng) {
-							        return this.getBounds().contains(latLng);
-							    }
-							});
-							L.Circle.include({
-							    contains: function (latLng) {
-							        return this.getLatLng().distanceTo(latLng) < this.getRadius();
-							    }
-							});
-							mymap.on(L.Draw.Event.CREATED, function (e) {
-								new_data=[]
-								list_remaining=[]
-							    markers.eachLayer(function (marker) {
-							        if (!e.layer.contains(marker.getLatLng())) {
-							            marker.remove();						            
-										id_tag = marker,
-										position = list_markers.indexOf(id_tag);
-										if ( ~position ) list_markers.splice(position, 1);		
-							        }
-							    });						  
-							   
-							    for(var i=0;i<list_markers.length;i++){
-							    	if(!list_remaining.includes(list_markers[i]['_popup']['_content'].split('Identificator: ')[1].split('</b>')[0])){
-							    		list_remaining.push(list_markers[i]['_popup']['_content'].split('Identificator: ')[1].split('</b>')[0])		
-							    	}						    					    	
-							    }
-							    
-							   	console.log(list_remaining)
-							   	
-							   	
-							   	datos.map(function(d){
-								   	for(var i=0;i<list_remaining.length;i++){
-								   		if(d['ID']==list_remaining[i]){
-								   			new_data.push(d)
-								   		}
-								   	}
-								   	datos=new_data
-								   	console.log(datos)							   	
-							   	})
-							   	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							});		
-		
-						}
-						
-						datos.map(function(d){
-							long.push(d.Longitude)
-							lat.push(d.Latitude)
-						
-							var max_latitudes=Math.max.apply(Math,lat)
-							var min_latitudes=Math.min.apply(Math,lat)
-							var max_longitudes=Math.max.apply(Math,long)
-							var min_longitudes=Math.min.apply(Math,long)
-							prom_latitudes= (max_latitudes+min_latitudes)/2;
-							prom_longitudes=(max_longitudes+min_longitudes)/2;
-						
-						})
-						
-						
-						if (mymap != undefined) {  mymap.remove(); mymap.off(); setInterval(function(){ mymap.invalidateSize()}, 400);}
-
-						mymap = new L.Map('mapid').setView([prom_latitudes, prom_longitudes], 11);						
-						drawMap(datos, mymap,previous_counter,counter,new_data)	
-							
-								
-						}
-						else{
-						document.getElementById("mapid").innerHTML = '<p></p><strong> <font size="3">THERE ARE NOT SPATIAL ATTRIBUTES THAT PERMITS THE DISPLAY OF THE MAP </font></strong>'
-					}
-				})
 				
-			})	
-		})*/		
 	}])
 				
 
