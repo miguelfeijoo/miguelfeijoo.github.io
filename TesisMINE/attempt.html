@@ -36,13 +36,22 @@
 <script src="js/xlsx.full.min.js"></script>
 <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-<script type="text/javascript" src="https://unpkg.com/navio/dist/navio.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://unpkg.com/popper.js@1.14/dist/umd/popper.min.js"></script>
+<script src="https://unpkg.com/navio/dist/navio.min.js"></script>
+
+
+
+
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.5.0/math.min.map"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/regression/1.4.0/regression.min.js"></script>
 <script type="text/javascript" src="https://cdn.anychart.com/releases/8.5.0/js/anychart-base.min.js"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=yes">
 <title>S-PLOR-T</title>
 <link rel="stylesheet" href="https://js.arcgis.com/3.27/dijit/themes/claro/claro.css">
@@ -217,6 +226,11 @@
 </span>
 </template>
 
+<template type="text/html" id="ESRI_OSM_Template">	
+	<div id='ESRI_OSM_id' ng-controller="ESRI_OSM_Controller" class="ESRI_OSM">
+	</div>
+</template>
+
 
 <!-- PRELIMINARY CONTENT STYLE -->
 
@@ -252,6 +266,7 @@
 	var regressionApp = angular.module('regression', ['test-service'] );
 	var mapESRIApp = angular.module('mapESRI', ['test-service'] );
 	var bubbleApp = angular.module('bubble', ['test-service'] );
+	var ESRI_OSMApp = angular.module('ESRI_OSM', ['test-service'] );
 	angular.module('test-service', []).service('TestService', function($rootScope, $window){
 	  var datos= null;
 	  var seq= null;
@@ -1075,7 +1090,6 @@
 		
 		console.log("entro aca")	
 		container.layoutManager.eventHub.on( 'datos', function( data ){
-				console.log("66666666444444444455555555555")
 				container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
 					container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
 						nv=navio(d3.select("#navio"), 600);
@@ -1108,11 +1122,8 @@
 		});	
 
 		container.layoutManager.eventHub.on( 'datachanged', function( data ){
-			console.log("ENTROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
 				container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
 					container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
-
-						console.log("ENTROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
 						nv=navio(d3.select("#navio"), 600);
 							catColumns.forEach((c) => nv.addCategoricalAttrib(c));
 							seqColumns.forEach((c) => nv.addSequentialAttrib(c));
@@ -1144,7 +1155,6 @@
 				});
 			});
 		});
-		
 	}])
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
 		
@@ -2840,6 +2850,21 @@
 			});	
 		},500)		
 	}])
+	ESRI_OSMApp.controller('ESRI_OSM_Controller', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
+		setTimeout(function(){
+		document.getElementById('ESRI_OSM_id').innerHTML=`<div id="map"></div>  <script src="js/leaflet.js"><\/script> <script src="js/leaflet.hash.js"><\/script>  <script src='jam/require.js'><\/script>  <script src='js/leaflet.spin.js'><\/script> <script src='js/mapSetup.js'><\/script> <script src='script.js'><\/script>`
+
+			var codes = document.getElementById('ESRI_OSM_id').getElementsByTagName("script");
+
+
+
+			for(var i=0;i<codes.length;i++)  
+			{  
+				eval(codes[i].text);  
+			}  
+		},500)
+
+	}])
 	
 
 	var app1El = document.getElementById('fileselector');
@@ -2852,6 +2877,7 @@
 	var app8El = document.getElementById('regression');
 	var app9El = document.getElementById('mapESRI');
 	var app10El = document.getElementById('bubble');
+	var app11El = document.getElementById('ESRI_OSM');
 	angular.bootstrap(app1El, ['fileselector', 'test-service']);
 	angular.bootstrap(app2El, ['navio', 'test-service']);
 	angular.bootstrap(app3El, ['spatialviz', 'test-service']);
@@ -2862,6 +2888,7 @@
 	angular.bootstrap(app8El, ['regression', 'test-service']);
 	angular.bootstrap(app9El, ['mapESRI', 'test-service']);
 	angular.bootstrap(app10El, ['bubble', 'test-service']);
+	angular.bootstrap(app11El, ['ESRI_OSM', 'test-service']);
 	var AngularModuleComponent = function( container, state ) {
 	    var html = $( '#' + state.templateId ).html(),
 	        element = container.getElement();
@@ -2907,6 +2934,14 @@
                 componentState: {
                     module: 'mapESRI',
                     templateId: 'mapESRITemplate'
+                }
+            },{
+                type: 'component',
+                title: 'ESRI - OSM Map',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'ESRI_OSM',
+                    templateId: 'ESRI_OSM_Template'
                 }
             },{
                 type: 'component',
