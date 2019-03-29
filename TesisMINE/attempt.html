@@ -72,7 +72,7 @@
 		<p><strong><font size="3">Select a file of your interest to analyze its current attributes </font></strong><p></p>(Accepted Extensions: <i>.csv, .xls, .xlsx</i> )</p>
 		<p></p>
 		<input ng-model='shared.current_data' type="file" accept=".csv,.xlsx,.xls" id="files" name="file" />
-		<div id='buttonComplete' align='center'></div>
+		<div id='buttonComplete' align='left'></div>
 		<div id="tableGoesHere"align="center"></div>	
 		</span>			
 </template>	
@@ -210,7 +210,7 @@
 		<p></p>
 		<div id="list9" align="left"></div>
 		<p></p>
-		
+		<div id="regressionGraph" align="left"></div>
 	</span>
 	</div>
 </template>
@@ -239,18 +239,18 @@
 	  overflow: scroll;
 	}	
 	#mapid { margin: 0px; height: 100%; width: 100% }
-	#boxplotid { margin: 0px; height: 100%; width: 100vw }
-	#splomid { margin: 0px; height: 100vh; width: 100vw }
-	#regressionid { margin: 0px; height: 100%; width: 100vw }
-	#temporal_id { margin: 15px; height: 100vh; width: 100% }
-	#spatial_id { margin: 15px; height: 100vh; width: 100% }
-	#navio { margin: 15px; height: 100vh; width: 100vw }
+	#boxplotid { margin: 0px; height: 100%; width: 100% }
+	#splomid { margin: 0px; height: 100%; width: 100% }
+	#regressionid { margin: 0px; height: 100%; width: 100% }
+	#temporal_id { margin: 15px; height: 100%; width: 100% }
+	#spatial_id { margin: 15px; height: 100%; width: 100% }
+	#navio { margin: 15px; height: 100%; width: 100% }
 	#selector { margin: 15px; height: 100%; width: 100% }
 	#mainWindow { margin: 0px; height: 97vh; width: 97vw }
 	#mapCanvas{ margin: 0px; height: 97vh; width: 97vw }
-	#boxplot { margin: 0px; width: 100vw }
-	#regressionGraph { margin: 0px; width: 100vw }
-	#bubbleid { margin: 0px; height: 100%; width: 100vw }
+	#boxplot { margin: 0px; width: 100% }
+	#regressionGraph { margin: 0px; width: 100% }
+	#bubbleid { margin: 0px; height: 100vh; width: 100vw }
 
 </style>
 
@@ -903,7 +903,14 @@
 		    	var dateparse=[];
 		   		var categoric=[];	
 							
-			
+			document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
+					$('button[id="complete_data_btn"]').click(function() {  	
+											
+						container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
+						container.layoutManager.eventHub.emit( 'datosvisibles', data );	
+						container.layoutManager.eventHub.emit( 'datos', data );		   	
+										   
+					});		
 
 				container.layoutManager.eventHub.on( 'argis_attributes', function( arc ){
 					var cols_esri = Object.keys(arc[0]);				
@@ -926,14 +933,7 @@
 
 					container.layoutManager.eventHub.emit('datachanged',new_datos)		
 
-					document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
-					$('button[id="complete_data_btn"]').click(function() {  	
-											
-						container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
-						container.layoutManager.eventHub.emit( 'datosvisibles', data );	
-						container.layoutManager.eventHub.emit( 'datos', data );		   	
-										   
-					});			
+						
 
 
 
@@ -1100,12 +1100,18 @@
 							visible = nv.getVisible();						
 							
 							container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', data );
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', data );							
 							console.log(data)
 							nv.updateCallback(function(){
 								visible = nv.getVisible();
-								container.layoutManager.eventHub.emit( 'datosvisibles', visible );
+								container.layoutManager.eventHub.emit( 'datosvisibles', visible );								
 								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
+								console.log(seqColumns)
+								container.layoutManager.eventHub.emit( 'seqColumns', seqColumns );
+								console.log(catColumns)
+								
+							container.layoutManager.eventHub.emit( 'datos', data );
+								console.log(catColumns)
 								console.log(visible)
 								container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
 									console.log(attr1)
@@ -1133,14 +1139,19 @@
 							
 							container.layoutManager.eventHub.emit( 'datosvisibles', visible );	
 							container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );	
-							container.layoutManager.eventHub.emit( 'datachanged', visible );													
+							container.layoutManager.eventHub.emit( 'datachanged', visible );
+							
 
 							console.log(data)
 							nv.updateCallback(function(){
 								visible = nv.getVisible();
-								container.layoutManager.eventHub.emit( 'datosvisibles', visible );
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
+								container.layoutManager.eventHub.emit( 'datosvisibles', visible );								
 								container.layoutManager.eventHub.emit( 'datachanged', visible );
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
+								container.layoutManager.eventHub.emit( 'seqColumns', seqColumns );
+							container.layoutManager.eventHub.emit( 'datos', data );
+
+
 								console.log(visible)
 								container.layoutManager.eventHub.on( 'change-attr1', function( attr1 ){
 									console.log(attr1)
@@ -1158,18 +1169,14 @@
 	}])
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
 		
-		
-
-
-
 		container.layoutManager.eventHub.on( 'columnas_list', function( cols ){		
 				console.log(cols)
-		container.layoutManager.eventHub.on( 'datos', function( completedata ){	
-				console.log(completedata)			
-					
+				container.layoutManager.eventHub.on( 'datos', function( completedata ){		
+					console.log(completedata)	
 					container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
 						console.log(seqColumns)
 						container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){
+							console.log(datos)
 						container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
 							console.log(catColumns)
 							
@@ -1177,7 +1184,7 @@
 									document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
 									document.getElementById("list").innerHTML = '<strong>Attribute 1:</strong><input list="attrs1" type="text" id="attr1"><datalist id="attrs1">'+cols
 									document.getElementById("list2").innerHTML = '<strong>Attribute 2:</strong> <input list="attrs2" type="text" id="attr2"><datalist id="attrs2">'+cols
-									document.getElementById("btn1").innerHTML='<button type="button" id="complete_t"> <strong>SHOW ('+completedata.length+' VALUES)</strong></button>'
+									document.getElementById("btn1").innerHTML='<button type="button" id="complete_t"> <strong>SHOW COMPLETE VALUES</strong></button>'
 									$('button[id="complete_t"]').click(function() {								    	
 										
 										container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );	
@@ -1890,8 +1897,9 @@
 	}])
 	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {	
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
-			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
+			container.layoutManager.eventHub.on( 'datos', function( datos ){
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
+					
 					if(datos[0].hasOwnProperty("Year")){
 						document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols				
 						function onlyUnique(value, index, self) { 
@@ -1912,7 +1920,7 @@
 						
 						d3.select("#attr4").on("change", function(){
 							document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="COMPLETE DATA"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'
-							var attr4 = this.value;
+							var attr4 = this.value;							
 							console.log("Selected Value Attr4: "+attr4)		
 							var data=[]
 							var colors = [];
@@ -1978,7 +1986,8 @@
 											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
 											returnData=data_filter
 											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
 										}	
 									}
 									if(attr5=='0-25th Percentile [MIN <-> Q1]'){
@@ -2076,9 +2085,14 @@
 								var value_max= _75percent + (1.5*interquartile_range)
 									console.log("Max Value:  "+value_max)									
 								
-								calcShowPercentiles(datos,returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)			
+								calcShowPercentiles(datos,returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)	
+								container.layoutManager.eventHub.emit('attr4_value',attr4)		
 							})
 						})
+
+						
+
+
 					}
 					else{
 						document.getElementById("list4").innerHTML = '<strong><font size="3"> THERE ARE NOT ANY TEMPORAL ATTRIBUTES THAT PERMITS THE PRELIMINARY STATISTICAL ANALYSIS </font></strong>'
@@ -2859,11 +2873,13 @@
 
 
 			for(var i=0;i<codes.length;i++)  
-			{  
-				eval(codes[i].text);  
+			{  				
+				console.log(codes[i])
+				console.log(codes[i].text)
+				eval(codes[i]);  
+
 			}  
 		},500)
-
 	}])
 	
 
