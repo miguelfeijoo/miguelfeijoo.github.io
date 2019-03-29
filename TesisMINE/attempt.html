@@ -239,7 +239,7 @@
 	  overflow: scroll;
 	}	
 	#mapid { margin: 0px; height: 100%; width: 100% }
-	#boxplotid { margin: 0px; height: 100%; width: 100% }
+	#boxplotid { margin: 0px; height: 100vh; width: 100vw }
 	#splomid { margin: 0px; height: 100%; width: 100% }
 	#regressionid { margin: 0px; height: 100%; width: 100% }
 	#temporal_id { margin: 15px; height: 100%; width: 100% }
@@ -248,8 +248,8 @@
 	#selector { margin: 15px; height: 100%; width: 100% }
 	#mainWindow { margin: 0px; height: 97vh; width: 97vw }
 	#mapCanvas{ margin: 0px; height: 97vh; width: 97vw }
-	#boxplot { margin: 0px; width: 100% }
-	#regressionGraph { margin: 0px; width: 100% }
+	#boxplot { margin: 0px; width: 100vw }
+	#regressionGraph { margin: 0px; width: 100vw }
 	#bubbleid { margin: 0px; height: 100vh; width: 100vw }
 
 </style>
@@ -769,7 +769,7 @@
 				console.log(dateparse)
 				
 				$scope.seq.map(function(col) {							
-							if (!(col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col=="Hours" || col=="Seconds" || col=='__seqId'||dateparse.includes(col))){
+							if (!(col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col=="Hours" || col=="Seconds" || col=='__seqId'|| col=='__i'||dateparse.includes(col))){
 									if(!($scope.cat).includes(col)){
 										console.log(col)									
 										columnsSequential.push('<option value="'+col+'">')	
@@ -1897,29 +1897,28 @@
 	}])
 	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {	
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
-			container.layoutManager.eventHub.on( 'datos', function( datos ){
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
 					
-					if(datos[0].hasOwnProperty("Year")){
+					if(returnData[0].hasOwnProperty("Year")){
 						document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols				
 						function onlyUnique(value, index, self) { 
 						    return self.indexOf(value) === index;
 						}
 						var years_temp=[]
-							var years = datos.map(function(d){
+							var years = returnData.map(function(d){
 								years_temp.push(parseInt(d.Year))				
 							})
 						var years_temp_array = years_temp.filter(onlyUnique)
-						if(datos[0].hasOwnProperty("Month")){
+						if(returnData[0].hasOwnProperty("Month")){
 							var months_temp=[]
-								var months = datos.map(function(d){
+								var months = returnData.map(function(d){
 									months_temp.push(parseInt(d.Date.getMonth()))				
 								})
 							var months_temp_array = months_temp.filter(onlyUnique)
 						}
 						
 						d3.select("#attr4").on("change", function(){
-							document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="COMPLETE DATA"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'
+							document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'//'<option value="COMPLETE DATA">'
 							var attr4 = this.value;							
 							console.log("Selected Value Attr4: "+attr4)		
 							var data=[]
@@ -1940,7 +1939,7 @@
 									new_colors.pop()
 								}
 								var temp_array_int=[]
-								datos.filter(d=>parseInt(d.Year)==years_temp_array[i]).map(function(d){
+								returnData.filter(d=>parseInt(d.Year)==years_temp_array[i]).map(function(d){
 									temp_array_int.push(parseInt(d[attr4]))
 								})
 								console.log(temp_array_int)
@@ -1975,18 +1974,16 @@
 									console.log(valores)
 								})
 								function isOdd(num) { return num % 2;}
-								function calcShowPercentiles(datos,returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max){
+								function calcShowPercentiles(returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max){
 									var data_filter=[]
 									if(attr5=='25th-50th Percentile [Q1 <-> Q2 (Median)]'){
 										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<value_median).map(function(d){					
 											data_filter.push(d)										
 										})
 										if(data_filter!=null || data_filter!=undefined){
-											datos=data_filter
-											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
-											returnData=data_filter
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+											document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );
 
 										}	
 									}
@@ -1996,10 +1993,9 @@
 										})
 										if(data_filter!=null || data_filter!=undefined){
 											datos=data_filter
-											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values, <strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 0-25th Percentile [MIN <-> Q1] </strong>'
-											returnData=data_filter
+											document.getElementById("counter").innerHTML = 'strong>'+returnData.length+'</strong> values were filtered\nbetween the <strong> 0-25th Percentile [MIN <-> Q1] </strong>'
 											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
+											container.layoutManager.eventHub.emit( 'datosvisibles', returnData );											
 										}
 									}
 									if(attr5=='50th-75th Percentile [Q2 (Median) <-> Q3]'){
@@ -2007,11 +2003,9 @@
 											data_filter.push(d)										
 										})
 										if(data_filter!=null || data_filter!=undefined){
-											datos=data_filter
-											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 50th-75th Percentile [Q2 (Median) <-> Q3] </strong>'
-											returnData=data_filter
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
+											document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> 50th-75th Percentile [Q2 (Median) <-> Q3] </strong>'
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
 										}	
 									}
 									if(attr5=='75th-100th Percentile [Q3 <-> MAX]'){
@@ -2019,11 +2013,9 @@
 											data_filter.push(d)										
 										})
 										if(data_filter!=null || data_filter!=undefined){
-											datos=data_filter
-											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> 75th-100th Percentile [Q3 <-> MAX] </strong>'
-											returnData=data_filter
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
+											document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> 75th-100th Percentile [Q3 <-> MAX] </strong>'
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
 										}	
 									}
 									if(attr5=='Interquartile Range'){
@@ -2031,11 +2023,9 @@
 											data_filter.push(d)										
 										})
 										if(data_filter!=null || data_filter!=undefined){
-											datos=data_filter
-											document.getElementById("counter").innerHTML = 'From <strong>'+returnData.length+'</strong> original values\n<strong>'+datos.length+'</strong> were filtered\nbetween the <strong> Interquartile Range </strong>'
-											returnData=data_filter
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );												
+											document.getElementById("counter").innerHTML = '<strong>'+returndata_filterData.length+'</strong> values were filtered\nbetween the <strong> Interquartile Range </strong>'
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );												
 										}
 									}
 									if(attr5=='Outliers'){
@@ -2044,11 +2034,9 @@
 										})
 
 										if(data_filter.length>0){
-											datos=data_filter
-											document.getElementById("counter").innerHTML = '<strong> From '+returnData.length+' original values\n'+datos.length+' were filtered\nas Outliers </strong>'
-											returnData=data_filter
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );											
+											document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+' values were filtered\nas Outliers </strong>'
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
 										}
 										else{
 											setTimeout(function(){
@@ -2056,14 +2044,14 @@
 											},400)
 										}	
 									}
-									if(attr5=='COMPLETE DATA'){	
+									/*if(attr5=='COMPLETE DATA'){	
 										console.log(returnData)									
-										datos=returnData;
+										//datos=returnData;
 										document.getElementById("counter").innerHTML = '<strong> SHOWING\n'+datos.length+' from the original loaded data </strong>'	
 										//returnData=data_filter
 										container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-										container.layoutManager.eventHub.emit( 'datosvisibles', datos );																		
-									}
+										container.layoutManager.eventHub.emit( 'datosvisibles', returnData );																		
+									}*/
 								}
 									
 								console.log("valores:   "+valores)
@@ -2085,7 +2073,7 @@
 								var value_max= _75percent + (1.5*interquartile_range)
 									console.log("Max Value:  "+value_max)									
 								
-								calcShowPercentiles(datos,returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)	
+								calcShowPercentiles(returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)	
 								container.layoutManager.eventHub.emit('attr4_value',attr4)		
 							})
 						})
@@ -2099,7 +2087,6 @@
 					}
 				})	
 			})
-		})
 	}])
 	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 
@@ -2311,17 +2298,19 @@
 	}])
 	splomApp.controller('splomController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 		container.layoutManager.eventHub.on( 'dateParseEvent', function( datPa ){
-			container.layoutManager.eventHub.on( 'categoricsEvent', function( cat ){	
-				container.layoutManager.eventHub.on( 'datos', function( completedata ){	
+			console.log(datPa)
+			container.layoutManager.eventHub.on( 'categoricsEvent', function( cat ){
+			console.log(cat)	
 					container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){
+						console.log(rows)
 						container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){	
-					console.log(rows)
+					console.log(returnData)
 				
 					var x=[]
 					var lista ='';
 					var lista_seq=[]
 					for(var i =0;i<cat.length;i++){
-						if(!(cat[i]=='__i'||cat[i]=='__seqId'||cat[i]=='visible')){
+						if(!(cat[i]=='__i'||cat[i]=='__seqId'||cat[i]=='visible'||cat[i]=='selected')){
 							lista_seq.push('<option value="'+cat[i]+'">')	
 						}						
 					}
@@ -2361,7 +2350,7 @@
 						for(var i =0;i<attributes.length;i++){							
 								att.push('<option value="'+attributes[i]+'">')							
 						}
-						att.push('<option value="COMPLETE DATA ('+completedata.length+' values)">')
+						//att.push('<option value="SHOW COMPLETE DATA">')
 						var att_text= att.join('')
 						document.getElementById("list7").innerHTML = '<strong>Do you want to FILTER any of these current values of your selected attribute?\nSelect a value to filter: </strong> <input list="attrs7" type="text" id="attr7"><datalist id="attrs7">'+att_text					
 						var filtered=[]
@@ -2370,8 +2359,18 @@
 							filtered=[]
 							console.log(rows)
 							rows.map(function(d){
-								if(attr7=='COMPLETE DATA ('+completedata.length+' values)'){									
-									filtered=completedata
+								if(attr7=='SHOW COMPLETE DATA'){
+
+									container.layoutManager.eventHub.on( 'datos', function( data ){
+											$('button[id="complete_data_btn"]').click(function() {  
+
+												filtered=data	
+													
+												   	
+																   
+											});	
+									})										
+								
 								}
 								else{
 										var new_rows=rows.filter(e=>e[attr6]==attr7)
@@ -2387,7 +2386,7 @@
 							console.log(filtered)							
 
 
-					document.getElementById('btn_complete_splom').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn_splom"> <strong>SHOW ('+completedata.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
+					/*document.getElementById('btn_complete_splom').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn_splom"> <strong>SHOW ('+completedata.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
 					$('button[id="complete_data_btn_splom"]').click(function() {  	
 
 						filtered=[]
@@ -2399,7 +2398,7 @@
 						container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
 						container.layoutManager.eventHub.emit( 'datos', rows );		   	
 										   
-					});
+					});*/
 							
 							
 							rows=filtered
@@ -2461,8 +2460,7 @@
 					})
 					})
 				})
-			})
-		})			
+			})			
 	}])
 	regressionApp.controller('regressionController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){	
