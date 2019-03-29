@@ -2023,7 +2023,7 @@
 											data_filter.push(d)										
 										})
 										if(data_filter!=null || data_filter!=undefined){
-											document.getElementById("counter").innerHTML = '<strong>'+returndata_filterData.length+'</strong> values were filtered\nbetween the <strong> Interquartile Range </strong>'
+											document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> Interquartile Range </strong>'
 											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
 											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );												
 										}
@@ -2052,6 +2052,24 @@
 										container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
 										container.layoutManager.eventHub.emit( 'datosvisibles', returnData );																		
 									}*/
+
+									container.layoutManager.eventHub.on( 'datos', function( data ){
+											console.log(data)
+											$('button[id="complete_data_btn"]').click(function() {  
+
+												console.log("CLICK COMPLETE")
+
+												data_filter=data										
+											   	document.getElementById("counter").innerHTML = '<strong> SHOWING\n'+data_filter.length+' from the original loaded data </strong>'
+											   	container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );	
+																   
+											});	
+									})	
+
+
+
+
 								}
 									
 								console.log("valores:   "+valores)
