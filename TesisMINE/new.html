@@ -1723,7 +1723,7 @@
 
 						
 						if(completedata[0].hasOwnProperty("Year")){
-							datos.map(function(d){
+							completedata.map(function(d){
 								year.push(d['Year'])
 								daynight.push(d['DayNight'])
 								day.push(d['DayOfTheWeek'])
@@ -1862,8 +1862,7 @@
 					$('#daynight').change(function() {
 						if($(this).prop('checked')){
 							console.log("cambiooooooooooooooooooooooooooo")
-						}
-						
+						}						
 					})
 
 					$('#day').change(function() {
@@ -1908,7 +1907,13 @@
 		                    scale: true,
 		                    labels: false,
 		                    onChange: function(vals) {
-		                        console.log(vals);
+		                        datos=completedata
+		                        var min=vals.split(',')[0]
+		                        var max= vals.split(',')[1]
+		                        datos=datos.filter(d=>d.Year>=parseInt(min) && d.Year<=parseInt(max))	
+		                        console.log(datos)	
+		                        //container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							    container.layoutManager.eventHub.emit( 'datosvisibles', datos );                        
 		                    }
 		                });
 					}
@@ -1926,7 +1931,13 @@
 		                    scale: true,
 		                    labels: false,
 		                    onChange: function(vals) {
-		                        console.log(vals);
+		                    	datos=completedata
+		                        var min=vals.split(',')[0]
+		                        var max= vals.split(',')[1]
+		                        datos=datos.filter(d=>d.Day>=parseInt(min) && d.Day<=parseInt(max))
+		                        console.log(datos)
+		                        //container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							    container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 		                    }
 		                });
 					}
@@ -1944,7 +1955,13 @@
 		                    scale: true,
 		                    labels: false,
 		                    onChange: function(vals) {
-		                        console.log(vals);
+		                        datos=completedata
+		                        var min=vals.split(',')[0]
+		                        var max= vals.split(',')[1]
+		                        datos=datos.filter(d=>d.Hours>=parseInt(min) && d.Hours<=parseInt(max))	
+		                        console.log(datos)
+		                        //container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							    container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
 		                    }
 		                });
 					}
