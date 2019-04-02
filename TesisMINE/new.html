@@ -374,6 +374,8 @@
 		<p></p>
 		<div id="list10" align="left"></div>
 		<p></p>
+		<div id="list10_1" align="left"></div>
+		<p></p>
 		<div id="bubbleGraph"align="center"></div>
 	</div>
 </span>
@@ -607,11 +609,7 @@
 							    var prefixes = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
 							    return prefixes[Math.floor(date.getDate() / 7)];
 							}
-							function isWeekDay(date){
-								if(date.getDay()!=0 || date.getDay()!=6){
-									return true
-								}
-							}
+							
 							if (d.hasOwnProperty("Date")){
 								d.Hours = d.Date.getHours();
 								d.Minutes = d.Date.getMinutes();
@@ -619,7 +617,16 @@
 								d.DayNight = d.Hours < 6 || d.Hours>18 ? "night": "diurnal";
 								d.WeekOfTheMonth = weekMonth(d.Date)
 								d.DayOfTheWeek = weekday[d.Date.getDay()];	
-								d.isWeekDay= isWeekDay(d.Date)					
+								
+									
+								if(!(d.DayOfTheWeek=='Sunday' || d.DayOfTheWeek=="Saturday")){
+									d.isWeekDay="Yes"
+								}	
+								else{
+									d.isWeekDay="No"
+								}								
+									
+												
 								d.Year = d.Date.getFullYear().toString();
 								d.Month = month[d.Date.getMonth()];
 								d.Day = d.Date.getDate();
@@ -1025,6 +1032,23 @@
 					});				
 					
 				})
+				container.layoutManager.eventHub.on( 'redrawVisibleData2', function(returnData){		
+
+					console.log(returnData)
+					document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
+					$(document).ready(function() {
+						$('#data').DataTable( {  
+							destroy: true,
+						    dom: 'lBfrtip',
+						    buttons: [
+						        'copy', 'csv', 'excel', 'pdf', 'print'
+						    ],
+			    			"scrollY": 300,
+			    			"scrollX": true
+			    		} );
+					});				
+					
+				})
 			})	
 
 			function otherfunction(){
@@ -1063,7 +1087,7 @@
 		    	var dateparse=[];
 		   		var categoric=[];	
 							
-			document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
+				document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
 					$('button[id="complete_data_btn"]').click(function() {  	
 											
 						container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
@@ -1693,7 +1717,7 @@
 	}])
 	temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
-			container.layoutManager.eventHub.on( 'datos', function( completedata ){
+			container.layoutManager.eventHub.on( 'redrawVisibleData', function( completedata ){
 
 
 				console.log(cols)
@@ -1780,7 +1804,7 @@
 
 						for(var i=0;i<daynight.length;i++){
 							
-							daynight_t+='<label class="switch">  <input type="checkbox" checked id="daynight">  <span class="slider round"></span></label><font size=3><strong>'+daynight[i]+'</font></strong>'					
+							daynight_t+='<label class="switch">  <input type="checkbox" checked id="daynight" value="'+daynight[i]+'">  <span class="slider round"></span></label><font size=3><strong>'+daynight[i]+'</font></strong>'					
 																
 						}
 
@@ -1794,7 +1818,7 @@
 
 						for(var i=0;i<day.length;i++){
 							
-							day_t+='<label class="switch">  <input type="checkbox" checked id="day">  <span class="slider round"></span></label><font size=3><strong>'+day[i]+'</font></strong>'					
+							day_t+='<label class="switch">  <input type="checkbox" checked id="day" value="'+day[i]+'">  <span class="slider round"></span></label><font size=3><strong>'+day[i]+'</font></strong>'					
 																
 						}
 
@@ -1809,7 +1833,7 @@
 
 						for(var i=0;i<month.length;i++){
 							
-							month_t+='</strong><label class="switch">  <input type="checkbox" checked id="month">  <span class="slider round"></span></label><font size=3><strong>'+month[i]+'</font>'					
+							month_t+='</strong><label class="switch">  <input type="checkbox" checked id="month" value="'+month[i]+'">  <span class="slider round"></span></label><font size=3><strong>'+month[i]+'</font>'					
 																
 						}
 
@@ -1824,7 +1848,7 @@
 
 						for(var i=0;i<daynight.length;i++){
 							
-							weekmonth_t+='<label class="switch">  <input type="checkbox" checked id="weekmonth">  <span class="slider round"></span></label><font size=3><strong>'+weekmonth[i]+'</font></strong>'					
+							weekmonth_t+='<label class="switch">  <input type="checkbox" checked id="weekmonth" value="'+weekmonth[i]+'">  <span class="slider round"></span></label><font size=3><strong>'+weekmonth[i]+'</font></strong>'					
 																
 						}
 
@@ -1839,7 +1863,7 @@
 
 						for(var i=0;i<isWeekDay.length;i++){
 							
-							isWeekDay_t+='<label class="switch">  <input type="checkbox" checked id="isWeekDay">  <span class="slider round"></span></label><font size=3><strong>'+isWeekDay[i]+'</font></strong>'					
+							isWeekDay_t+='<label class="switch">  <input type="checkbox" checked id="isWeekDay" value="'+isWeekDay[i]+'">  <span class="slider round"></span></label><font size=3><strong>'+isWeekDay[i]+'</font></strong>'					
 																
 						}
 
@@ -1850,44 +1874,14 @@
 
 					document.getElementById('temporal_id').innerHTML=html_final
 
+					var datos=completedata;
 
+					var daynight_removed=null;
+					var day_removed=null;
+					var month_removed=null;
+					var weekmonth_removed=null;
+					var isWeekDay_removed=null;		
 
-					
-					
-					$('#daynight').change(function() {
-						if($(this).prop('checked')){
-							console.log("cambiooooooooooooooooooooooooooo")
-						}						
-					})
-
-					$('#day').change(function() {
-						if($(this).prop('checked')){
-							console.log("cambiooooooooooooooooooooooooooo")
-						}
-						
-					})
-
-					$('#month').change(function() {
-						if($(this).prop('checked')){
-							console.log("cambiooooooooooooooooooooooooooo")
-						}
-						
-					})
-
-					$('#weekmonth').change(function() {
-						if($(this).prop('checked')){
-							console.log("cambiooooooooooooooooooooooooooo")
-						}
-						
-					})
-
-					$('#isWeekDay').change(function() {
-						if($(this).prop('checked')){
-							console.log("cambiooooooooooooooooooooooooooo")
-						}
-						
-					})
-					
 
 					if(!(year.includes(undefined))){
 						var slider3 = new rSlider({
@@ -1902,13 +1896,21 @@
 		                    scale: true,
 		                    labels: false,
 		                    onChange: function(vals) {
-		                        datos=completedata
+		                        //datos=completedata
+		                        console.log(datos)
 		                        var min=vals.split(',')[0]
 		                        var max= vals.split(',')[1]
-		                        datos=datos.filter(d=>d.Year>=parseInt(min) && d.Year<=parseInt(max))	
+		                        datos=completedata.filter(d=>d.Year>=parseInt(min) && d.Year<=parseInt(max))	
 		                        console.log(datos)	
-		                        container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							    container.layoutManager.eventHub.emit( 'datosvisibles', datos );                        
+		                        if(datos.length>0){
+									//container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+									//container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+								}
+								else{
+									alert('Your current filtered data has no results between the range ['+min+','+max+'] of the attribute: "'+this.value+'"')
+								}	
+
+
 		                    }
 		                });
 					}
@@ -1926,13 +1928,24 @@
 		                    scale: true,
 		                    labels: false,
 		                    onChange: function(vals) {
-		                    	datos=completedata
+		                    	//datos=completedata
 		                        var min=vals.split(',')[0]
 		                        var max= vals.split(',')[1]
-		                        datos=datos.filter(d=>d.Day>=parseInt(min) && d.Day<=parseInt(max))
+		                        console.log(vals)
+
+
+
+		                        datos=completedata.filter(d=>d.Day>=parseInt(min) && d.Day<=parseInt(max))                     
+
+
 		                        console.log(datos)
-		                        container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							    container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+		                        if(datos.length>0){
+									container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+									container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+								}
+								else{
+									alert('Your current filtered data has no results between the range ['+min+','+max+'] of the attribute: "'+this.value+'"')
+								}	
 		                    }
 		                });
 					}
@@ -1950,19 +1963,172 @@
 		                    scale: true,
 		                    labels: false,
 		                    onChange: function(vals) {
-		                        datos=completedata
+		                        //datos=completedata
 		                        var min=vals.split(',')[0]
 		                        var max= vals.split(',')[1]
-		                        datos=datos.filter(d=>d.Hours>=parseInt(min) && d.Hours<=parseInt(max))	
+		                        datos=completedata.filter(d=>d.Hours>=parseInt(min) && d.Hours<=parseInt(max))	
 		                        console.log(datos)
-		                        container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							    container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
+		                        if(datos.length>0){
+									container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+									container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+								}
+								else{
+									alert('Your current filtered data has no results between the range ['+min+','+max+'] of the attribute: "'+this.value+'"')
+								}		
 		                    }
 		                });
 					}
-
-
 					
+					$('input[id="daynight"]').change(function() {
+						console.log(this.value)
+						if(!($(this).prop('checked'))){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							daynight_removed=datos.filter(d=>(d.DayNight==this.value))
+							datos=datos.filter(d=>!(d.DayNight==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+								if(this.value=='diurnal'){
+									slider3.conf.set=[6,18]
+									console.log(slider3.conf.set)
+									console.log(slider3)
+								}
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}							 
+						}	
+						else{
+							console.log("removed: "+daynight_removed.length)
+
+							daynight_removed.map(function(e){
+								if(!datos.includes(e))
+									datos.push(e)
+							})
+							container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}					
+					})
+
+					$('input[id="day"]').change(function() {
+						if(!($(this).prop('checked'))){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							day_removed=datos.filter(d=>(d.DayOfTheWeek==this.value))
+							datos=datos.filter(d=>!(d.DayOfTheWeek==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}	
+						}
+						else{
+							console.log("removed: "+day_removed.length)
+
+							day_removed.map(function(e){
+								if(!datos.includes(e))
+									datos.push(e)
+							})
+							container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}	
+						
+					})
+
+					$('input[id="month"]').change(function() {
+						if(!($(this).prop('checked'))){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							month_removed=datos.filter(d=>(d.Month==this.value))
+							datos=datos.filter(d=>!(d.Month==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}	
+						}
+						else{
+							console.log("removed: "+month_removed.length)
+
+							month_removed.map(function(e){
+								if(!datos.includes(e))
+									datos.push(e)
+							})
+							container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}	
+
+						
+					})
+
+					$('input[id="weekmonth"]').change(function() {
+						if(!($(this).prop('checked'))){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							weekmonth_removed=datos.filter(d=>(d.WeekOfTheMonth==this.value))
+							datos=datos.filter(d=>!(d.WeekOfTheMonth==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}	
+						}
+						else{
+							console.log("removed: "+weekmonth_removed.length)
+
+							weekmonth_removed.map(function(e){
+								if(!datos.includes(e))
+									datos.push(e)
+							})
+							container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}	
+						
+					})
+
+					$('input[id="isWeekDay"]').change(function() {
+						if(!($(this).prop('checked'))){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							isWeekDay_removed=datos.filter(d=>(d.isWeekDay==this.value))
+							datos=datos.filter(d=>!(d.isWeekDay==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}	
+						}
+						else{
+							console.log("removed: "+isWeekDay_removed.length)
+
+							isWeekDay_removed.map(e=>datos.push(e))
+							container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}	
+						
+					})			
+
+	
 					
 
 				},500)
@@ -3202,17 +3368,27 @@
 
 					if(rows[0].hasOwnProperty('Latitude') && rows[0].hasOwnProperty('Longitude')){
 
-						document.getElementById("list10").innerHTML='<p></p><strong>Select Quantitative Value: </strong> <input list="attrs10" type="text" id="attr10"><datalist id="attrs10">'+cols		
-						d3.select("#attr10").on("change", function(){
+						document.getElementById("list10").innerHTML='<p></p><strong>[SERIES 1] Select Quantitative Value: </strong> <input list="attrs10" type="text" id="attr10"><datalist id="attrs10">'+cols
+						document.getElementById("list10_1").innerHTML='<p></p><strong>[SERIES 2] Select Quantitative Value: </strong> <input list="attrs10_1" type="text" id="attr10_1"><datalist id="attrs10_1">'+cols		
+						d3.select("#attr10").on("change", function(){													
+							d3.select("#attr10_1").on("change", function(){
+
 							var attr10 = this.value;
+							var attr10_1 = this.value;
+
 							var serie=[]
+							var series2 =[]
 							rows.map(function(d){
 								serie.push([d.Longitude, d.Latitude,parseInt(d[attr10])])								
 							})
+							rows.map(function(d){
+								series2.push([d.Longitude, d.Latitude,parseInt(d[attr10_1])])								
+							})
 
-							console.log(serie)
+							
 
-							var chart =Highcharts.chart('bubbleGraph', {
+
+							var chart=Highcharts.chart('bubbleGraph', {
 
 							    chart: {
 							        type: 'bubble',
@@ -3221,7 +3397,7 @@
 							    },
 
 							    title: {
-							        text: 'Spatial BubbleChart'
+							        text: 'Highcharts bubbles with radial gradient fill'
 							    },
 
 							    xAxis: {
@@ -3233,20 +3409,121 @@
 							        endOnTick: false
 							    },
 
-							    plotOptions: {
-							        bubble: {
-							            minSize: 3,
-							            maxSize: 50
+							    series: [{
+							        data: serie,
+							        marker: {
+							            fillColor: {
+							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
+							                stops: [
+							                    [0, 'rgba(255,255,255,0.5)'],
+                   								[1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')]
+							                ]
+							            }
 							        }
+							    },{
+							        data: series2,
+							        marker: {
+							            fillColor: {
+							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
+							                stops: [
+							                    [0, 'rgba(255,255,255,0.5)'],
+                   								[1, Highcharts.Color(Highcharts.getOptions().colors[1]).setOpacity(0.5).get('rgba')]
+							                ]
+							            }
+							        }
+							    }]
+
+							});	
+
+
+
+
+
+
+
+
+							})
+
+						//chart.series[0].update({name:attr10}, false);
+						//chart.redraw();
+						})
+
+						d3.select("#attr10_1").on("change", function(){													
+							d3.select("#attr10").on("change", function(){
+
+							var attr10 = this.value;
+							var attr10_1 = this.value;
+
+							var serie=[]
+							var series2 =[]
+							rows.map(function(d){
+								serie.push([d.Longitude, d.Latitude,parseInt(d[attr10])])								
+							})
+							rows.map(function(d){
+								series2.push([d.Longitude, d.Latitude,parseInt(d[attr10_1])])								
+							})
+
+							
+
+
+							var chart=Highcharts.chart('bubbleGraph', {
+
+							    chart: {
+							        type: 'bubble',
+							        plotBorderWidth: 1,
+							        zoomType: 'xy'
+							    },
+
+							    title: {
+							        text: 'Highcharts bubbles with radial gradient fill'
+							    },
+
+							    xAxis: {
+							        gridLineWidth: 1
+							    },
+
+							    yAxis: {
+							        startOnTick: false,
+							        endOnTick: false
 							    },
 
 							    series: [{
-							        data: serie
+							        data: serie,
+							        marker: {
+							            fillColor: {
+							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
+							                stops: [
+							                    [0, 'rgba(255,255,255,0.5)'],
+							                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')]
+							                ]
+							            }
+							        }
+							    },{
+							        data: series2,
+							        marker: {
+							            fillColor: {
+							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
+							                stops: [
+							                    [0, 'rgba(255,255,255,0.5)'],
+							                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')]
+							                ]
+							            }
+							        }
 							    }]
 
-							});
-						chart.series[0].update({name:attr10}, false);
-						chart.redraw();
+							});	
+
+
+
+
+
+
+
+
+							})
+
+						//chart.series[0].update({name:attr10}, false);
+						//chart.redraw();
 						})
 
 					}
