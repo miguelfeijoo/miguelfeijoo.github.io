@@ -1068,7 +1068,6 @@
 											
 						container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
 						container.layoutManager.eventHub.emit( 'datosvisibles', data );	
-						container.layoutManager.eventHub.emit( 'datos', data );		   	
 										   
 					});		
 
@@ -1698,11 +1697,7 @@
 
 
 				console.log(cols)
-				container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){	
-
-     
-
-						console.log(datos)			
+						
 						//document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
 						var year=[]
 						var daynight=[]
@@ -1912,7 +1907,7 @@
 		                        var max= vals.split(',')[1]
 		                        datos=datos.filter(d=>d.Year>=parseInt(min) && d.Year<=parseInt(max))	
 		                        console.log(datos)	
-		                        //container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+		                        container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
 							    container.layoutManager.eventHub.emit( 'datosvisibles', datos );                        
 		                    }
 		                });
@@ -1936,7 +1931,7 @@
 		                        var max= vals.split(',')[1]
 		                        datos=datos.filter(d=>d.Day>=parseInt(min) && d.Day<=parseInt(max))
 		                        console.log(datos)
-		                        //container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+		                        container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
 							    container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 		                    }
 		                });
@@ -1960,7 +1955,7 @@
 		                        var max= vals.split(',')[1]
 		                        datos=datos.filter(d=>d.Hours>=parseInt(min) && d.Hours<=parseInt(max))	
 		                        console.log(datos)
-		                        //container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+		                        container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
 							    container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
 		                    }
 		                });
@@ -2231,7 +2226,7 @@
 								}
 							    console.log("FILTRADOS")	
 								console.log(datos)	
-							});	*/
+							});	
 							var temporal=function(datos){
 								d3.select("#attr3").on("change", function(){
 								  var attrSeq = this.value;
@@ -2274,14 +2269,13 @@
 								});
 							}
 							temporal(datos)
-							console.log(datos)
+							console.log(datos)*/
 						}
 						else{
 							document.getElementById("list3").innerHTML = '<strong> <font size="3">THERE ARE NOT TEMPORAL ATTRIBUTES THAT PERMITS ANY TEMPORAL ANALYSIS </font></strong>'
 						}
 					});
 				});
-			});		
 	}])
 	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {	
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
@@ -2695,7 +2689,6 @@
 						})
 						container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
 						container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-						container.layoutManager.eventHub.emit( 'datos', datos );
 					});	
 
 				}	
@@ -2704,13 +2697,9 @@
 	}])
 	splomApp.controller('splomController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 		container.layoutManager.eventHub.on( 'dateParseEvent', function( datPa ){
-			console.log(datPa)
 			container.layoutManager.eventHub.on( 'categoricsEvent', function( cat ){
-			console.log(cat)	
 					container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){
-						console.log(rows)
 						container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){	
-					console.log(returnData)
 				
 					var x=[]
 					var lista ='';
