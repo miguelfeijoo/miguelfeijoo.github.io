@@ -1903,8 +1903,8 @@
 		                        datos=completedata.filter(d=>d.Year>=parseInt(min) && d.Year<=parseInt(max))	
 		                        console.log(datos)	
 		                        if(datos.length>0){
-									//container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-									//container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+									container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+									container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 								}
 								else{
 									alert('Your current filtered data has no results between the range ['+min+','+max+'] of the attribute: "'+this.value+'"')
