@@ -222,6 +222,8 @@
 		<p></p>
 		<div id="list10" align="left"></div>
 		<p></p>
+		<div id="list10_1" align="left"></div>
+		<p></p>
 		<div id="bubbleGraph"align="center"></div>
 	</div>
 </span>
@@ -397,7 +399,188 @@ cursor: pointer;
 				var fmt16 = d3.timeParse("%Y-%m-%d %H:%M:%S %p");
 				var fmt17 = d3.timeParse("%Y-%m-%d %H:%M:%S ");
 				var fmt18 = d3.timeParse("%Y-%m-%d %H:%M");
-				function parsing(d){					
+				function parsing(d){	
+
+							if (d.hasOwnProperty("ID_ENCUESTA")){
+							     d["ID"] = +d["ID_ENCUESTA"];
+							    delete d["ID_ENCUESTA"];
+							}
+
+							if(d.hasOwnProperty('ID_ACTIVIDAD')){
+								if(d['ID_ACTIVIDAD']==1){
+									d['ID_ACTIVIDAD']='Trabajar'
+								}
+								if(d['ID_ACTIVIDAD']==2){
+									d['ID_ACTIVIDAD']='Busca Trabajo'
+								}
+								if(d['ID_ACTIVIDAD']==3){
+									d['ID_ACTIVIDAD']='Estudia'
+								}
+								if(d['ID_ACTIVIDAD']==4){
+									d['ID_ACTIVIDAD']='Estudia y trabaja'
+								}
+								if(d['ID_ACTIVIDAD']==5){
+									d['ID_ACTIVIDAD']='Oficios del Hogar'
+								}
+								if(d['ID_ACTIVIDAD']==6){
+									d['ID_ACTIVIDAD']='Está incapacitado permanentemente para trabajar'
+								}
+								if(d['ID_ACTIVIDAD']==7){
+									d['ID_ACTIVIDAD']='Pensionado/Jubilado'
+								}
+								
+								if(d['ID_ACTIVIDAD']==89){
+									d['ID_ACTIVIDAD']='Otra Actividad'
+								}
+								
+								if(d['ID_ACTIVIDAD']==-1){
+									d['ID_ACTIVIDAD']='-'
+								}							
+
+							}
+
+							if(d.hasOwnProperty('ID_RANGOINGRESOS')){
+								if(d['ID_RANGOINGRESOS']==1){
+									d['ID_RANGOINGRESOS']='$0 - $644.350'
+								}
+								if(d['ID_RANGOINGRESOS']==2){
+									d['ID_RANGOINGRESOS']='$644.351 - $1.300.000'
+								}
+								if(d['ID_RANGOINGRESOS']==3){
+									d['ID_RANGOINGRESOS']='$1.300.000 - $2.000.000'
+								}
+								if(d['ID_RANGOINGRESOS']==4){
+									d['ID_RANGOINGRESOS']='$2.000.001 - $2.800.000'
+								}
+								if(d['ID_RANGOINGRESOS']==5){
+									d['ID_RANGOINGRESOS']='$2.800.001 - $4.000.000'
+								}
+								if(d['ID_RANGOINGRESOS']==6){
+									d['ID_RANGOINGRESOS']='$4.000.001 - $5.500.000'
+								}
+								if(d['ID_RANGOINGRESOS']==7){
+									d['ID_RANGOINGRESOS']='$5.500.001 - $8.000.000'
+								}								
+								if(d['ID_RANGOINGRESOS']==8){
+									d['ID_RANGOINGRESOS']='Más de $8.000.000'
+								}													
+
+							}
+
+							if(d.hasOwnProperty('ID_NIVELEDUCATIVO')){
+								if(d['ID_NIVELEDUCATIVO']==5){
+									d['ID_NIVELEDUCATIVO']='Media Completa'
+								}
+								if(d['ID_NIVELEDUCATIVO']==4){
+									d['ID_NIVELEDUCATIVO']='Media Incompleta'
+								}
+								if(d['ID_NIVELEDUCATIVO']==2){
+									d['ID_NIVELEDUCATIVO']='Primaria Incompleta'
+								}
+								if(d['ID_NIVELEDUCATIVO']==3){
+									d['ID_NIVELEDUCATIVO']='Primaria Completa'
+								}
+								if(d['ID_NIVELEDUCATIVO']==7){
+									d['ID_NIVELEDUCATIVO']='Técnico Tecnólogo Completo'
+								}
+								if(d['ID_NIVELEDUCATIVO']==6){
+									d['ID_NIVELEDUCATIVO']='Técnico Tecnólogo Incompleto'
+								}
+								if(d['ID_NIVELEDUCATIVO']==9){
+									d['ID_NIVELEDUCATIVO']='Pregrado Completo'
+								}								
+								if(d['ID_NIVELEDUCATIVO']==12){
+									d['ID_NIVELEDUCATIVO']='Ninguno'
+								}	
+								if(d['ID_NIVELEDUCATIVO']==8){
+									d['ID_NIVELEDUCATIVO']='Pregrado Incompleto'
+								}
+								if(d['ID_NIVELEDUCATIVO']==11){
+									d['ID_NIVELEDUCATIVO']='Postgrado Completo'
+								}
+								if(d['ID_NIVELEDUCATIVO']==1){
+									d['ID_NIVELEDUCATIVO']='Preescolar'
+								}								
+								if(d['ID_NIVELEDUCATIVO']==10){
+									d['ID_NIVELEDUCATIVO']='Postrgrado Incompleto'
+								}
+							}
+
+
+							if(d.hasOwnProperty('ID_MOTIVOVIAJE')){
+								if(d['ID_MOTIVOVIAJE']==1){
+									d['ID_MOTIVOVIAJE']='Trabajar'
+								}
+								if(d['ID_MOTIVOVIAJE']==2){
+									d['ID_MOTIVOVIAJE']='Asuntos de Trabajo'
+								}
+								if(d['ID_MOTIVOVIAJE']==3){
+									d['ID_MOTIVOVIAJE']='Estudiar'
+								}
+								if(d['ID_MOTIVOVIAJE']==4){
+									d['ID_MOTIVOVIAJE']='Recibir atención en salud'
+								}
+								if(d['ID_MOTIVOVIAJE']==5){
+									d['ID_MOTIVOVIAJE']='Ir a ver a alguien'
+								}
+								if(d['ID_MOTIVOVIAJE']==6){
+									d['ID_MOTIVOVIAJE']='Volver a Casa'
+								}
+								if(d['ID_MOTIVOVIAJE']==7){
+									d['ID_MOTIVOVIAJE']='Buscar/Dejar a alguien bajo su cuidado'
+								}								
+								if(d['ID_MOTIVOVIAJE']==8){
+									d['ID_MOTIVOVIAJE']='Buscar/Dejar a alguien que no esta bajo su cuidado'
+								}	
+								if(d['ID_MOTIVOVIAJE']==9){
+									d['ID_MOTIVOVIAJE']='Buscar/Dejar algo'
+								}
+								if(d['ID_MOTIVOVIAJE']==10){
+									d['ID_MOTIVOVIAJE']='Comer/Tomar Algo'
+								}
+								if(d['ID_MOTIVOVIAJE']==11){
+									d['ID_MOTIVOVIAJE']='Compras'
+								}								
+								if(d['ID_MOTIVOVIAJE']==12){
+									d['ID_MOTIVOVIAJE']='Trámites'
+								}
+								if(d['ID_MOTIVOVIAJE']==13){
+									d['ID_MOTIVOVIAJE']='Recreación'
+								}								
+								if(d['ID_MOTIVOVIAJE']==14){
+									d['ID_MOTIVOVIAJE']='Buscar Trabajo'
+								}
+								if(d['ID_MOTIVOVIAJE']==89){
+									d['ID_MOTIVOVIAJE']='Otra cosa'
+								}
+							}
+
+							if(d.hasOwnProperty('LIMITACION_FISICA')){
+								if(d['LIMITACION_FISICA']==1){
+									d['LIMITACION_FISICA']='Si'
+								}
+								if(d['LIMITACION_FISICA']==2){
+									d['LIMITACION_FISICA']='No'
+								}							
+							}
+
+							if(d.hasOwnProperty('TRABAJO_CASA')){
+								if(!(d['TRABAJO_CASA']==-1)){
+									d['TRABAJO_CASA']='Si'
+								}
+								else{
+									d['TRABAJO_CASA']='No'
+								}						
+							}
+
+							if(d.hasOwnProperty('HORA_INICIO')){
+									d['HORA_INICIO']=parseInt((d['HORA_INICIO']/60).toString().split(".")[0])											
+							}
+
+							if(d.hasOwnProperty('HORA_FIN')){							
+									d['HORA_FIN']=parseInt((d['HORA_FIN']/60).toString().split(".")[0])												
+							}
+
 							if (d.hasOwnProperty("Latitud")){
 							     d["Latitude"] = +d["Latitud"];
 							    delete d["Latitud"];
@@ -414,9 +597,23 @@ cursor: pointer;
 							    d["Latitude"] = +d["x"];
 							    delete d["x"];
 							}
+							if(d.hasOwnProperty("LATITUD_ORIGEN")){
+								if(d['LATITUD_ORIGEN'].includes(',')){
+									d['LATITUD_ORIGEN']=d['LATITUD_ORIGEN'].replace(',','.')
+								}
+							    d["Latitude"] = parseFloat(d["LATITUD_ORIGEN"]);
+							    delete d["LATITUD_ORIGEN"];
+							}
 							if (d.hasOwnProperty("Longitud")){
 							     d["Longitude"] = +d["Longitud"];
 							    delete d["Longitud"];
+							}
+							if (d.hasOwnProperty("LONGITUD_ORIGEN")){
+								if(d['LONGITUD_ORIGEN'].includes(',')){
+									d['LONGITUD_ORIGEN']=d['LONGITUD_ORIGEN'].replace(',','.')
+								}
+							     d["Longitude"] = parseFloat(d["LONGITUD_ORIGEN"]);
+							    delete d["LONGITUD_ORIGEN"];
 							}
 							if(d.hasOwnProperty("longitud")){
 							    d["Longitude"] = +d["longitud"];
@@ -430,6 +627,9 @@ cursor: pointer;
 							    d["Longitude"] = +d["y"];
 							    delete d["y"];
 							}
+
+
+
 							if (!d.hasOwnProperty("Latitude") && !d.hasOwnProperty("Longitude")){
 							 var x=Object.keys(d)
 							 for(var i=0;i<x.length;i++){
@@ -518,6 +718,10 @@ cursor: pointer;
 							else if (fmt18(d.Date)!=null){
 							  d.Date = fmt18(d.Date);
 							}
+
+							if (!d.hasOwnProperty('Date')){
+								d['Year']=0
+							}
 							
 							var weekday = new Array(7);
 							weekday[0] =  "Sunday";
@@ -585,153 +789,165 @@ cursor: pointer;
 					  var worksheet = workbook.Sheets[first_sheet_name];
 					  var dats= XLSX.utils.sheet_to_json(worksheet,{raw:true});
 					  var cols = Object.keys(dats[0]);
-					  console.log(cols.indexOf('Time'))
-					  
-					  cols=cols.slice(0,cols.indexOf('Time'))
 
-					  var dats_callback=[]
-					 
-										  
-						var transpose = dats.reduce(function(arr, obj) {
-							for (let key in obj) {
-								if (obj.hasOwnProperty(key)) {
-									arr[key] = arr[key] || []
-									arr[key].push(obj[key])
+					  dats.map(function(d){
+
+					  	parsing(d)
+
+					  })
+
+					  if(cols.includes('Time')){
+						  console.log(cols.indexOf('Time'))
+						  
+						  cols=cols.slice(0,cols.indexOf('Time'))
+
+						  var dats_callback=[]
+						 
+											  
+							var transpose = dats.reduce(function(arr, obj) {
+								for (let key in obj) {
+									if (obj.hasOwnProperty(key)) {
+										arr[key] = arr[key] || []
+										arr[key].push(obj[key])
+									}
 								}
-							}
-							return arr
-						}, {})
+								return arr
+							}, {})
 
 
 
 
-						var myJsonString = JSON.stringify(transpose);
+							var myJsonString = JSON.stringify(transpose);
 
 
-						//var array_json=JSON.parse(myJsonString)
-						var x=[]
-						
-						for(var i=0;i<myJsonString.split(',').length;i++){
+							//var array_json=JSON.parse(myJsonString)
+							var x=[]
 							
-							x.push(myJsonString.split(',')[i].split(':['))					
+							for(var i=0;i<myJsonString.split(',').length;i++){
+								
+								x.push(myJsonString.split(',')[i].split(':['))					
 
-						}
-
-
-						var y=[]
-
-						for(var k=0;k<x.length;k++){
-							if(x[k].length>1){
-								x[k]=x[k][1]
-								if(x[k].includes(']')){
-									if(!x[k].includes('a')){										
-										x[k]=x[k].split(']')[0]
-									}									
-								}
-								if(x[k].includes('"')){
-									x[k]=x[k].split('"')[1]
-								}
-								if(x[k].includes('a')){
-									y.push(x[k])
-								}
-								else{
-									y.push(parseFloat(x[k]))
-								}	
 							}
-							else{
-								x[k]=x[k][0]
 
-								if(x[k].includes(']')){
-									if(x[k].includes('a')){	
-										console.log("..")
+
+							var y=[]
+
+							for(var k=0;k<x.length;k++){
+								if(x[k].length>1){
+									x[k]=x[k][1]
+									if(x[k].includes(']')){
+										if(!x[k].includes('a')){										
+											x[k]=x[k].split(']')[0]
+										}									
+									}
+									if(x[k].includes('"')){
+										x[k]=x[k].split('"')[1]
+									}
+									if(x[k].includes('a')){
+										y.push(x[k])
 									}
 									else{
-										x[k]=x[k].split(']')[0]
-									}									
-								}
-								if(x[k].includes('"')){
-									x[k]=x[k].split('"')[1]
-								}	
-								if(x[k].includes('a')){
-									y.push(x[k])
+										y.push(parseFloat(x[k]))
+									}	
 								}
 								else{
-									y.push(parseFloat(x[k]))
-								}															
-							}				
-						}
+									x[k]=x[k][0]
 
-						function chunkArrayInGroups(arr, size) {
-						  var myArray = [];
-						  for(var i = 0; i < arr.length; i += size) {
-						    myArray.push(arr.slice(i, i+size));
-						  }
-						  return myArray;
-						}		
+									if(x[k].includes(']')){
+										if(x[k].includes('a')){	
+											console.log("..")
+										}
+										else{
+											x[k]=x[k].split(']')[0]
+										}									
+									}
+									if(x[k].includes('"')){
+										x[k]=x[k].split('"')[1]
+									}	
+									if(x[k].includes('a')){
+										y.push(x[k])
+									}
+									else{
+										y.push(parseFloat(x[k]))
+									}															
+								}				
+							}
+
+							function chunkArrayInGroups(arr, size) {
+							  var myArray = [];
+							  for(var i = 0; i < arr.length; i += size) {
+							    myArray.push(arr.slice(i, i+size));
+							  }
+							  return myArray;
+							}		
 
 
-						
-						var chunks=chunkArrayInGroups(y,dats.length)	
+							
+							var chunks=chunkArrayInGroups(y,dats.length)	
 
-						for(var i=0;i<chunks.length;i++){
-							chunks[i].push(i)
-						}	
+							for(var i=0;i<chunks.length;i++){
+								chunks[i].push(i)
+							}	
 
-						console.log(chunks)
+							console.log(chunks)
 
-						var json=[]
-						for(var i=0;i<chunks.length;i++){
-							for(var x=0;x<chunks[i].slice(0,chunks[i].length-1).length;x++){	
-								if(i!=chunks.length-1){											
-									json.push({'Year':(chunks[i][chunks[i].length-1]).toString(),'Value':chunks[i][x],'Time':chunks[chunks.length-1][x]})
-								}
-							}								
-						}	
+							var json=[]
+							for(var i=0;i<chunks.length;i++){
+								for(var x=0;x<chunks[i].slice(0,chunks[i].length-1).length;x++){	
+									if(i!=chunks.length-1){											
+										json.push({'Year':(chunks[i][chunks[i].length-1]).toString(),'Value':chunks[i][x],'Time':chunks[chunks.length-1][x]})
+									}
+								}								
+							}	
 
-			     		for(var i=0;i<json.length;i++){	
+				     		for(var i=0;i<json.length;i++){	
 
-			     				//console.log(dats[i])
+				     				//console.log(dats[i])
 
-							  	if(json[i].hasOwnProperty('Time')){
-							  		json[i]['Name']=json[i]['Time'].split(']')[0].split('[')[0]							  		
-							  		if((json[i]['Time'].split(',')).length ==3){
-							  			if(json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1].length>1){
-							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
-							  			}
-							  			else{
-							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
-							  			}
-							  			
-							  			json[i]['Status']=json[i]['Time'].split(',')[2].split(']')[0]
-							  			json[i]['Type']=json[i]['Time'].split(',')[1]  	
-							  			
-							  		}
-							  		if((json[i]['Time'].split(',')).length ==2){
-						  				if(json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1].length>1){
-							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
-							  			}
-							  			else{
-							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
-							  			}
-						  				json[i]['Type']=json[i]['Time'].split(',')[1].split(']')[0]			  								  			
-							  		}
-							  		if((json[i]['Time'].split(',')).length ==1){
-							  			if(json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1].length>1){
-							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
-							  			}
-							  			else{
-							  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
-							  			}
-							  		}	  									  		
-							  								  		
-							  		delete json[i]['Time'];				  		
-							  		
-							  	}
-							  	dats_callback.push(json[i])
-					   }
-	
-					 			
-					  callback(dats_callback);
+								  	if(json[i].hasOwnProperty('Time')){
+								  		json[i]['Name']=json[i]['Time'].split(']')[0].split('[')[0]							  		
+								  		if((json[i]['Time'].split(',')).length ==3){
+								  			if(json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1].length>1){
+								  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+								  			}
+								  			else{
+								  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+								  			}
+								  			
+								  			json[i]['Status']=json[i]['Time'].split(',')[2].split(']')[0]
+								  			json[i]['Type']=json[i]['Time'].split(',')[1]  	
+								  			
+								  		}
+								  		if((json[i]['Time'].split(',')).length ==2){
+							  				if(json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1].length>1){
+								  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+								  			}
+								  			else{
+								  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+								  			}
+							  				json[i]['Type']=json[i]['Time'].split(',')[1].split(']')[0]			  								  			
+								  		}
+								  		if((json[i]['Time'].split(',')).length ==1){
+								  			if(json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1].length>1){
+								  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+								  			}
+								  			else{
+								  				json[i]['Shape']="a-"+json[i]['Time'].split(']')[0].split('[')[1].split(',')[0].split('a')[1]
+								  			}
+								  		}	  									  		
+								  								  		
+								  		delete json[i]['Time'];				  		
+								  		
+								  	}
+								  	dats_callback.push(json[i])
+						   }
+		
+						 			
+						  callback(dats_callback);
+					  }
+					  else{
+					  	callback(dats);
+					  }					  
 				}
 					oReq.send();
 				}
@@ -1027,7 +1243,7 @@ cursor: pointer;
 			})
 
 
-				container.layoutManager.eventHub.on( 'redrawVisibleData', function( data ){
+				container.layoutManager.eventHub.on( 'datosvisibles', function( data ){
 					console.log(data)
 					document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ALL CURRENT FILTERED DATA ('+data.length+' VALUES) </strong></button><p></p><p></p><p></p><p></p>'	
 					console.log(document.getElementById('buttonComplete'))
@@ -1222,8 +1438,6 @@ cursor: pointer;
 					
 				})
 				})	
-		    	
-				
 	}])
 	navioApp.controller('navioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		
@@ -1699,13 +1913,20 @@ cursor: pointer;
 
 						
 						if(dats[0].hasOwnProperty("Year")){
+							console.log(dats)
 							dats.map(function(d){
 								year.push(d['Year'])
 								daynight.push(d['DayNight'])
 								day.push(d['DayOfTheWeek'])
 								dayofMonth.push(d['Day'])
 								month.push(d['Month'])
-								hour.push(d['Hours'])
+								if(d.hasOwnProperty('HORA_INICIO') || d.hasOwnProperty('HORA_FIN')){
+									hour.push(d['HORA_INICIO'])
+									hour.push(d['HORA_FIN'])
+								}
+								else{
+									hour.push(d['Hours'])
+								}
 								weekmonth.push(d['WeekOfTheMonth'])
 								isWeekDay.push(d['isWeekDay'])
 							})
@@ -1716,10 +1937,12 @@ cursor: pointer;
 							daynight=daynight.filter((value, index, self) => self.indexOf(value) === index).sort()
 							day=day.filter((value, index, self) => self.indexOf(value) === index).sort().sort(sortNumber)
 							dayofMonth=dayofMonth.filter((value, index, self) => self.indexOf(value) === index).sort()
-							month=month.filter((value, index, self) => self.indexOf(value) === index)
-							hour=hour.filter((value, index, self) => self.indexOf(value) === index).sort(sortNumber)
-							weekmonth=weekmonth.filter((value, index, self) => self.indexOf(value) === index).sort()
+							month=month.filter((value, index, self) => self.indexOf(value) === index)							
+							hour=hour.filter((value, index, self) => self.indexOf(value) === index).sort(sortNumber)					
+							Weekmonth=weekmonth.filter((value, index, self) => self.indexOf(value) === index).sort()
 							isWeekDay=isWeekDay.filter((value, index, self) => self.indexOf(value) === index)
+
+							console.log(hour)
 							//var complete_enable='<button type="button" id="complete"> Show ('+completedata.length+' values)</button>'
 
 							setTimeout(function(){
@@ -2166,18 +2389,36 @@ cursor: pointer;
 
 								$('input[id="hour"]').change(function() {
 									if(!this.checked){
-										console.log("cambiooooooooooooooooooooooooooo   "+this.value)
-										//datos=completedata
-										hour_removed=datos.filter(d=>(d.Hours==this.value))
-										datos=datos.filter(d=>!(d.Hours==this.value))
-										console.log(datos)	
-										if(datos.length>0){
-											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
-											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										if(dats[0].hasOwnProperty('HORA_FIN') || dats[0].hasOwnProperty('HORA_INICIO')){
+											console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+											//datos=completedata
+											hour_removed=datos.filter(d=>(d.HORA_INICIO==this.value)).filter(d=>(d.HORA_FIN==this.value))
+											console.log(hour_removed)
+											datos=datos.filter(d=>!(d.HORA_INICIO==this.value)).filter(d=>!(d.HORA_FIN==this.value))
+											console.log(datos)	
+											if(datos.length>0){
+												container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+												container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+											}
+											else{
+												alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+											}
 										}
 										else{
-											alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
-										}	
+											console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+											//datos=completedata
+											hour_removed=datos.filter(d=>(d.Hours==this.value))
+											datos=datos.filter(d=>!(d.Hours==this.value))
+											console.log(datos)	
+											if(datos.length>0){
+												container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+												container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+											}
+											else{
+												alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+											}	
+										}
+										
 									}
 									else{
 										console.log("removed: "+hour_removed.length)
@@ -2519,6 +2760,8 @@ cursor: pointer;
 					}	
 				}).addTo(mymap);
 
+				console.log(markers)
+
 				L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 					attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 					}).addTo(mymap);
@@ -2560,7 +2803,6 @@ cursor: pointer;
 			container.layoutManager.eventHub.on( 'datosvisibles', function( datos ){
 				var list_markers=[]
 				var list_remaining=[]
-				console.log(datos)
 				if(completedata[0].hasOwnProperty('Latitude') && completedata[0].hasOwnProperty('Longitude')){
 					function init(){
 
@@ -2580,8 +2822,17 @@ cursor: pointer;
 						
 						})
 
-						mymap.setView([prom_latitudes, prom_longitudes], 7);							 					
+						mymap.setView([prom_latitudes, prom_longitudes], 7);	
+
+						console.log(prom_latitudes)
+						console.log(prom_longitudes)
+
+
 						draw(markers);
+
+						console.log(markers)
+
+
 					}
 
 					
@@ -2595,7 +2846,7 @@ cursor: pointer;
 						
 
 							markers.clearLayers();	
-							if(datos[0].hasOwnProperty('Year')){
+							if(datos[0].hasOwnProperty('Year') || datos[0].hasOwnProperty('Date')){
 								var years =[];
 								var lista=[];
 								var colors = ['black','green','orange','blue','red','fuchsia','cyan','purple','teal'];	
@@ -2638,15 +2889,22 @@ cursor: pointer;
 											previous_counter=counter										
 										}
 										else{
-											if(lista[b]!=undefined || lista[b]!=null){
+											if((lista[b]!=undefined || lista[b]!=null) && datos[0].hasOwnProperty('Date')){
 										 		var marker= new L.circleMarker(lista[b],{fillOpacity:0.5,color:colors[k]}).addTo(markers).bindPopup("The coordinates of the current point are:\n\n<b>["+lista[b]+"]</b>\n\n\n <b>Identificator: "+identificators[b]+"</b> from the <b>Date: "+dates[b]+"</b>");//.addTo(mymap)
+												//
+												list_markers.push(marker)
+											}	
+											if((lista[b]!=undefined || lista[b]!=null) && !datos[0].hasOwnProperty('Date')){
+										 		var marker= new L.circleMarker(lista[b],{fillOpacity:0.5,color:colors[k]}).addTo(markers).bindPopup("The coordinates of the current point are:\n\n<b>["+lista[b]+"]</b>\n\n\n <b>Identificator: "+identificators[b]+"</b>");//.addTo(mymap)
 												//
 												list_markers.push(marker)
 											}									
 										}																										
 									}		
 								}									
-							}			
+							}
+
+
 						
 
 						setInterval(function(){ mymap.invalidateSize()}, 400);
@@ -2707,7 +2965,7 @@ cursor: pointer;
 						})
 						container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
 						container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-						container.layoutManager.eventHub.emit( 'datos', datos );
+						//container.layoutManager.eventHub.emit( 'datos', datos );
 					});	
 
 				}	
@@ -3225,17 +3483,27 @@ cursor: pointer;
 
 					if(rows[0].hasOwnProperty('Latitude') && rows[0].hasOwnProperty('Longitude')){
 
-						document.getElementById("list10").innerHTML='<p></p><strong>Select Quantitative Value: </strong> <input list="attrs10" type="text" id="attr10"><datalist id="attrs10">'+cols		
-						d3.select("#attr10").on("change", function(){
+						document.getElementById("list10").innerHTML='<p></p><strong>[SERIES 1] Select Quantitative Value: </strong> <input list="attrs10" type="text" id="attr10"><datalist id="attrs10">'+cols
+						document.getElementById("list10_1").innerHTML='<p></p><strong>[SERIES 2] Select Quantitative Value: </strong> <input list="attrs10_1" type="text" id="attr10_1"><datalist id="attrs10_1">'+cols		
+						d3.select("#attr10").on("change", function(){													
+							d3.select("#attr10_1").on("change", function(){
+
 							var attr10 = this.value;
+							var attr10_1 = this.value;
+
 							var serie=[]
+							var series2 =[]
 							rows.map(function(d){
 								serie.push([d.Longitude, d.Latitude,parseInt(d[attr10])])								
 							})
+							rows.map(function(d){
+								series2.push([d.Longitude, d.Latitude,parseInt(d[attr10_1])])								
+							})
 
-							console.log(serie)
+							
 
-							var chart =Highcharts.chart('bubbleGraph', {
+
+							var chart=Highcharts.chart('bubbleGraph', {
 
 							    chart: {
 							        type: 'bubble',
@@ -3244,7 +3512,7 @@ cursor: pointer;
 							    },
 
 							    title: {
-							        text: 'Spatial BubbleChart'
+							        text: 'Highcharts bubbles with radial gradient fill'
 							    },
 
 							    xAxis: {
@@ -3256,20 +3524,121 @@ cursor: pointer;
 							        endOnTick: false
 							    },
 
-							    plotOptions: {
-							        bubble: {
-							            minSize: 3,
-							            maxSize: 50
+							    series: [{
+							        data: serie,
+							        marker: {
+							            fillColor: {
+							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
+							                stops: [
+							                    [0, 'rgba(255,255,255,0.5)'],
+                   								[1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')]
+							                ]
+							            }
 							        }
+							    },{
+							        data: series2,
+							        marker: {
+							            fillColor: {
+							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
+							                stops: [
+							                    [0, 'rgba(255,255,255,0.5)'],
+                   								[1, Highcharts.Color(Highcharts.getOptions().colors[1]).setOpacity(0.5).get('rgba')]
+							                ]
+							            }
+							        }
+							    }]
+
+							});	
+
+
+
+
+
+
+
+
+							})
+
+						//chart.series[0].update({name:attr10}, false);
+						//chart.redraw();
+						})
+
+						d3.select("#attr10_1").on("change", function(){													
+							d3.select("#attr10").on("change", function(){
+
+							var attr10 = this.value;
+							var attr10_1 = this.value;
+
+							var serie=[]
+							var series2 =[]
+							rows.map(function(d){
+								serie.push([d.Longitude, d.Latitude,parseInt(d[attr10])])								
+							})
+							rows.map(function(d){
+								series2.push([d.Longitude, d.Latitude,parseInt(d[attr10_1])])								
+							})
+
+							
+
+
+							var chart=Highcharts.chart('bubbleGraph', {
+
+							    chart: {
+							        type: 'bubble',
+							        plotBorderWidth: 1,
+							        zoomType: 'xy'
+							    },
+
+							    title: {
+							        text: 'Highcharts bubbles with radial gradient fill'
+							    },
+
+							    xAxis: {
+							        gridLineWidth: 1
+							    },
+
+							    yAxis: {
+							        startOnTick: false,
+							        endOnTick: false
 							    },
 
 							    series: [{
-							        data: serie
+							        data: serie,
+							        marker: {
+							            fillColor: {
+							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
+							                stops: [
+							                    [0, 'rgba(255,255,255,0.5)'],
+							                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')]
+							                ]
+							            }
+							        }
+							    },{
+							        data: series2,
+							        marker: {
+							            fillColor: {
+							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
+							                stops: [
+							                    [0, 'rgba(255,255,255,0.5)'],
+							                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')]
+							                ]
+							            }
+							        }
 							    }]
 
-							});
-						chart.series[0].update({name:attr10}, false);
-						chart.redraw();
+							});	
+
+
+
+
+
+
+
+
+							})
+
+						//chart.series[0].update({name:attr10}, false);
+						//chart.redraw();
 						})
 
 					}
