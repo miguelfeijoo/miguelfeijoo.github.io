@@ -52,17 +52,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 
-<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=yes">
-<title>S-PLOR-T</title>
-<link rel="stylesheet" href="https://js.arcgis.com/3.27/dijit/themes/claro/claro.css">
-<link rel="stylesheet" href="css/app.css">
-<link rel="stylesheet" href="css/fileupload.css">
-<link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/css/esri.css">
-<link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/themes/calcite/dijit/calcite.css">
-<link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/themes/calcite/esri/esri.css">
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/highcharts-more.js"></script>
-<script src="https://js.arcgis.com/3.27/"></script>
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=yes">
+	<title>S-PLOR-T</title>
+	<link rel="stylesheet" href="https://js.arcgis.com/3.27/dijit/themes/claro/claro.css">
+	<link rel="stylesheet" href="css/app.css">
+	<link rel="stylesheet" href="css/fileupload.css">
+	<link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/css/esri.css">
+	<link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/themes/calcite/dijit/calcite.css">
+	<link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/themes/calcite/esri/esri.css">
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/highcharts-more.js"></script>
+	<script src="https://js.arcgis.com/3.27/"></script>
 
 
 <!--  TEMPLATE FOR EACH MODULE/VIEW   -->
@@ -72,7 +72,8 @@
 		<p><strong><font size="3">Select a file of your interest to analyze its current attributes </font></strong><p></p>(Accepted Extensions: <i>.csv, .xls, .xlsx</i> )</p>
 		<p></p>
 		<input ng-model='shared.current_data' type="file" accept=".csv,.xlsx,.xls" id="files" name="file" />
-		<div id='buttonComplete' align='left'></div>
+		<div id='removeallfilters' align='left'></div>
+		<div id='buttonComplete' align='left'></div>		
 		<div id="tableGoesHere"align="center"></div>	
 		</span>			
 </template>	
@@ -251,6 +252,19 @@
 	#boxplot { margin: 0px; width: 100vw }
 	#regressionGraph { margin: 0px; width: 100vw }
 	#bubbleid { margin: 0px; height: 100vh; width: 100vw }
+
+.button {
+background-color: #4CAF50;
+border: none;
+color: white;
+padding: 15px 32px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+margin: 4px 2px;
+cursor: pointer;
+}
 
 .switch {
         position: relative;
@@ -943,6 +957,23 @@
 					});				
 					
 				})
+
+				container.layoutManager.eventHub.on( 'redrawVisibleData2', function(returnData){		
+
+					document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
+					$(document).ready(function() {
+						$('#data').DataTable( {  
+							destroy: true,
+						    dom: 'lBfrtip',
+						    buttons: [
+						        'copy', 'csv', 'excel', 'pdf', 'print'
+						    ],
+			    			"scrollY": 300,
+			    			"scrollX": true
+			    		} );
+					});				
+					
+				})
 			})	
 
 			function otherfunction(){
@@ -973,7 +1004,7 @@
 				})	
 
 
-			container.layoutManager.eventHub.on( 'datos', function( data ){
+			/*container.layoutManager.eventHub.on( 'datos', function( data ){
 					document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
 					$('button[id="complete_data_btn"]').click(function() {  	
 											
@@ -982,25 +1013,41 @@
 						container.layoutManager.eventHub.emit( 'datos', data );		   	
 										   
 					});
-			})
+			})*/
 
-			container.layoutManager.eventHub.on( 'redrawVisibleData', function( ret ){
-				container.layoutManager.eventHub.on( 'datos', function( data ){
-						data=ret
-
-				var new_datos=[]
-				var parse=[];
-		    	var dateparse=[];
-		   		var categoric=[];	
-							
-					document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
-					$('button[id="complete_data_btn"]').click(function() {  	
+			container.layoutManager.eventHub.on( 'datos', function( data ){
+				document.getElementById('removeallfilters').innerHTML='<p></p><p></p><button type="button" id="removeallfilters_btn"> <strong>REMOVE ALL FILTERS (SHOW '+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
+					$('button[id="removeallfilters_btn"]').click(function() {  	
 											
 						container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
 						container.layoutManager.eventHub.emit( 'datosvisibles', data );	
 						container.layoutManager.eventHub.emit( 'datos', data );		   	
 										   
-					});		
+					});
+			})
+
+
+				container.layoutManager.eventHub.on( 'redrawVisibleData', function( data ){
+					console.log(data)
+					document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ALL CURRENT FILTERED DATA ('+data.length+' VALUES) </strong></button><p></p><p></p><p></p><p></p>'	
+					console.log(document.getElementById('buttonComplete'))
+					$('button[id="complete_data_btn"]').click(function() {  	
+											
+						container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
+						container.layoutManager.eventHub.emit( 'datosvisibles', data );	
+										   
+					});	
+				})
+
+
+				container.layoutManager.eventHub.on( 'datos', function( data ){
+
+					var new_datos=[]
+					var parse=[];
+			    	var dateparse=[];
+			   		var categoric=[];	
+							
+						
 
 				container.layoutManager.eventHub.on( 'argis_attributes', function( arc ){
 					var cols_esri = Object.keys(arc[0]);				
@@ -1175,7 +1222,7 @@
 					
 				})
 				})	
-		    })	
+		    	
 				
 	}])
 	navioApp.controller('navioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
@@ -1196,6 +1243,7 @@
 							console.log(data)
 							nv.updateCallback(function(){
 								visible = nv.getVisible();
+								console.log(visible)
 								container.layoutManager.eventHub.emit( 'datosvisibles', visible );								
 								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
 								console.log(seqColumns)
@@ -1237,6 +1285,7 @@
 							console.log(data)
 							nv.updateCallback(function(){
 								visible = nv.getVisible();
+								console.log(visible)
 								container.layoutManager.eventHub.emit( 'datosvisibles', visible );								
 								container.layoutManager.eventHub.emit( 'datachanged', visible );
 								container.layoutManager.eventHub.emit( 'redrawVisibleData', visible );
@@ -1626,6 +1675,7 @@
 	}])
 	temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
+			container.layoutManager.eventHub.on( 'datos', function( dats ){
 			container.layoutManager.eventHub.on( 'redrawVisibleData', function( completedata ){
 			
 				console.log(cols)
@@ -1648,8 +1698,8 @@
 						var isWeekDay_t=''
 
 						
-						if(completedata[0].hasOwnProperty("Year")){
-							completedata.map(function(d){
+						if(dats[0].hasOwnProperty("Year")){
+							dats.map(function(d){
 								year.push(d['Year'])
 								daynight.push(d['DayNight'])
 								day.push(d['DayOfTheWeek'])
@@ -1670,7 +1720,7 @@
 							hour=hour.filter((value, index, self) => self.indexOf(value) === index).sort(sortNumber)
 							weekmonth=weekmonth.filter((value, index, self) => self.indexOf(value) === index).sort()
 							isWeekDay=isWeekDay.filter((value, index, self) => self.indexOf(value) === index)
-							var complete_enable='<button type="button" id="complete"> Show ('+completedata.length+' values)</button>'
+							//var complete_enable='<button type="button" id="complete"> Show ('+completedata.length+' values)</button>'
 
 							setTimeout(function(){
 									//year_t=' <label class="switch"> <input type="checkbox" id="checkbox1">      <div class="slider round">         <span class="on">ON</span>           <span class="off">OFF</span>           </div>         </label>'
@@ -1968,11 +2018,7 @@
 
 									document.getElementById("temporal_id").innerHTML=texto
 
-								/*$('input[id="year"]').change(function() {
-									console.log("cambioooooo    "+ this.value)	
-									console.log($(this).prop('checked'))	
-									if()				
-								})	*/
+								
 
 								var value = 1;
 
@@ -1985,278 +2031,269 @@
 								}
 
 
-					var datos=completedata;
+								var datos=completedata;
 
-					var year_removed=null;
-					var daynight_removed=null;
-					var day_removed=null;
-					var month_removed=null;
-					var weekmonth_removed=null;
-					var isWeekDay_removed=null;	
-					var hour_removed=null;
-					var dayMonth_removed=null;
-					var hour_removed=null;
+								var year_removed=null;
+								var daynight_removed=null;
+								var day_removed=null;
+								var month_removed=null;
+								var weekmonth_removed=null;
+								var isWeekDay_removed=null;	
+								var hour_removed=null;
+								var dayMonth_removed=null;
+								var hour_removed=null;
 
-					$('input[id="year"]').change(function() {
-						console.log(this.value)
-						if(!this.checked){
-							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
-							//datos=completedata
-							year_removed=datos.filter(d=>(d.Year==this.value))
-							datos=datos.filter(d=>!(d.Year==this.value))
-							console.log(datos)	
-							if(datos.length>0){
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+								$('input[id="year"]').change(function() {
+									console.log(this.value)
+									if(!this.checked){
+										console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+										//datos=completedata
+										year_removed=datos.filter(d=>(d.Year==this.value))
+										datos=datos.filter(d=>!(d.Year==this.value))
+										console.log(datos)	
+										if(datos.length>0){
+											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
-								if(this.value=='diurnal'){
-									slider3.conf.set=[6,18]
-									console.log(slider3.conf.set)
-									console.log(slider3)
-								}
-							}
-							else{
-								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
-							}							 
-						}	
-						else{
-							console.log("removed: "+year_removed.length)
+											if(this.value=='diurnal'){
+												slider3.conf.set=[6,18]
+												console.log(slider3.conf.set)
+												console.log(slider3)
+											}
+										}
+										else{
+											alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+										}							 
+									}	
+									else{
+										console.log("removed: "+year_removed.length)
 
-							year_removed.map(function(e){
-								if(!datos.includes(e))
-									datos.push(e)
-							})
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										year_removed.map(function(e){
+											if(!datos.includes(e))
+												datos.push(e)
+										})
+										container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+										container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
-						}					
-					})
+									}					
+								})
 
-					$('input[id="month"]').change(function() {
-						if(!this.checked){
-							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
-							//datos=completedata
-							month_removed=datos.filter(d=>(d.Month==this.value))
-							datos=datos.filter(d=>!(d.Month==this.value))
-							console.log(datos)	
-							if(datos.length>0){
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							}
-							else{
-								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
-							}	
-						}
-						else{
-							console.log("removed: "+month_removed.length)
+								$('input[id="month"]').change(function() {
+									if(!this.checked){
+										console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+										//datos=completedata
+										month_removed=datos.filter(d=>(d.Month==this.value))
+										datos=datos.filter(d=>!(d.Month==this.value))
+										console.log(datos)	
+										if(datos.length>0){
+											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										}
+										else{
+											alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+										}	
+									}
+									else{
+										console.log("removed: "+month_removed.length)
 
-							month_removed.map(function(e){
-								if(!datos.includes(e))
-									datos.push(e)
-							})
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										month_removed.map(function(e){
+											if(!datos.includes(e))
+												datos.push(e)
+										})
+										container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+										container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
-						}	
+									}	
 
-						
-					})
+									
+								})
 
-					$('input[id="dayofMonth"]').change(function() {
-						if(!this.checked){
-							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
-							//datos=completedata
-							dayMonth_removed=datos.filter(d=>(d.Day==this.value))
-							datos=datos.filter(d=>!(d.Day==this.value))
-							console.log(datos)	
-							if(datos.length>0){
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							}
-							else{
-								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
-							}	
-						}
-						else{
-							console.log("removed: "+dayMonth_removed.length)
+								$('input[id="dayofMonth"]').change(function() {
+									if(!this.checked){
+										console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+										//datos=completedata
+										dayMonth_removed=datos.filter(d=>(d.Day==this.value))
+										datos=datos.filter(d=>!(d.Day==this.value))
+										console.log(datos)	
+										if(datos.length>0){
+											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										}
+										else{
+											alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+										}	
+									}
+									else{
+										console.log("removed: "+dayMonth_removed.length)
 
-							dayMonth_removed.map(e=>datos.push(e))
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										dayMonth_removed.map(e=>datos.push(e))
+										container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+										container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
-						}	
-						
-					})
-
-
-					$('input[id="day"]').change(function() {
-						if(!this.checked){
-							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
-							//datos=completedata
-							day_removed=datos.filter(d=>(d.DayOfTheWeek==this.value))
-							datos=datos.filter(d=>!(d.DayOfTheWeek==this.value))
-							console.log(datos)	
-							if(datos.length>0){
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							}
-							else{
-								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
-							}	
-						}
-						else{
-							console.log("removed: "+day_removed.length)
-
-							day_removed.map(function(e){
-								if(!datos.includes(e))
-									datos.push(e)
-							})
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-
-						}	
-						
-					})
-
-					$('input[id="hour"]').change(function() {
-						if(!this.checked){
-							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
-							//datos=completedata
-							hour_removed=datos.filter(d=>(d.Hours==this.value))
-							datos=datos.filter(d=>!(d.Hours==this.value))
-							console.log(datos)	
-							if(datos.length>0){
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							}
-							else{
-								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
-							}	
-						}
-						else{
-							console.log("removed: "+hour_removed.length)
-
-							hour_removed.map(e=>datos.push(e))
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-
-						}	
-						
-					})
+									}	
+									
+								})
 
 
+								$('input[id="day"]').change(function() {
+									if(!this.checked){
+										console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+										//datos=completedata
+										day_removed=datos.filter(d=>(d.DayOfTheWeek==this.value))
+										datos=datos.filter(d=>!(d.DayOfTheWeek==this.value))
+										console.log(datos)	
+										if(datos.length>0){
+											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										}
+										else{
+											alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+										}	
+									}
+									else{
+										console.log("removed: "+day_removed.length)
+
+										day_removed.map(function(e){
+											if(!datos.includes(e))
+												datos.push(e)
+										})
+										container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+										container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+									}	
+									
+								})
+
+								$('input[id="hour"]').change(function() {
+									if(!this.checked){
+										console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+										//datos=completedata
+										hour_removed=datos.filter(d=>(d.Hours==this.value))
+										datos=datos.filter(d=>!(d.Hours==this.value))
+										console.log(datos)	
+										if(datos.length>0){
+											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										}
+										else{
+											alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+										}	
+									}
+									else{
+										console.log("removed: "+hour_removed.length)
+
+										hour_removed.map(e=>datos.push(e))
+										container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+										container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+									}	
+									
+								})
 
 
 
-					$('input[id="daynight"]').change(function() {
-						console.log(this.value)
-						if(!this.checked){
-							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
-							//datos=completedata
-							daynight_removed=datos.filter(d=>(d.DayNight==this.value))
-							datos=datos.filter(d=>!(d.DayNight==this.value))
-							console.log(datos)	
-							if(datos.length>0){
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+								$('input[id="daynight"]').change(function() {
+									console.log(this.value)
+									if(!this.checked){
+										console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+										//datos=completedata
+										daynight_removed=datos.filter(d=>(d.DayNight==this.value))
+										datos=datos.filter(d=>!(d.DayNight==this.value))
+										console.log(datos)	
+										if(datos.length>0){
+											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
-								if(this.value=='diurnal'){
-									slider3.conf.set=[6,18]
-									console.log(slider3.conf.set)
-									console.log(slider3)
-								}
-							}
-							else{
-								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
-							}							 
-						}	
-						else{
-							console.log("removed: "+daynight_removed.length)
+											if(this.value=='diurnal'){
+												slider3.conf.set=[6,18]
+												console.log(slider3.conf.set)
+												console.log(slider3)
+											}
+										}
+										else{
+											alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+										}							 
+									}	
+									else{
+										console.log("removed: "+daynight_removed.length)
 
-							daynight_removed.map(function(e){
-								if(!datos.includes(e))
-									datos.push(e)
-							})
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										daynight_removed.map(function(e){
+											if(!datos.includes(e))
+												datos.push(e)
+										})
+										container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+										container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
-						}					
-					})
-
-					
-
-					
+									}					
+								})
 
 
-					$('input[id="weekmonth"]').change(function() {
-						if(!this.checked){
-							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
-							//datos=completedata
-							weekmonth_removed=datos.filter(d=>(d.WeekOfTheMonth==this.value))
-							datos=datos.filter(d=>!(d.WeekOfTheMonth==this.value))
-							console.log(datos)	
-							if(datos.length>0){
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							}
-							else{
-								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
-							}	
-						}
-						else{
-							console.log("removed: "+weekmonth_removed.length)
+								$('input[id="weekmonth"]').change(function() {
+									if(!this.checked){
+										console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+										//datos=completedata
+										weekmonth_removed=datos.filter(d=>(d.WeekOfTheMonth==this.value))
+										datos=datos.filter(d=>!(d.WeekOfTheMonth==this.value))
+										console.log(datos)	
+										if(datos.length>0){
+											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										}
+										else{
+											alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+										}	
+									}
+									else{
+										console.log("removed: "+weekmonth_removed.length)
 
-							weekmonth_removed.map(function(e){
-								if(!datos.includes(e))
-									datos.push(e)
-							})
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										weekmonth_removed.map(function(e){
+											if(!datos.includes(e))
+												datos.push(e)
+										})
+										container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+										container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
-						}	
-						
-					})
+									}	
+									
+								})
 
-					$('input[id="isWeekDay"]').change(function() {
+								$('input[id="isWeekDay"]').change(function() {
 
-						if(!this.checked){
-							console.log("cambiooooooooooooooooooooooooooo   "+this.name)
-							//datos=completedata
-							isWeekDay_removed=datos.filter(d=>(console.log(d.isWeekDay==this.name)))
-							datos=datos.filter(d=>!(d.isWeekDay==this.name))
-							console.log(datos)	
-							if(datos.length>0){
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							}
-							else{
-								alert('Your current filtered data has no attribute: "'+this.name+'" or is the only value existent in its column')
-							}	
-						}
-						else{
-							console.log("removed: "+isWeekDay_removed.length)
+									if(!this.checked){
+										console.log("cambiooooooooooooooooooooooooooo   "+this.name)
+										//datos=completedata
+										isWeekDay_removed=datos.filter(d=>(console.log(d.isWeekDay==this.name)))
+										datos=datos.filter(d=>!(d.isWeekDay==this.name))
+										console.log(datos)	
+										if(datos.length>0){
+											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										}
+										else{
+											alert('Your current filtered data has no attribute: "'+this.name+'" or is the only value existent in its column')
+										}	
+									}
+									else{
+										console.log("removed: "+isWeekDay_removed.length)
 
-							isWeekDay_removed.map(e=>datos.push(e))
-							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+										isWeekDay_removed.map(e=>datos.push(e))
+										container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
+										container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
-						}	
-						
-					})
+									}	
+									
+								})
 						
 
 							},500)
 
-
-
-						
 						}
 						else{
 							document.getElementById("list3").innerHTML = '<strong> <font size="3">THERE ARE NOT TEMPORAL ATTRIBUTES THAT PERMITS ANY TEMPORAL ANALYSIS </font></strong>'
 						}
 					});
 				});
-				
+			});				
 	}])
 	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {	
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
