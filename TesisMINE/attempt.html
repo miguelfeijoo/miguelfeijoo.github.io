@@ -252,6 +252,83 @@
 	#regressionGraph { margin: 0px; width: 100vw }
 	#bubbleid { margin: 0px; height: 100vh; width: 100vw }
 
+.switch {
+        position: relative;
+        display: inline-block;
+        width: 100px;
+        height: 34px;
+      }
+
+      .switch input {display:none;}
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ca2222;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      .slider.round {
+        border-radius: 34px;
+      }
+
+      .slider.round:before {
+        border-radius: 50%;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      input:checked + .slider {
+        background-color: #2ab934;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(68px);
+        -ms-transform: translateX(68px);
+        transform: translateX(68px);
+      }
+
+      .on
+      {
+        display: none;
+      }
+
+      .on, .off
+      {
+        color: white;
+        position: absolute;
+        transform: translate(-50%,-50%);
+        top: 50%;
+        left: 50%;
+        font-size: 10px;
+        font-family: Verdana, sans-serif;
+      }
+
+      input:checked+ .slider .on
+      {display: block;}
+
+      input:checked + .slider .off
+      {display: none;}	
+
 </style>
 
 
@@ -453,11 +530,7 @@
 							    var prefixes = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
 							    return prefixes[Math.floor(date.getDate() / 7)];
 							}
-							function isWeekDay(date){
-								if(date.getDay()!=0 || date.getDay()!=6){
-									return true
-								}
-							}
+							
 							if (d.hasOwnProperty("Date")){
 								d.Hours = d.Date.getHours();
 								d.Minutes = d.Date.getMinutes();
@@ -465,7 +538,12 @@
 								d.DayNight = d.Hours < 6 || d.Hours>18 ? "night": "diurnal";
 								d.WeekOfTheMonth = weekMonth(d.Date)
 								d.DayOfTheWeek = weekday[d.Date.getDay()];	
-								d.isWeekDay= isWeekDay(d.Date)					
+								if(!(d.DayOfTheWeek=='Sunday' || d.DayOfTheWeek=="Saturday")){
+									d.isWeekDay="Yes"
+								}	
+								else{
+									d.isWeekDay="No"
+								}				
 								d.Year = d.Date.getFullYear().toString();
 								d.Month = month[d.Date.getMonth()];
 								d.Day = d.Date.getDate();
@@ -895,15 +973,27 @@
 				})	
 
 
-		
 			container.layoutManager.eventHub.on( 'datos', function( data ){
+					document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
+					$('button[id="complete_data_btn"]').click(function() {  	
+											
+						container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
+						container.layoutManager.eventHub.emit( 'datosvisibles', data );	
+						container.layoutManager.eventHub.emit( 'datos', data );		   	
+										   
+					});
+			})
+
+			container.layoutManager.eventHub.on( 'redrawVisibleData', function( ret ){
+				container.layoutManager.eventHub.on( 'datos', function( data ){
+						data=ret
 
 				var new_datos=[]
 				var parse=[];
 		    	var dateparse=[];
 		   		var categoric=[];	
 							
-			document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
+					document.getElementById('buttonComplete').innerHTML='<p></p><p></p><button type="button" id="complete_data_btn"> <strong>SHOW ('+data.length+' VALUES)</strong></button><p></p><p></p><p></p><p></p>'	
 					$('button[id="complete_data_btn"]').click(function() {  	
 											
 						container.layoutManager.eventHub.emit( 'redrawVisibleData', data );	
@@ -1084,7 +1174,9 @@
 					document.getElementById("tableGoesHere").appendChild(script);
 					
 				})
-			})	
+				})	
+		    })	
+				
 	}])
 	navioApp.controller('navioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		
@@ -1534,12 +1626,10 @@
 	}])
 	temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
-			container.layoutManager.eventHub.on( 'datos', function( completedata ){
+			container.layoutManager.eventHub.on( 'redrawVisibleData', function( completedata ){
 			
 				console.log(cols)
-				container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){	
-						console.log(datos)			
-						document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
+						//document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
 						var year=[]
 						var daynight=[]
 						var dayofMonth=[]
@@ -1559,7 +1649,7 @@
 
 						
 						if(completedata[0].hasOwnProperty("Year")){
-							datos.map(function(d){
+							completedata.map(function(d){
 								year.push(d['Year'])
 								daynight.push(d['DayNight'])
 								day.push(d['DayOfTheWeek'])
@@ -1582,318 +1672,591 @@
 							isWeekDay=isWeekDay.filter((value, index, self) => self.indexOf(value) === index)
 							var complete_enable='<button type="button" id="complete"> Show ('+completedata.length+' values)</button>'
 
+							setTimeout(function(){
+									//year_t=' <label class="switch"> <input type="checkbox" id="checkbox1">      <div class="slider round">         <span class="on">ON</span>           <span class="off">OFF</span>           </div>         </label>'
+									for(var i=0;i<year.length;i++){	
+
+										if(!(i % 4 === 0)){
+											console.log("entro")
+											year_t+='<label class="switch"> <input type="checkbox" value="'+year[i]+'" id="year"><div class="slider round">         <span class="on">'+year[i]+'</span>           <span class="off">'+year[i]+'</span>           </div>         </label>'
+										}
+										else{
+											year_t+='<p></p><label class="switch"> <input type="checkbox" value="'+year[i]+'" id="year"><div class="slider round">         <span class="on">'+year[i]+'</span>           <span class="off">'+year[i]+'</span>           </div>         </label>'
+										}						
+									}
+									for(var i=0;i<daynight.length;i++){	
+
+										if(!(i % 4 === 0)){
+											console.log("entro")
+											if(daynight[i]=='diurnal'){
+												daynight_t+='<label class="switch"> <input type="checkbox" value="'+daynight[i]+'" id="daynight"><div class="slider round">         <span class="on">DAY</span>           <span class="off">DAY</span>           </div>         </label>'
+											}
+											if(daynight[i]=='night'){
+												daynight_t+='<label class="switch"> <input type="checkbox" value="'+daynight[i]+'" id="daynight"><div class="slider round">         <span class="on">NIGHT</span>           <span class="off">NIGHT</span>           </div>         </label>'
+											}
+										}
+										else{
+											if(daynight[i]=='diurnal'){
+												daynight_t+='<p></p><label class="switch"> <input type="checkbox" value="'+daynight[i]+'" id="daynight"><div class="slider round">         <span class="on">DAY</span>           <span class="off">DAY</span>           </div>         </label>'
+											}
+											if(daynight[i]=='night'){
+												daynight_t+='<p></p><label class="switch"> <input type="checkbox" value="'+daynight[i]+'" id="daynight"><div class="slider round">         <span class="on">NIGHT</span>           <span class="off">NIGHT</span>           </div>         </label>'
+											}
+										}						
+									}
+									for(var i=0;i<day.length;i++){	
+
+										if(!(i % 4 === 0)){
+											console.log("entro")
+											if(day[i]=='Monday'){
+													day_t+='<label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">MON</span>           <span class="off">MON</span>           </div>         </label>'
+											}
+											if(day[i]=='Tuesday'){
+													day_t+='<label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">TUE</span>           <span class="off">TUE</span>           </div>         </label>'
+											}
+											if(day[i]=='Wednesday'){
+													day_t+='<label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">WED</span>           <span class="off">WED</span>           </div>         </label>'
+											}
+											if(day[i]=='Thursday'){
+													day_t+='<label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">THU</span>           <span class="off">THU</span>           </div>         </label>'
+											}
+											if(day[i]=='Friday'){
+													day_t+='<label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">FRI</span>           <span class="off">FRI</span>           </div>         </label>'
+											}
+											if(day[i]=='Saturday'){
+													day_t+='<label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">SAT</span>           <span class="off">SAT</span>           </div>         </label>'
+											}
+											if(day[i]=='Sunday'){
+													day_t+='<label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">SUN</span>           <span class="off">SUN</span>           </div>         </label>'
+											}
+										}
+										else{
+
+											if(day[i]=='Monday'){
+													day_t+='<p></p><label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">MON</span>           <span class="off">MON</span>           </div>         </label>'
+											}
+											if(day[i]=='Tuesday'){
+													day_t+='<p></p><label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">TUE</span>           <span class="off">TUE</span>           </div>         </label>'
+											}
+											if(day[i]=='Wednesday'){
+													day_t+='<p></p><label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">WED</span>           <span class="off">WED</span>           </div>         </label>'
+											}
+											if(day[i]=='Thursday'){
+													day_t+='<p></p><label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">THU</span>           <span class="off">THU</span>           </div>         </label>'
+											}
+											if(day[i]=='Friday'){
+													day_t+='<p></p><label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">FRI</span>           <span class="off">FRI</span>           </div>         </label>'
+											}
+											if(day[i]=='Saturday'){
+													day_t+='<p></p><label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">SAT</span>           <span class="off">SAT</span>           </div>         </label>'
+											}
+											if(day[i]=='Sunday'){
+													day_t+='<p></p><label class="switch"> <input type="checkbox" value="'+day[i]+'" id="day"><div class="slider round">         <span class="on">SUN</span>           <span class="off">SUN</span>           </div>         </label>'
+											}											
+										}						
+									}
+									for(var i=0;i<dayofMonth.length;i++){	
+
+										if(!(i % 4 === 0)){
+											console.log("entro")
+											dayofMonth_t+='<label class="switch"> <input type="checkbox" value="'+dayofMonth[i]+'" id="dayofMonth"><div class="slider round">         <span class="on">'+dayofMonth[i]+'</span>           <span class="off">'+dayofMonth[i]+'</span>           </div>         </label>'
+										}
+										else{
+											dayofMonth_t+='<p></p><label class="switch"> <input type="checkbox" value="'+dayofMonth[i]+'" id="dayofMonth"><div class="slider round">         <span class="on">'+dayofMonth[i]+'</span>           <span class="off">'+dayofMonth[i]+'</span>           </div>         </label>'
+										}						
+									}
+									for(var i=0;i<month.length;i++){	
+
+										if(!(i % 4 === 0)){
+											console.log("entro")
+											if(month[i]=='January'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">JAN</span>           <span class="off">JAN</span>           </div>         </label>'
+											}
+											if(month[i]=='February'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">FEB</span>           <span class="off">FEB</span>           </div>         </label>'
+											}
+											if(month[i]=='March'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">MAR</span>           <span class="off">MAR</span>           </div>         </label>'
+											}
+											if(month[i]=='April'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">APR</span>           <span class="off">APR</span>           </div>         </label>'
+											}
+											if(month[i]=='May'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">MAY</span>           <span class="off">MAY</span>           </div>         </label>'
+											}
+											if(month[i]=='June'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">JUN</span>           <span class="off">JUN</span>           </div>         </label>'
+											}
+											if(month[i]=='July'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">JUL</span>           <span class="off">JUL</span>           </div>         </label>'
+											}
+											if(month[i]=='August'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">AUG</span>           <span class="off">AUG</span>           </div>         </label>'
+											}
+											if(month[i]=='September'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">SEPT</span>           <span class="off">SEPT</span>           </div>         </label>'
+											}
+											if(month[i]=='October'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">OCT</span>           <span class="off">OCT</span>           </div>         </label>'
+											}
+											if(month[i]=='November'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">NOV</span>           <span class="off">NOV</span>           </div>         </label>'
+											}
+											if(month[i]=='December'){
+													month_t+='<label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">DEC</span>           <span class="off">DEC</span>           </div>         </label>'
+											}
+										}
+										else{
+											if(month[i]=='January'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">JAN</span>           <span class="off">JAN</span>           </div>         </label>'
+											}
+											if(month[i]=='February'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">FEB</span>           <span class="off">FEB</span>           </div>         </label>'
+											}
+											if(month[i]=='March'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">MAR</span>           <span class="off">MAR</span>           </div>         </label>'
+											}
+											if(month[i]=='April'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">APR</span>           <span class="off">APR</span>           </div>         </label>'
+											}
+											if(month[i]=='May'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">MAY</span>           <span class="off">MAY</span>           </div>         </label>'
+											}
+											if(month[i]=='June'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">JUN</span>           <span class="off">JUN</span>           </div>         </label>'
+											}
+											if(month[i]=='July'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">JUL</span>           <span class="off">JUL</span>           </div>         </label>'
+											}
+											if(month[i]=='August'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">AUG</span>           <span class="off">AUG</span>           </div>         </label>'
+											}
+											if(month[i]=='September'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">SEPT</span>           <span class="off">SEPT</span>           </div>         </label>'
+											}
+											if(month[i]=='October'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">OCT</span>           <span class="off">OCT</span>           </div>         </label>'
+											}
+											if(month[i]=='November'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">NOV</span>           <span class="off">NOV</span>           </div>         </label>'
+											}
+											if(month[i]=='December'){
+													month_t+='<p></p><label class="switch"> <input type="checkbox" value="'+month[i]+'" id="month"><div class="slider round">         <span class="on">DEC</span>           <span class="off">DEC</span>           </div>         </label>'
+											}
+										}						
+									}
+									for(var i=0;i<hour.length;i++){	
+
+										if(!(i % 4 === 0)){
+											console.log("entro")
+											hour_t+='<label class="switch"> <input type="checkbox" value="'+hour[i]+'" id="hour"><div class="slider round">         <span class="on">'+hour[i]+'-hr</span>           <span class="off">'+hour[i]+'-hr</span>           </div>         </label>'
+										}
+										else{
+											hour_t+='<p></p><label class="switch"> <input type="checkbox" value="'+hour[i]+'" id="hour"><div class="slider round">         <span class="on">'+hour[i]+'-hr</span>           <span class="off">'+hour[i]+'-hr</span>           </div>         </label>'
+										}						
+									}
+									for(var i=0;i<weekmonth.length;i++){	
 
 
+										if(!(i % 4 === 0)){
+											if(weekmonth[i]=='First'){
+													console.log("entro")
+													weekmonth_t+='<label class="switch"> <input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth"><div class="slider round">         <span class="on">1st</span>           <span class="off">1st</span>           </div>         </label>'
+											}
+											if(weekmonth[i]=='Second'){
+													console.log("entro")
+													weekmonth_t+='<label class="switch"> <input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth"><div class="slider round">         <span class="on">2nd</span>           <span class="off">2nd</span>           </div>         </label>'
+											}
+											if(weekmonth[i]=='Third'){
+													console.log("entro")
+													weekmonth_t+='<label class="switch"> <input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth"><div class="slider round">         <span class="on">3rd</span>           <span class="off">3rd</span>           </div>         </label>'
+											}
+											if(weekmonth[i]=='Fourth'){
+													console.log("entro")
+													weekmonth_t+='<label class="switch"> <input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth"><div class="slider round">         <span class="on">4th</span>           <span class="off">4th</span>           </div>         </label>'
+											}
+											if(weekmonth[i]=='Fifth'){
+													console.log("entro")
+													weekmonth_t+='<label class="switch"> <input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth"><div class="slider round">         <span class="on">5th</span>           <span class="off">5th</span>           </div>         </label>'
+											}											
+										}
+										else{
+											if(weekmonth[i]=='First'){
+													console.log("entro")
+													weekmonth_t+='<p></p><label class="switch"> <input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth"><div class="slider round">         <span class="on">1st</span>           <span class="off">1st</span>           </div>         </label>'
+											}
+											if(weekmonth[i]=='Second'){
+													console.log("entro")
+													weekmonth_t+='<p></p><label class="switch"> <input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth"><div class="slider round">         <span class="on">2nd</span>           <span class="off">2nd</span>           </div>         </label>'
+											}
+											if(weekmonth[i]=='Third'){
+													console.log("entro")
+													weekmonth_t+='<p></p><label class="switch"> <input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth"><div class="slider round">         <span class="on">3rd</span>           <span class="off">3rd</span>           </div>         </label>'
+											}
+											if(weekmonth[i]=='Fourth'){
+													console.log("entro")
+													weekmonth_t+='<p></p><label class="switch"> <input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth"><div class="slider round">         <span class="on">4th</span>           <span class="off">4th</span>           </div>         </label>'
+											}
+											if(weekmonth[i]=='Fifth'){
+													console.log("entro")
+													weekmonth_t+='<p></p><label class="switch"> <input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth"><div class="slider round">         <span class="on">5th</span>           <span class="off">5th</span>           </div>         </label>'
+											}
+										}						
+									}
+									for(var i=0;i<isWeekDay.length;i++){	
 
-							for(var i=0;i<year.length;i++){	
+										if(!(i % 4 === 0)){
+											console.log("entro")
+											isWeekDay_t+='<label class="switch"> <input type="checkbox" name="'+isWeekDay[i]+'" id="isWeekDay"><div class="slider round">         <span class="on">'+isWeekDay[i]+'</span>           <span class="off">'+isWeekDay[i]+'</span>           </div>         </label>'
 
-								if(!(i % 10 === 0)){
-									console.log("entro")
-									year_t+='<input type="checkbox" value="'+year[i]+'" id="year">'+year[i]
+  
+
+										}
+										else{
+											isWeekDay_t+='<p></p><label class="switch"> <input type="checkbox" name="'+isWeekDay[i]+'" id="isWeekDay"><div class="slider round">         <span class="on">'+isWeekDay[i]+'</span>           <span class="off">'+isWeekDay[i]+'</span>           </div>         </label>'
+										}						
+									}
+
+									year_t=('<ul>').concat(year_t)
+									daynight_t=('<ul>').concat(daynight_t)
+									dayofMonth_t=('<ul>').concat(dayofMonth_t)
+									day_t=('<ul>').concat(day_t)
+									month_t=('<ul>').concat(month_t)
+									hour_t=('<ul>').concat(hour_t)
+									weekmonth_t=('<ul>').concat(weekmonth_t)
+									isWeekDay_t=('<ul>').concat(isWeekDay_t)
+									year_t=year_t.concat('</ul>')
+									daynight_t=daynight_t.concat('</ul>')
+									dayofMonth_t=dayofMonth_t.concat('</ul>')
+									day_t=day_t.concat('</ul>')
+									month_t=month_t.concat('</ul>')
+									hour_t=hour_t.concat('</ul>')
+									weekmonth_t=weekmonth_t.concat('</ul>')
+									isWeekDay_t=isWeekDay_t.concat('</ul>')
+
+									var texto='';
+									if(!(year_t.includes(undefined))){
+										texto+=	'<p><font size="5"><strong>Year:</strong></font></p> <font size="3">  '+year_t+'</font>   <p></p>'								
+									}
+
+									if(!(month_t.includes(undefined))){
+										texto+=	'<p><font size="5"><strong>Month:</strong></font</p>   <font size="3">'+month_t+' </font>   <p></p>'								
+									}
+									if(!(dayofMonth_t.includes(undefined))){
+										texto+=	'<p><font size="5"><strong>Day:</strong</font></p>  <font size="3"> '+dayofMonth_t+' </font>   <p></p>'								
+									}
+									if(!(day_t.includes(undefined))){
+										texto+=	'<p><font size="5"><strong>Day of the Week:</strong></font</p>   <font size="3">'+day_t+'</font>    <p></p>'								
+									}
+
+									if(!(hour_t.includes(undefined))){
+										texto+=	'<p><font size="5"><strong>Hour:</strong></font</p>  <font size="3"> '+hour_t+' </font>   <p></p>'								
+									}
+									if(!(daynight_t.includes(undefined))){
+										texto+=	'<p><font size="5"><strong>Day/Night:</strong></font</p>  <font size="3">'+daynight_t+' </font>   <p></p>'								
+									}
+									if(!(weekmonth_t.includes(undefined))){
+										texto+=	'<p><font size="5"><strong>Week Of The Month:</strong></font</p>   <font size="3">'+weekmonth_t+'</font>    <p></p>'								
+									}
+
+									if(!(isWeekDay_t.includes(undefined))){
+										texto+=	'<p><font size="5"><strong>Is Weekday:</strong></font></p>  <font size="3">'+isWeekDay_t+'</font>'							
+									}
+
+									//texto+='<div id="list3" align="left"></div>    <div id="temporal"align="center"></div>'
+
+
+									document.getElementById("temporal_id").innerHTML=texto
+
+								/*$('input[id="year"]').change(function() {
+									console.log("cambioooooo    "+ this.value)	
+									console.log($(this).prop('checked'))	
+									if()				
+								})	*/
+
+								var value = 1;
+
+								var checkbox =  document.getElementsByTagName('input')
+
+								for(var i=0;i<checkbox.length;i++){
+									if(checkbox[i].getAttribute('type')=='checkbox'){
+											checkbox[i].checked = value
+									}
 								}
-								else{
-									year_t+='<p></p><input type="checkbox" value="'+year[i]+'" id="year">'+year[i]
-								}						}
-							for(var i=0;i<daynight.length;i++){
-								if(!(i % 10 === 0)){
-									daynight_t+='<input type="checkbox" value="'+daynight[i]+'" id="daynight">'+daynight[i]
-								}
-								else{
-									daynight_t+='<p></p><input type="checkbox" value="'+daynight[i]+'" id="daynight">'+daynight[i]
-								}						}
-							for(var i=0;i<day.length;i++){
-								if(!(i % 10 === 0)){
-									day_t+='<input type="checkbox" value="'+day[i]+'" id="day">'+day[i]
-								}
-								else{
-									day_t+='<p></p><input type="checkbox" value="'+day[i]+'" id="day">'+day[i]
-								}						}
-							for(var i=0;i<dayofMonth.length;i++){
-								if(!(i % 10 === 0)){
-									dayofMonth_t+='<input type="checkbox" value="'+dayofMonth[i]+'" id="dayofMonth">'+dayofMonth[i]
-								}
-								else{
-									dayofMonth_t+='<p></p><input type="checkbox" value="'+dayofMonth[i]+'" id="dayofMonth">'+dayofMonth[i]
-								}						}
-							for(var i=0;i<month.length;i++){							
-								if(!(i % 10 === 0)){
-									month_t+='<input type="checkbox" value="'+month[i]+'" id="month">'+month[i]
-								}
-								else{
-									month_t+='<p></p><input type="checkbox" value="'+month[i]+'" id="month">'+month[i]
-								}	
-							}
-							for(var i=0;i<hour.length;i++){
-								if(!(i % 11 === 0)){
-									hour_t+='<input type="checkbox" value="'+hour[i]+'" id="hour">'+hour[i]
-								}
-								else{
-									hour_t+='<p></p><input type="checkbox" value="'+hour[i]+'" id="hour">'+hour[i]
-								}						}
-							for(var i=0;i<weekmonth.length;i++){
-								if(!(i % 10 === 0)){
-									weekmonth_t+='<input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth">'+weekmonth[i]
-								}
-								else{
-									weekmonth_t+='<p></p><input type="checkbox" value="'+weekmonth[i]+'" id="weekmonth">'+weekmonth[i]
-								}						}
-							for(var i=0;i<isWeekDay.length;i++){
-								if(!(i % 10 === 0)){
-									isWeekDay_t+='<input type="checkbox" value="'+isWeekDay[i]+'" id="isWeekDay">'+isWeekDay[i]
-								}
-								else{
-									isWeekDay_t+='<p></p><input type="checkbox" value="'+isWeekDay[i]+'" id="isWeekDay">'+isWeekDay[i]
-								}						
-							}
-							year_t=('<ul>').concat(year_t)
-							daynight_t=('<ul>').concat(daynight_t)
-							dayofMonth_t=('<ul>').concat(dayofMonth_t)
-							day_t=('<ul>').concat(day_t)
-							month_t=('<ul>').concat(month_t)
-							hour_t=('<ul>').concat(hour_t)
-							weekmonth_t=('<ul>').concat(weekmonth_t)
-							isWeekDay_t=('<ul>').concat(isWeekDay_t)
-							year_t=year_t.concat('</ul>')
-							daynight_t=daynight_t.concat('</ul>')
-							dayofMonth_t=dayofMonth_t.concat('</ul>')
-							day_t=day_t.concat('</ul>')
-							month_t=month_t.concat('</ul>')
-							hour_t=hour_t.concat('</ul>')
-							weekmonth_t=weekmonth_t.concat('</ul>')
-							isWeekDay_t=isWeekDay_t.concat('</ul>')
-
-							var texto='';
-							if(!(complete_enable.includes(undefined))){
-								texto+=	'<p><strong>COMPLETE DATA:            </strong><strong>'+complete_enable+'</strong></p>'								
-							}
-							if(!(year_t.includes(undefined))){
-								texto+=	'<p><font size="5"><strong>Year:</strong></font></p> <font size="3">  '+year_t+'</font>   <p></p>'								
-							}
-
-							if(!(month_t.includes(undefined))){
-								texto+=	'<p><font size="5"><strong>Month:</strong></font</p>   <font size="3">'+month_t+' </font>   <p></p>'								
-							}
-							if(!(dayofMonth_t.includes(undefined))){
-								texto+=	'<p><font size="5"><strong>Day:</strong</font></p>  <font size="3"> '+dayofMonth_t+' </font>   <p></p>'								
-							}
-							if(!(day_t.includes(undefined))){
-								texto+=	'<p><font size="5"><strong>Day of the Week:</strong></font</p>   <font size="3">'+day_t+'</font>    <p></p>'								
-							}
-
-							if(!(hour_t.includes(undefined))){
-								texto+=	'<p><font size="5"><strong>Hour:</strong></font</p>  <font size="3"> '+hour_t+' </font>   <p></p>'								
-							}
-							if(!(daynight_t.includes(undefined))){
-								texto+=	'<p><font size="5"><strong>Day/Night:</strong></font</p>  <font size="3">'+daynight_t+' </font>   <p></p>'								
-							}
-							if(!(weekmonth_t.includes(undefined))){
-								texto+=	'<p><font size="5"><strong>Week Of The Month:</strong></font</p>   <font size="3">'+weekmonth_t+'</font>    <p></p>'								
-							}
-
-							if(!(isWeekDay_t.includes(undefined))){
-								texto+=	'<p><font size="5"><strong>Is Weekday:</strong></font></p>  <font size="3">'+isWeekDay_t+'</font>'							
-							}
-
-							texto+='<div id="list3" align="left"></div>    <div id="temporal"align="center"></div>'
 
 
-							document.getElementById("temporal_id").innerHTML=texto
-							
-							
-							document.getElementById("list3").innerHTML = '<strong><font size="3">Select Quantitative Value: </font></strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
-							var allInputs = document.getElementsByTagName("input");
-							for (var i = 0, max = allInputs.length; i < max; i++){
-							    if (allInputs[i].type === 'checkbox' && !(allInputs[i].id=='complete'))
-							    	allInputs[i].checked = true;
-							    else
-							    	d3.select('#complete').property('disabled',true)
+					var datos=completedata;
+
+					var year_removed=null;
+					var daynight_removed=null;
+					var day_removed=null;
+					var month_removed=null;
+					var weekmonth_removed=null;
+					var isWeekDay_removed=null;	
+					var hour_removed=null;
+					var dayMonth_removed=null;
+					var hour_removed=null;
+
+					$('input[id="year"]').change(function() {
+						console.log(this.value)
+						if(!this.checked){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							year_removed=datos.filter(d=>(d.Year==this.value))
+							datos=datos.filter(d=>!(d.Year==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+								if(this.value=='diurnal'){
+									slider3.conf.set=[6,18]
+									console.log(slider3.conf.set)
+									console.log(slider3)
+								}
 							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}							 
+						}	
+						else{
+							console.log("removed: "+year_removed.length)
+
+							year_removed.map(function(e){
+								if(!datos.includes(e))
+									datos.push(e)
+							})
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}					
+					})
+
+					$('input[id="month"]').change(function() {
+						if(!this.checked){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							month_removed=datos.filter(d=>(d.Month==this.value))
+							datos=datos.filter(d=>!(d.Month==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}	
+						}
+						else{
+							console.log("removed: "+month_removed.length)
+
+							month_removed.map(function(e){
+								if(!datos.includes(e))
+									datos.push(e)
+							})
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}	
+
+						
+					})
+
+					$('input[id="dayofMonth"]').change(function() {
+						if(!this.checked){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							dayMonth_removed=datos.filter(d=>(d.Day==this.value))
+							datos=datos.filter(d=>!(d.Day==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}	
+						}
+						else{
+							console.log("removed: "+dayMonth_removed.length)
+
+							dayMonth_removed.map(e=>datos.push(e))
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}	
+						
+					})
 
 
-							
-							
-							$('button[id="complete"]').click(function() {				
-							    	
-						    	
-						    	container.layoutManager.eventHub.emit( 'redrawVisibleData', completedata );	
-						    	container.layoutManager.eventHub.emit( 'datosvisibles', completedata );	
-						    	for (var i = 0, max = allInputs.length; i < max; i++){
-							    if (allInputs[i].type === 'checkbox')
-							        allInputs[i].checked = true;	
-							        d3.select('#complete').property('disabled',true)	 
-							    }	
-							});
-										
-							$('input[id="year"]').click(function() {								
-							    if(!this.checked){							    		
-							    		datos=datos.filter(d => !(d['Year']==this.value))		
-							    		container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							    		container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
-							    		d3.select('#complete').property('disabled',false)	    		
-							    }	
-							    else{	
-							    	completedata.filter(d=>d['Year']==this.value).map(e=>datos.push(e))	
-							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );					    							    	
-							    }
-							    console.log("FILTRADOS")	
-								console.log(datos)					    
-							});
-							$('input[id="daynight"]').click(function() {
-							    if(!this.checked){
-							            datos=datos.filter(d => d['DayNight']!==this.value)	
-							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
-							            d3.select('#complete').property('disabled',false)							            				            
-							    }
-							    else{
-							    	completedata.filter(d=>d['DayNight']==this.value).map(e=>datos.push(e))		
-							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							    }
-							    console.log("FILTRADOS")	
-								console.log(datos)	
-							});	
-							$('input[id="day"]').click(function() {
-							    if(!this.checked){
-							        datos=datos.filter(d => d['DayOfTheWeek']!==this.value)	
-							        container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							        container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							        d3.select('#complete').property('disabled',false)				            
-							    }
-							    else{
-							    	completedata.filter(d=>d['DayOfTheWeek']==this.value).map(e=>datos.push(e))
-							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );		
-							    }
-							    console.log("FILTRADOS")	
-								console.log(datos)	
-							});	
-							$('input[id="dayofMonth"]').click(function() {
-							    if(!this.checked){
-							           datos= datos.filter(d => !(d['Day']==this.value))	
-							           container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							           container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							           d3.select('#complete').property('disabled',false)						           					           
-							    }
-							    else{
-							    	completedata.filter(d=>d['Day']==this.value).map(e=>datos.push(e))	
-							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							    }
-							    console.log("FILTRADOS")	
-								console.log(datos)	
-							});	
-							$('input[id="month"]').click(function() {
-							    if(!this.checked){
-							            datos=datos.filter(d => !(d['Month']==this.value))
-							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							            d3.select('#complete').property('disabled',false)							            
-							    }
-							    else{
-							    	completedata.filter(d=>d['Month']==this.value).map(e=>datos.push(e))
-							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
-							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );							    
-							    }
-							    console.log("FILTRADOS")	
-								console.log(datos)	
-							});	
-							$('input[id="hour"]').click(function() {
-							    if(!this.checked){
-							           datos=datos.filter(d => !(d['Hours']==this.value))	
-							           container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );		
-							           container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
-							           d3.select('#complete').property('disabled',false)			           
-							    }
-							    else{
-							    	completedata.filter(d=>d['Hours']==this.value).map(e=>datos.push(e))
-							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );								    
-							    }
-							    console.log("FILTRADOS")	
-								console.log(datos)	
-							});	
-							$('input[id="weekmonth"]').click(function() {
-							    if(!this.checked){
-							            datos=datos.filter(d => d['WeekOfTheMonth']!==this.value)	
-							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							            d3.select('#complete').property('disabled',false)						            
-							    }
-							    else{
-							    	completedata.filter(d=>d['WeekOfTheMonth']==this.value).map(e=>datos.push(e))	
-							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );						    
-							    }
-							    console.log("FILTRADOS")	
-								console.log(datos)	
-							});	
-							$('input[id="isWeekDay"]').click(function() {
-							    if(!this.checked){
-							            datos=datos.filter(d => d['isWeekDay']!==this.value)
-							            container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							            container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-							            d3.select('#complete').property('disabled',false)							            
-							    }
-							    else{
-							    	completedata.filter(d=>d['isWeekDay']==this.value).map(e=>datos.push(e))
-							    	container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );
-							    	container.layoutManager.eventHub.emit( 'datosvisibles', datos );	
-								}
-							    console.log("FILTRADOS")	
-								console.log(datos)	
-							});	
-							var temporal=function(datos){
-								d3.select("#attr3").on("change", function(){
-								  var attrSeq = this.value;
-								  var temporalvis = {
-								  "data": {"values":datos},
-								  "vconcat": [{
-								    "width": 700,
-								    "mark": "area",
-								    "encoding": {
-								      "x": {
-								        "field": "Date",
-								        "type": "temporal",
-								        "scale": {"domain": {"selection": "brush"}},
-								        "axis": {"title": ""}
-								      },
-								      "y": {"field": attrSeq,"type": "quantitative"}
-								    }
-								  }, {
-								    "width": 700,
-								    "height": 80,
-								    "mark": "area",
-								    "selection": {
-								      "brush": {"type": "interval", "encodings": ["x"],"zoom": "wheel!",
-								                  "mark": {"fill": "#333", "stroke": "green"}}
-								    },
-								    "encoding": {
-								      "x": {
-								        "field": "Date",
-								        "type": "temporal"
-								      },
-								      "y": {
-								        "field": attrSeq,
-								        "type": "quantitative",
-								        "axis": {"tickCount": 3, "grid": false}
-								      }
-								    }
-								  }]
-								}
-								  vegaEmbed("#temporal", temporalvis);
-								});
+					$('input[id="day"]').change(function() {
+						if(!this.checked){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							day_removed=datos.filter(d=>(d.DayOfTheWeek==this.value))
+							datos=datos.filter(d=>!(d.DayOfTheWeek==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 							}
-							temporal(datos)
-							console.log(datos)
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}	
+						}
+						else{
+							console.log("removed: "+day_removed.length)
+
+							day_removed.map(function(e){
+								if(!datos.includes(e))
+									datos.push(e)
+							})
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}	
+						
+					})
+
+					$('input[id="hour"]').change(function() {
+						if(!this.checked){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							hour_removed=datos.filter(d=>(d.Hours==this.value))
+							datos=datos.filter(d=>!(d.Hours==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}	
+						}
+						else{
+							console.log("removed: "+hour_removed.length)
+
+							hour_removed.map(e=>datos.push(e))
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}	
+						
+					})
+
+
+
+
+
+					$('input[id="daynight"]').change(function() {
+						console.log(this.value)
+						if(!this.checked){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							daynight_removed=datos.filter(d=>(d.DayNight==this.value))
+							datos=datos.filter(d=>!(d.DayNight==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+								if(this.value=='diurnal'){
+									slider3.conf.set=[6,18]
+									console.log(slider3.conf.set)
+									console.log(slider3)
+								}
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}							 
+						}	
+						else{
+							console.log("removed: "+daynight_removed.length)
+
+							daynight_removed.map(function(e){
+								if(!datos.includes(e))
+									datos.push(e)
+							})
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}					
+					})
+
+					
+
+					
+
+
+					$('input[id="weekmonth"]').change(function() {
+						if(!this.checked){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.value)
+							//datos=completedata
+							weekmonth_removed=datos.filter(d=>(d.WeekOfTheMonth==this.value))
+							datos=datos.filter(d=>!(d.WeekOfTheMonth==this.value))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
+							}	
+						}
+						else{
+							console.log("removed: "+weekmonth_removed.length)
+
+							weekmonth_removed.map(function(e){
+								if(!datos.includes(e))
+									datos.push(e)
+							})
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}	
+						
+					})
+
+					$('input[id="isWeekDay"]').change(function() {
+
+						if(!this.checked){
+							console.log("cambiooooooooooooooooooooooooooo   "+this.name)
+							//datos=completedata
+							isWeekDay_removed=datos.filter(d=>(console.log(d.isWeekDay==this.name)))
+							datos=datos.filter(d=>!(d.isWeekDay==this.name))
+							console.log(datos)	
+							if(datos.length>0){
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+								container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+							}
+							else{
+								alert('Your current filtered data has no attribute: "'+this.name+'" or is the only value existent in its column')
+							}	
+						}
+						else{
+							console.log("removed: "+isWeekDay_removed.length)
+
+							isWeekDay_removed.map(e=>datos.push(e))
+							container.layoutManager.eventHub.emit( 'redrawVisibleData', datos );	
+							container.layoutManager.eventHub.emit( 'datosvisibles', datos );
+
+						}	
+						
+					})
+						
+
+							},500)
+
+
+
+						
 						}
 						else{
 							document.getElementById("list3").innerHTML = '<strong> <font size="3">THERE ARE NOT TEMPORAL ATTRIBUTES THAT PERMITS ANY TEMPORAL ANALYSIS </font></strong>'
 						}
 					});
 				});
-			});		
+				
 	}])
 	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {	
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){

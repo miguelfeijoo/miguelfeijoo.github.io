@@ -402,8 +402,8 @@
 	#spatial_id { margin: 15px; height: 100%; width: 100% }
 	#navio { margin: 15px; height: 100%; width: 100% }
 	#selector { margin: 15px; height: 100%; width: 100% }
-	#mainWindow { margin: 0px; height: 97vh; width: 97vw }
-	#mapCanvas{ margin: 0px; height: 97vh; width: 97vw }
+	#mainWindow { margin: 0px; height: 97vh; width: 97% }
+	#mapCanvas{ margin: 0px; height: 97vh; width: 100vw }
 	#boxplot { margin: 0px; width: 100vw }
 	#regressionGraph { margin: 0px; width: 100vw }
 	#bubbleid { margin: 0px; height: 100vh; width: 100vw }
@@ -873,9 +873,8 @@
 		   		var categoric=[];
 				function json2table(json, classes) {
 
-				console.log(json)
+				
 				var cols = Object.keys(json[0]);
-				console.log(cols)
 				  
 				var headerRow = '';
 				var bodyRows = '';
@@ -933,7 +932,6 @@
 				headerRow += '<th>' + capitalizeFirstLetter(col) + '</th>';
 				columnas += '<option value="'+col+'">'
 				});	
-				console.log(dateparse)
 				
 				$scope.seq.map(function(col) {							
 							if (!(col=="Year" ||  col=="Day" || col=="DayNight" || col=="Minutes" || col=="Month" || col=="DayOfTheWeek" || col=="Latitude" || col=="Longitude" || col=="DayNight" || col=="Date" || col=="Hours" || col=="Seconds" || col=='__seqId'|| col=='__i'||dateparse.includes(col))){
@@ -1017,7 +1015,6 @@
 
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function(returnData){		
 
-					console.log(returnData)
 					document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
 					$(document).ready(function() {
 						$('#data').DataTable( {  
@@ -1034,7 +1031,6 @@
 				})
 				container.layoutManager.eventHub.on( 'redrawVisibleData2', function(returnData){		
 
-					console.log(returnData)
 					document.getElementById('tableGoesHere').innerHTML = json2table(returnData, 'table');
 					$(document).ready(function() {
 						$('#data').DataTable( {  
@@ -1352,16 +1348,11 @@
 	}])
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
 		
-		container.layoutManager.eventHub.on( 'columnas_list', function( cols ){		
-				console.log(cols)
+		/*container.layoutManager.eventHub.on( 'columnas_list', function( cols ){		
 				container.layoutManager.eventHub.on( 'datos', function( completedata ){		
-					console.log(completedata)	
 					container.layoutManager.eventHub.on( 'seqColumns', function( seqColumns ){
-						console.log(seqColumns)
 						container.layoutManager.eventHub.on( 'redrawVisibleData', function( datos ){
-							console.log(datos)
 						container.layoutManager.eventHub.on( 'catColumns', function( catColumns ){
-							console.log(catColumns)
 							
 								if(datos[0].hasOwnProperty('Latitude') && datos[0].hasOwnProperty('Longitude')){
 									document.getElementById("text").innerHTML='<p><strong>Select two attributes from this dataset that you would like to analize graphically:</strong></p>'
@@ -1713,14 +1704,13 @@
 						})
 					})
 				})	
-			})
+			})*/
 	}])
 	temporalApp.controller('temporalController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 
 		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 			container.layoutManager.eventHub.on( 'redrawVisibleData', function( completedata ){
 
 
-				console.log(cols)
 						
 						//document.getElementById("list3").innerHTML = '<strong>Select a Quantitative Value: </strong> <input list="attrs3" type="text" id="attr3"><datalist id="attrs3">'+cols
 						var year=[]
@@ -3147,8 +3137,8 @@
 		  map = new Map("mapCanvas", {
 		    basemap: "streets-navigation-vector",
 		    center: [-41.647, 36.41],
-		    zoom: 3,
-		    slider: false
+		    zoom: 1,
+		    slider: true
 		  });
 
 
@@ -3612,8 +3602,8 @@
 	        }]},{
 	        type: 'column',
 	        content: [{
-	        	 type: 'stack',
-	       		 content: [{
+	        	type: 'stack',
+	       		content: [{
                 type: 'component',
                 title: 'ESRI Map',
                 componentName: 'angularModule',
@@ -3647,6 +3637,8 @@
                 }
             }]
             },{
+	        type: 'row',
+	        content: [{
             	 type: 'stack',
 	       		 content: [{
 	                type: 'component',
@@ -3673,8 +3665,17 @@
                     templateId: 'regressionTemplate'
              }
 	       }]
+	       },{
+                type: 'component',
+                title: 'WHEN',
+                componentName: 'angularModule',
+                componentState: {
+                    module: 'temporalviz',
+                    templateId: 'temporalTemplate'
+             }
            }]
-	   },{
+           }]
+	   }/*,{
 	        type: 'column',
 	        content: [{
                 type: 'component',
@@ -3684,16 +3685,8 @@
                     module: 'spatialviz',
                     templateId: 'spatioTemplate'
                 }
-            },{
-                type: 'component',
-                title: 'WHEN',
-                componentName: 'angularModule',
-                componentState: {
-                    module: 'temporalviz',
-                    templateId: 'temporalTemplate'
-             }
-           }]
-	   }]
+            }]
+	   }*/]
 	   }]
 	});
 	myLayout.registerComponent( 'angularModule', AngularModuleComponent );
