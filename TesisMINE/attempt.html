@@ -3510,21 +3510,21 @@
 					if(rows[0].hasOwnProperty('Latitude') && rows[0].hasOwnProperty('Longitude')){
 
 						document.getElementById("list10").innerHTML='<p></p><strong>[SERIES 1] Select Quantitative Value: </strong> <input list="attrs10" type="text" id="attr10"><datalist id="attrs10">'+cols
-						document.getElementById("list10_1").innerHTML='<p></p><strong>[SERIES 2] Select Quantitative Value: </strong> <input list="attrs10_1" type="text" id="attr10_1"><datalist id="attrs10_1">'+cols		
+						/*document.getElementById("list10_1").innerHTML='<p></p><strong>[SERIES 2] Select Quantitative Value: </strong> <input list="attrs10_1" type="text" id="attr10_1"><datalist id="attrs10_1">'+cols*/	
 						d3.select("#attr10").on("change", function(){													
-							d3.select("#attr10_1").on("change", function(){
+							//d3.select("#attr10_1").on("change", function(){
 
 							var attr10 = this.value;
-							var attr10_1 = this.value;
+							//var attr10_1 = this.value;
 
 							var serie=[]
-							var series2 =[]
+							//var series2 =[]
 							rows.map(function(d){
 								serie.push([d.Longitude, d.Latitude,parseInt(d[attr10])])								
 							})
-							rows.map(function(d){
+							/*rows.map(function(d){
 								series2.push([d.Longitude, d.Latitude,parseInt(d[attr10_1])])								
-							})
+							})*/
 
 							
 
@@ -3561,7 +3561,7 @@
 							                ]
 							            }
 							        }
-							    },{
+							    }/*,{
 							        data: series2,
 							        marker: {
 							            fillColor: {
@@ -3572,7 +3572,7 @@
 							                ]
 							            }
 							        }
-							    }]
+							    }*/]
 
 							});	
 
@@ -3587,22 +3587,22 @@
 
 						//chart.series[0].update({name:attr10}, false);
 						//chart.redraw();
-						})
+						//})
 
-						d3.select("#attr10_1").on("change", function(){													
+						//d3.select("#attr10_1").on("change", function(){													
 							d3.select("#attr10").on("change", function(){
 
 							var attr10 = this.value;
-							var attr10_1 = this.value;
+							//var attr10_1 = this.value;
 
 							var serie=[]
 							var series2 =[]
 							rows.map(function(d){
 								serie.push([d.Longitude, d.Latitude,parseInt(d[attr10])])								
 							})
-							rows.map(function(d){
+							/*rows.map(function(d){
 								series2.push([d.Longitude, d.Latitude,parseInt(d[attr10_1])])								
-							})
+							})*/
 
 							
 
@@ -3639,7 +3639,7 @@
 							                ]
 							            }
 							        }
-							    },{
+							    }/*,{
 							        data: series2,
 							        marker: {
 							            fillColor: {
@@ -3650,7 +3650,7 @@
 							                ]
 							            }
 							        }
-							    }]
+							    }*/]
 
 							});	
 
@@ -3665,7 +3665,7 @@
 
 						//chart.series[0].update({name:attr10}, false);
 						//chart.redraw();
-						})
+						//})
 
 					}
 					else{
@@ -3699,10 +3699,11 @@
 
 						
 				document.getElementById("list11").innerHTML='<p></p><strong>Select an attribute to display a BAR CHART: </strong> <input list="attrs11" type="text" id="attr11"><datalist id="attrs11">'+cols
-				document.getElementById("list11_1").innerHTML='<p></p><strong>Select a <font color="red">QUANTITATIVE attribute</font> to display a HISTOGRAM: </strong> <input list="attrs11_1" type="text" id="attr11_1"><datalist id="attrs11_1">'+cols
+				document.getElementById("list11_1").innerHTML='<p></p><strong>Select a <font color="green">QUANTITATIVE attribute</font> to display a HISTOGRAM: </strong> <input list="attrs11_1" type="text" id="attr11_1"><datalist id="attrs11_1">'+cols
 				document.getElementById("list11_2").innerHTML='<p></p><strong>Select a <font color="blue">CATEGORICAL attribute</font> to display a HISTOGRAM: </strong> <input list="attrs11_2" type="text" id="attr11_2"><datalist id="attrs11_2">'+cols
 
-				document.getElementById("list11_3").innerHTML='<p></p><strong>     Select a <font color="green">SECOND QUANTITATIVE attribute </font> to display a GROUPED HISTOGRAM: </strong> <input list="attrs11_3" type="text" id="attr11_3"><datalist id="attrs11_3">'+cols
+				//document.getElementById("list11_3").innerHTML='<p></p><strong>     Select a <font color="green">SECOND QUANTITATIVE attribute </font> to display a GROUPED HISTOGRAM: </strong> <input list="attrs11_3" type="text" id="attr11_3"><datalist id="attrs11_3">'+cols
+
 				//document.getElementById("list11_4").innerHTML='<p></p><strong>          Select a <font color="red">THIRD QUANTITATIVE attribute </font> to display a BIGGER GROUPED HISTOGRAM: </strong> <input list="attrs11_4" type="text" id="attr11_4"><datalist id="attrs11_4">'+cols
 
 				document.getElementById("averageorsum").innerHTML='<label class="switch"> <input type="checkbox" id="averageorsum_btn"><div class="slider round">         <span class="on">Average</span>           <span class="off">Sum</span>           </div>         </label>'
@@ -3816,11 +3817,13 @@
 				})
 
 
-				if(document.getElementById('averageorsum_btn').value == 'on'){
+				if(document.getElementById('averageorsum_btn').value == 'on'){	
 						d3.select("#attr11_1").on("change", function(){
 							var attr11_1 = this.value;
 							d3.select("#attr11_2").on("change", function(){
 								var attr11_2 = this.value;
+
+								console.log("entro opcion 1")
 
 								var values_x=[]
 								var values_y=[]
@@ -3870,7 +3873,23 @@
 
 								var data = [trace1];
 
-								var layout = {barmode: 'group'};
+								var layout = {
+									title: {
+										text:'<b>Histogram:</b> Average of "'+attr11_1+'" by "'+attr11_2+'"',
+										xanchor: 'left', // or 'auto', which matches 'left' in this case
+										yanchor: 'bottom',
+										x: 0,
+										y: 1,
+										xref: 'paper',
+										yref: 'paper',
+										font: {
+											family: 'Courier New, monospace',
+											size: 30
+										}
+									},
+									barmode: 'group'
+								}
+
 
 								Plotly.newPlot('HistogramGraph', data, layout);
 
@@ -3881,6 +3900,8 @@
 							d3.select("#attr11_1").on("change", function(){
 								var attr11_1 = this.value;
 
+								console.log("entro opcion 2")
+
 								var values_x=[]
 								var values_y=[]
 
@@ -3926,17 +3947,34 @@
 
 								var data = [trace1];
 
-								var layout = {barmode: 'group'};
+								var layout = {
+									title: {
+										text:'<b>Histogram:</b> Average of "<b>'+attr11_1+'</b>" by "<b>'+attr11_2+'</b>"',
+										xanchor: 'left', // or 'auto', which matches 'left' in this case
+										yanchor: 'bottom',
+										x: 0,
+										y: 1,
+										xref: 'paper',
+										yref: 'paper',
+										font: {
+											family: 'Courier New, monospace',
+											size: 30
+										}
+									},
+									barmode: 'group'
+								}
 
 								Plotly.newPlot('HistogramGraph', data, layout);
 							})
 						})		
-						d3.select("#attr11_1").on("change", function(){
+						/*d3.select("#attr11_1").on("change", function(){
 							var attr11_1 = this.value;
 							d3.select("#attr11_2").on("change", function(){
 								var attr11_2 = this.value;
 								d3.select("#attr11_3").on("change", function(){
 									var attr11_3 = this.value;
+
+									console.log("entro opcion 3")
 
 									var values_x=[]
 									var values_y=[]
@@ -4023,6 +4061,7 @@
 								var attr11_3 = this.value;
 								d3.select("#attr11_2").on("change", function(){
 									var attr11_2 = this.value;
+									console.log("entro opcion 4")
 
 									var values_x=[]
 									var values_y=[]
@@ -4109,6 +4148,7 @@
 								var attr11_3 = this.value;
 								d3.select("#attr11_1").on("change", function(){
 									var attr11_1 = this.value;
+									console.log("entro opcion 5")
 
 									var values_x=[]
 									var values_y=[]
@@ -4196,6 +4236,8 @@
 								d3.select("#attr11_3").on("change", function(){
 									var attr11_3 = this.value;
 
+									console.log("entro opcion 6")
+
 									var values_x=[]
 									var values_y=[]
 									var values_y1=[]
@@ -4274,15 +4316,15 @@
 									Plotly.newPlot('HistogramGraph', data, layout);
 								})
 							})
-						})	
+						})*/
 				}
 				
 				$('input[id="averageorsum_btn"]').change(function() {
 
 					document.getElementById("attr11_1").value = "";
 					document.getElementById("attr11_2").value = "";
-					document.getElementById("attr11_3").value = "";
-					document.getElementById("attr11_4").value = "";
+					//document.getElementById("attr11_3").value = "";
+					//document.getElementById("attr11_4").value = "";
 
 					if(this.checked){
 						console.log(this.value)
@@ -4345,7 +4387,22 @@
 
 								var data = [trace1];
 
-								var layout = {barmode: 'group'};
+								var layout = {
+									title: {
+										text:'<b>Histogram:</b> Average of "'+attr11_1+'" by "'+attr11_2+'"',
+										xanchor: 'left', // or 'auto', which matches 'left' in this case
+										yanchor: 'bottom',
+										x: 0,
+										y: 1,
+										xref: 'paper',
+										yref: 'paper',
+										font: {
+											family: 'Courier New, monospace',
+											size: 30
+										}
+									},
+									barmode: 'group'
+								}
 
 								Plotly.newPlot('HistogramGraph', data, layout);
 
@@ -4401,12 +4458,27 @@
 
 								var data = [trace1];
 
-								var layout = {barmode: 'group'};
+								var layout = {
+									title: {
+										text:'<b>Histogram:</b> Average of "'+attr11_1+'" by "'+attr11_2+'"',
+										xanchor: 'left', // or 'auto', which matches 'left' in this case
+										yanchor: 'bottom',
+										x: 0,
+										y: 1,
+										xref: 'paper',
+										yref: 'paper',
+										font: {
+											family: 'Courier New, monospace',
+											size: 30
+										}
+									},
+									barmode: 'group'
+								}
 
 								Plotly.newPlot('HistogramGraph', data, layout);
 							})
 						})		
-						d3.select("#attr11_1").on("change", function(){
+						/*d3.select("#attr11_1").on("change", function(){
 							var attr11_1 = this.value;
 							d3.select("#attr11_2").on("change", function(){
 								var attr11_2 = this.value;
@@ -4749,7 +4821,7 @@
 									Plotly.newPlot('HistogramGraph', data, layout);
 								})
 							})
-						})					 
+						})*/				 
 					}	
 					else{
 						console.log(this.value)	
@@ -4802,7 +4874,22 @@
 
 								var data = [trace1];
 
-								var layout = {barmode: 'group'};
+								var layout = {
+									title: {
+										text:'<b>Histogram:</b> Frequency of "'+attr11_1+'" by "'+attr11_2+'"',
+										xanchor: 'left', // or 'auto', which matches 'left' in this case
+										yanchor: 'bottom',
+										x: 0,
+										y: 1,
+										xref: 'paper',
+										yref: 'paper',
+										font: {
+											family: 'Courier New, monospace',
+											size: 30
+										}
+									},
+									barmode: 'group'
+								}
 
 								Plotly.newPlot('HistogramGraph', data, layout);
 							})
@@ -4856,12 +4943,27 @@
 
 								var data = [trace1];
 
-								var layout = {barmode: 'group'};
+								var layout = {
+									title: {
+										text:'<b>Histogram:</b> Frequency of "'+attr11_1+'" by "'+attr11_2+'"',
+										xanchor: 'left', // or 'auto', which matches 'left' in this case
+										yanchor: 'bottom',
+										x: 0,
+										y: 1,
+										xref: 'paper',
+										yref: 'paper',
+										font: {
+											family: 'Courier New, monospace',
+											size: 30
+										}
+									},
+									barmode: 'group'
+								}
 
 								Plotly.newPlot('HistogramGraph', data, layout);
 							})
 						})
-						d3.select("#attr11_1").on("change", function(){
+						/*d3.select("#attr11_1").on("change", function(){
 							var attr11_1 = this.value;
 							d3.select("#attr11_2").on("change", function(){
 								var attr11_2 = this.value;
@@ -5201,7 +5303,7 @@
 									Plotly.newPlot('HistogramGraph', data, layout);
 								})
 							})
-						})	
+						})*/
 					}					
 				})	
 				
