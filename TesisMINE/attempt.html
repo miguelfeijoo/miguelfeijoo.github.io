@@ -118,6 +118,10 @@
 	<div id='boxplotid' ng-controller="boxplotController" class="boxplot">
 		<span style=" float:left; padding-left:2%;"> 
 		<p></p>
+		<div id="list4_1" align="left"></div>	
+		<p></p>
+		<div id="list4_2" align="left"></div>	
+		<p></p>
 		<div id="list4" align="left"></div>		
 		<div id="boxplot"></div>
 		<p></p>
@@ -2604,7 +2608,7 @@
 			});				
 	}])
 	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {	
-		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
+		/*container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
 					
 					if(returnData[0].hasOwnProperty("Year")){
@@ -2752,14 +2756,7 @@
 											},400)
 										}	
 									}
-									/*if(attr5=='COMPLETE DATA'){	
-										console.log(returnData)									
-										//datos=returnData;
-										document.getElementById("counter").innerHTML = '<strong> SHOWING\n'+datos.length+' from the original loaded data </strong>'	
-										//returnData=data_filter
-										container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-										container.layoutManager.eventHub.emit( 'datosvisibles', returnData );																		
-									}*/
+									
 
 									container.layoutManager.eventHub.on( 'datos', function( data ){
 											console.log(data)
@@ -2812,7 +2809,141 @@
 						document.getElementById("list4").innerHTML = '<strong><font size="3"> THERE ARE NOT ANY TEMPORAL ATTRIBUTES THAT PERMITS THE PRELIMINARY STATISTICAL ANALYSIS </font></strong>'
 					}
 				})	
+			})*/
+
+		container.layoutManager.eventHub.on( 'columnas_list', function( totales ){
+			container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
+				container.layoutManager.eventHub.on( 'catColumns', function( cat ){	
+					container.layoutManager.eventHub.on( 'datosvisibles', function( returnData ){	
+
+						var x=[]
+						var lista ='';
+						var lista_seq=[]
+						for(var i =0;i<cat.length;i++){
+							if(!(cat[i]=='__i'||cat[i]=='__seqId'||cat[i]=='visible'||cat[i]=='selected')){
+								lista_seq.push('<option value="'+cat[i]+'">')	
+							}						
+						}
+						lista=lista_seq.join('')	
+
+						document.getElementById("list4").innerHTML = '<strong>Select a <font color="blue">QUANTITATIVE </font> value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols	
+						document.getElementById("list4_1").innerHTML = '<strong>Select a <font color="green"> FIRST CATEGORICAL </font> value: </strong> <input list="attrs4_1" type="text" id="attr4_1"><datalist id="attrs4_1">'+lista	
+						document.getElementById("list4_2").innerHTML = '<strong>Select a <font color="green"> SECOND CATEGORICAL </font> value: </strong> <input list="attrs4_2" type="text" id="attr4_2"><datalist id="attrs4_2">'+lista	
+
+						d3.select("#attr4_1").on("change", function(){
+							var attr4_1 = this.value;	
+							console.log("Selected Value Attr4_1: "+attr4_1)	
+							d3.select("#attr4_2").on("change", function(){
+								var attr4_2 = this.value;
+								console.log("Selected Value Attr4_2: "+attr4_2)
+								d3.select("#attr4").on("change", function(){
+									document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'//'<option value="COMPLETE DATA">'
+									var attr4 = this.value;							
+									console.log("Selected Value Attr4: "+attr4)	
+
+									var values_x=[]
+									var values_x_sub=[]
+
+									returnData.map(function(d){
+										values_x.push(d[attr4_1])
+										values_x_sub.push(d[attr4_2])
+									})		
+
+									var arraydistinct=values_x_sub.filter((value, index, self) => self.indexOf(value) === index)
+
+
+
+
+									var traces=[]
+									for(var k=0;k<arraydistinct.length;k++){
+										for(var i=0;i<values_x_sub.length;i++){
+											var temp_array=[]
+											var values_y=[]									
+
+											returnData.filter(d=>d[attr4_2]==arraydistinct[k]).filter(d=>d[attr4_1]==values_x[i]).map(function(d){
+
+												temp_array.push(+d[attr4])
+											
+											})										
+											
+										}
+										traces.push({
+											  y: temp_array,
+											  x: values_x,
+											  name: arraydistinct[k],
+											  boxpoints: 'all',
+											 // marker: {color: '#3D9970'},
+											  type: 'box'
+											})
+									}
+									
+									
+
+									
+
+									/*var trace1 = {
+									  y: [0.2, 0.2, 0.6, 1.0, 0.5, 0.4, 0.2, 0.7, 0.9, 0.1, 0.5, 0.3],
+									  x: x,
+									  name: 'kale',
+									  boxpoints: 'all',
+									  marker: {color: '#3D9970'},
+									  type: 'box'
+									};
+
+									var trace2 = {
+									  y: [0.6, 0.7, 0.3, 0.6, 0.0, 0.5, 0.7, 0.9, 0.5, 0.8, 0.7, 0.2],
+									  x: x,
+									  name: 'radishes',
+									  boxpoints: 'all',
+									  marker: {color: '#FF4136'},
+									  type: 'box'
+									};
+
+									var trace3 = {
+									  y: [0.1, 0.3, 0.1, 0.9, 0.6, 0.6, 0.9, 1.0, 0.3, 0.6, 0.8, 0.5],
+									  x: x,
+									  name: 'carrots',
+									  boxpoints: 'all',
+									  marker: {color: '#FF851B'},
+									  type: 'box'
+									};*/
+
+									var data = traces;
+
+									var layout = {
+									  title: {
+										text:'<b>Box Plot</b> relating: "<b>'+attr4+'</b>" by "<b>'+attr4_1+'</b>" AND "<b>'+attr4_2+'</b>"',
+										xanchor: 'left', // or 'auto', which matches 'left' in this case
+										yanchor: 'bottom',
+										x: 0,
+										y: 1,
+										xref: 'paper',
+										yref: 'paper',
+										font: {
+											family: 'Courier New, monospace',
+											size: 30
+										}
+									},
+									  yaxis: {
+									    title: attr4,
+									    zeroline: false
+									  },
+									  boxmode: 'group'
+									};
+
+									Plotly.newPlot('boxplot', data, layout);
+
+									document.getElementById('boxplot').on('plotly_click',function(data){
+										console.log(data)			
+																
+									})
+								})
+							})
+						})
+					})
+				})
 			})
+		})
 	}])
 	mapApp.controller('mapController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$interval,container, state,TestService ) {
 
