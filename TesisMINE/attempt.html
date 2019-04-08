@@ -237,23 +237,42 @@
 <template type="text/html" id="pieTemplate">			
 	<div id='pieid' ng-controller="pieController" class="pie">
 		<p></p>
+		<div id="text_pie"></div>
+		<p></p>
 		<div id="list11" align="left"></div>
 		<p></p>
 		<div id="pieGraph"align="left"></div>
 		<p></p>
-		<p><strong>Select the analysis you want to check on the following HISTOGRAM,</strong></p><div id='averageorsum' align="left"></div><p><strong>Now SELECT the attributes below:</strong></p>
 		<p></p>
-		
-			<div id="list11_2" align="left"></div>
-			<p></p>
-			<div id="list11_1" align="left"></div>
-			<p></p>
-			<div id="list11_3" align="left"></div>
-			<p></p>
-			<div id="list11_4" align="left"></div>
-			<p></p>				
-		
-		<div id="HistogramGraph"align="center"></div>
+		<div id="text_bar"></div>
+		<p></p>
+		<div id='averageorsum' align="left"></div>
+		<p></p>		
+		<div id="list11_2" align="left"></div>
+		<p></p>
+		<div id="list11_1" align="left"></div>
+		<p></p>
+		<div id="HistogramGraph"align="left"></div>
+		<p></p>
+		<div id="text_grouped"></div>
+		<p></p>
+		<div id='averageorsum2' align="left"></div>
+		<p></p>					
+		<div id="list11_5" align="left"></div>
+		<p></p>
+		<div id="list11_3" align="left"></div>
+		<p></p>
+		<div id="list11_4" align="left"></div>
+		<p></p>	
+		<div id="GroupedBarGraph"align="left"></div>
+		<p></p>
+		<div id="text_stack"></div>
+		<p></p>
+		<div id="list11_6" align="left"></div>
+		<p></p>
+		<div id="list11_7" align="left"></div>
+		<p></p>	
+		<div id="StackedBarGraph"align="left"></div>		
 	</span>
 	</div>
 </template>
@@ -490,6 +509,28 @@
 								if(d['ID_RANGOINGRESOS']==8){
 									d['ID_RANGOINGRESOS']='Más de $8.000.000'
 								}													
+
+							}
+
+							if(d.hasOwnProperty('ESTRATO')){
+								if(d['ESTRATO']==1){
+									d['ESTRATO']='ESTRATO 1'
+								}
+								if(d['ESTRATO']==2){
+									d['ESTRATO']='ESTRATO 2'
+								}
+								if(d['ESTRATO']==3){
+									d['ESTRATO']='ESTRATO 3'
+								}
+								if(d['ESTRATO']==4){
+									d['ESTRATO']='ESTRATO 4'
+								}
+								if(d['ESTRATO']==5){
+									d['ESTRATO']='ESTRATO 5'
+								}
+								if(d['ESTRATO']==6){
+									d['ESTRATO']='ESTRATO 6'
+								}																	
 
 							}
 
@@ -3693,1622 +3734,1927 @@
 		},500)
 	}])
 	pieApp.controller('pieController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
-		container.layoutManager.eventHub.on( 'columnas_list', function( cols ){
-			console.log(cols)
-			container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){		
+		
+
+		container.layoutManager.eventHub.on( 'columnas_list', function( totales ){
+			container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
+				container.layoutManager.eventHub.on( 'catColumns', function( cat ){					
+					container.layoutManager.eventHub.on( 'datosvisibles', function( rows ){		
+
+						var x=[]
+						var lista ='';
+						var lista_seq=[]
+						for(var i =0;i<cat.length;i++){
+							if(!(cat[i]=='__i'||cat[i]=='__seqId'||cat[i]=='visible'||cat[i]=='selected')){
+								lista_seq.push('<option value="'+cat[i]+'">')	
+							}						
+						}
+						lista=lista_seq.join('')
+
+						document.getElementById("text_pie").innerHTML='<strong><font size="5">PIE CHART</font></strong>'
+						document.getElementById("text_bar").innerHTML='<strong><font size="5">BAR CHART</font></strong>'
+						document.getElementById("text_grouped").innerHTML='<strong><font size="5">GROUPED BAR CHART</font></strong>'
+						document.getElementById("text_stack").innerHTML='<strong><font size="5">STACKED BAR CHART</font></strong>'
+						document.getElementById("list11").innerHTML='<p></p><strong>Select an attribute to display a BAR CHART: </strong> <input list="attrs11" type="text" id="attr11"><datalist id="attrs11">'+cols
+						document.getElementById("list11_1").innerHTML='<p></p><strong>Select a <font color="green">QUANTITATIVE attribute</font> to display a HISTOGRAM by FREQUENCY/AVERAGE: </strong> <input list="attrs11_1" type="text" id="attr11_1"><datalist id="attrs11_1">'+cols
+						document.getElementById("list11_2").innerHTML='<p></p><strong>Select a <font color="blue">CATEGORICAL attribute</font> for your analysis: </strong> <input list="attrs11_2" type="text" id="attr11_2"><datalist id="attrs11_2">'+lista
+
+						document.getElementById("list11_5").innerHTML='<p></p><strong>Select a <font color="blue">CATEGORICAL attribute</font> for your analysis: </strong> <input list="attrs11_5" type="text" id="attr11_5"><datalist id="attrs11_5">'+lista
+
+						document.getElementById("list11_6").innerHTML='<p></p><strong>Select a <font color="blue">CATEGORICAL attribute</font> for your analysis: </strong> <input list="attrs11_6" type="text" id="attr11_6"><datalist id="attrs11_6">'+lista
+
+						document.getElementById("list11_7").innerHTML='<p></p><strong>     Select an<font color="orange"> ATTRIBUTE OF INTEREST </font> to display a STACKED BAR CHART: </strong> <input list="attrs11_7" type="text" id="attr11_7"><datalist id="attrs11_7">'+totales
+
+						document.getElementById("list11_3").innerHTML='<p></p><strong>     Select a <font color="red">FIRST QUANTITATIVE attribute </font> to display a GROUPED HISTOGRAM: </strong> <input list="attrs11_3" type="text" id="attr11_3"><datalist id="attrs11_3">'+cols
+
+						document.getElementById("list11_4").innerHTML='<p></p><strong>          Select a <font color="red">SECOND QUANTITATIVE attribute </font> to display a GROUPED HISTOGRAM: </strong> <input list="attrs11_4" type="text" id="attr11_4"><datalist id="attrs11_4">'+cols
+
+						document.getElementById("averageorsum").innerHTML='<p><strong>Select the analysis you want to check on the following HISTOGRAM:</strong></p><label class="switch"> <input type="checkbox" id="averageorsum_btn"><div class="slider round">         <span class="on">Average</span>           <span class="off">Sum</span>           </div>         </label><p><strong>Now SELECT the attributes below:</strong></p>'
+
+						document.getElementById("averageorsum2").innerHTML='<p><strong>Select the analysis you want to check on the following HISTOGRAM:</strong></p><label class="switch"> <input type="checkbox" id="averageorsum2_btn"><div class="slider round">         <span class="on">Average</span>           <span class="off">Sum</span>           </div>         </label><p><strong>Now SELECT the attributes below:</strong></p>'
+
 
 						
-				document.getElementById("list11").innerHTML='<p></p><strong>Select an attribute to display a BAR CHART: </strong> <input list="attrs11" type="text" id="attr11"><datalist id="attrs11">'+cols
-				document.getElementById("list11_1").innerHTML='<p></p><strong>Select a <font color="green">QUANTITATIVE attribute</font> to display a HISTOGRAM: </strong> <input list="attrs11_1" type="text" id="attr11_1"><datalist id="attrs11_1">'+cols
-				document.getElementById("list11_2").innerHTML='<p></p><strong>Select a <font color="blue">CATEGORICAL attribute</font> to display a HISTOGRAM: </strong> <input list="attrs11_2" type="text" id="attr11_2"><datalist id="attrs11_2">'+cols
+						d3.select("#attr11").on("change", function(){
 
-				//document.getElementById("list11_3").innerHTML='<p></p><strong>     Select a <font color="green">SECOND QUANTITATIVE attribute </font> to display a GROUPED HISTOGRAM: </strong> <input list="attrs11_3" type="text" id="attr11_3"><datalist id="attrs11_3">'+cols
-
-				//document.getElementById("list11_4").innerHTML='<p></p><strong>          Select a <font color="red">THIRD QUANTITATIVE attribute </font> to display a BIGGER GROUPED HISTOGRAM: </strong> <input list="attrs11_4" type="text" id="attr11_4"><datalist id="attrs11_4">'+cols
-
-				document.getElementById("averageorsum").innerHTML='<label class="switch"> <input type="checkbox" id="averageorsum_btn"><div class="slider round">         <span class="on">Average</span>           <span class="off">Sum</span>           </div>         </label>'
+							var attr11 = this.value;
 
 
-				setTimeout(function(){
-					var data = [{
-					values: [],
-					labels: [],
-					type: 'pie'
-					}];			
+							var arrayToCount=[]
+							rows.map(function(d){
+								arrayToCount.push(d[attr11])
+							})
 
-					Plotly.newPlot('pieGraph', data);			
+
+							var arraydistinct=arrayToCount.filter((value, index, self) => self.indexOf(value) === index)
+
+
+							var array_count=[]
+
+							for(var i=0;i<arraydistinct.length;i++){
+								var result = arrayToCount.filter(d => d === arraydistinct[i]).length;
+								if(result!=0){
+									array_count.push(result)
+								}	
+
+								console.log(arraydistinct[i]+"    "+result)						
+							}
+
+							console.log(array_count)
+
+							var data = [{
+								values: array_count,
+								labels: arraydistinct,
+								type: 'pie'
+							}];
+
+							var layout = {
+								title: {
+									text:'<b>Graph:</b> Pie Chart',
+									xanchor: 'left', // or 'auto', which matches 'left' in this case
+									yanchor: 'bottom',
+									x: 0,
+									y: 1,
+									xref: 'paper',
+									yref: 'paper',
+									font: {
+										family: 'Courier New, monospace',
+										size: 20
+									}
+								},
+								annotations:[{
+									text: '<b>% for each: "'+attr11+'"</b>',
+									showarrow: false,
+									xanchor: 'left', // or 'auto', which matches 'left' in this case
+									yanchor: 'bottom',
+									x: 0,
+									y: 0.82,
+									xref: 'paper',
+									yref: 'paper',
+									font: {
+										family: 'Courier New, monospace',
+										size: 26
+									}
+								},{
+									text: "- Scroll to the right",
+									showarrow: false,
+									xanchor: 'left', // or 'auto', which matches 'left' in this case
+									yanchor: 'bottom',
+									x: 0,
+									y: 0.72,
+									xref: 'paper',
+									yref: 'paper',
+									font: {
+										family: 'Courier New, monospace',
+										size: 18
+									}
+								},{
+									text: "or Maximize the Container Window -",
+									showarrow: false,
+									xanchor: 'left', // or 'auto', which matches 'left' in this case
+									yanchor: 'bottom',
+									x: 0,
+									y: 0.65,
+									xref: 'paper',
+									yref: 'paper',
+									font: {
+										family: 'Courier New, monospace',
+										size: 18
+									}
+								}]
+							}
 
 							
-				},500)
+
+							Plotly.newPlot('pieGraph', data,layout);
+						})
 
 
-				d3.select("#attr11").on("change", function(){
+						if(document.getElementById('averageorsum_btn').value == 'on'){	
+								d3.select("#attr11_1").on("change", function(){
+									var attr11_1 = this.value;
+									d3.select("#attr11_2").on("change", function(){
+										var attr11_2 = this.value;
 
-					var attr11 = this.value;
+										console.log("entro opcion 1")
+
+										var values_x=[]
+										var values_y=[]
+
+										rows.map(function(d){
+											if(!values_x.includes(d[attr11_2])){
+												values_x.push(d[attr11_2])
+											}													
+										})	
+
+										console.log(values_x)
 
 
-					var arrayToCount=[]
-					rows.map(function(d){
-						arrayToCount.push(d[attr11])
+										
+										for(var i=0;i<values_x.length;i++){							
+											var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+											var avgs=[];
+											temp.map(function(d){
+												avgs.push(parseFloat(d[attr11_1]))
+											})
+
+											console.log(avgs)
+
+											var total=0
+											for(var j=0;j<avgs.length;j++){
+												total += avgs[j];
+											}
+											var avg = total / avgs.length;
+
+											values_y.push(avg)
+											
+										}
+
+										console.log(values_y)
+
+
+
+
+
+										var trace1 = {
+										  x: values_x,
+										  y: values_y,
+										  name: attr11_1,
+										  type: 'bar'
+										};
+										
+
+										var data = [trace1];
+
+										var layout = {
+											title: {
+												text:'<b>Histogram:</b> Average of "'+attr11_1+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+
+										Plotly.newPlot('HistogramGraph', data, layout);
+
+									})
+								})
+								d3.select("#attr11_2").on("change", function(){
+									var attr11_2 = this.value;	
+									d3.select("#attr11_1").on("change", function(){
+										var attr11_1 = this.value;
+
+										console.log("entro opcion 2")
+
+										var values_x=[]
+										var values_y=[]
+
+										rows.map(function(d){
+											if(!values_x.includes(d[attr11_2])){
+												values_x.push(d[attr11_2])
+											}													
+										})	
+
+										console.log(values_x)
+
+
+										
+										for(var i=0;i<values_x.length;i++){							
+											var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+											var avgs=[];
+											temp.map(function(d){
+												avgs.push(parseFloat(d[attr11_1]))
+											})
+
+											console.log(avgs)
+
+											var total=0
+											for(var j=0;j<avgs.length;j++){
+												total += avgs[j];
+											}
+											var avg = total / avgs.length;
+
+											values_y.push(avg)
+											
+										}
+
+										console.log(values_y)
+
+
+										var trace1 = {
+										  x: values_x,
+										  y: values_y,
+										  name: attr11_1,
+										  type: 'bar'
+										};
+										
+
+										var data = [trace1];
+
+										var layout = {
+											title: {
+												text:'<b>Histogram:</b> Average of "<b>'+attr11_1+'</b>" by "<b>'+attr11_2+'</b>"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+										Plotly.newPlot('HistogramGraph', data, layout);
+									})
+								})									
+						}
+
+						if(document.getElementById('averageorsum2_btn').value == 'on'){
+								d3.select("#attr11_5").on("change", function(){
+									var attr11_2 = this.value;
+									d3.select("#attr11_3").on("change", function(){
+										var attr11_1 = this.value;
+										d3.select("#attr11_4").on("change", function(){
+											var attr11_3 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y1.push(avg)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Average of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})	
+								d3.select("#attr11_3").on("change", function(){
+									var attr11_1 = this.value;
+									d3.select("#attr11_5").on("change", function(){
+										var attr11_2 = this.value;
+										d3.select("#attr11_4").on("change", function(){
+											var attr11_3 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y1.push(avg)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Average of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})	
+								d3.select("#attr11_4").on("change", function(){
+									var attr11_3 = this.value;
+									d3.select("#attr11_5").on("change", function(){
+										var attr11_2 = this.value;
+										d3.select("#attr11_3").on("change", function(){
+											var attr11_1 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y1.push(avg)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Average of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})	
+								d3.select("#attr11_3").on("change", function(){
+									var attr11_1 = this.value;
+									d3.select("#attr11_4").on("change", function(){
+										var attr11_3 = this.value;
+										d3.select("#attr11_5").on("change", function(){
+											var attr11_2 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y1.push(avg)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Average of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})						
+						}
+						
+						$('input[id="averageorsum_btn"]').change(function() {
+
+							document.getElementById("attr11_1").value = "";
+							document.getElementById("attr11_2").value = "";						
+
+							if(this.checked){
+								console.log(this.value)
+								d3.select("#attr11_1").on("change", function(){
+									var attr11_1 = this.value;
+									d3.select("#attr11_2").on("change", function(){
+										var attr11_2 = this.value;
+
+										var values_x=[]
+										var values_y=[]
+
+										rows.map(function(d){
+											if(!values_x.includes(d[attr11_2])){
+												values_x.push(d[attr11_2])
+											}													
+										})	
+
+										console.log(values_x)
+
+
+										
+										for(var i=0;i<values_x.length;i++){							
+											var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+											var avgs=[];
+											temp.map(function(d){
+												avgs.push(parseFloat(d[attr11_1]))
+											})
+
+											console.log(avgs)
+
+											var total=0
+											for(var j=0;j<avgs.length;j++){
+												total += avgs[j];
+											}
+											var avg = total / avgs.length;
+
+											values_y.push(avg)
+											
+										}
+
+										console.log(values_y)
+
+
+
+
+
+										var trace1 = {
+										  x: values_x,
+										  y: values_y,
+										  name: attr11_2,
+										  type: 'bar'
+										};
+
+										var trace2 = {
+										  x: values_x,
+										  y: values_y,
+										  name: attr11_1,
+										  type: 'bar'
+										};
+
+										var data = [trace1];
+
+										var layout = {
+											title: {
+												text:'<b>Histogram:</b> Average of "'+attr11_1+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+										Plotly.newPlot('HistogramGraph', data, layout);
+
+									})
+								})
+								d3.select("#attr11_2").on("change", function(){
+									var attr11_2 = this.value;
+									d3.select("#attr11_1").on("change", function(){
+										var attr11_1 = this.value;
+
+										var values_x=[]
+										var values_y=[]
+
+										rows.map(function(d){
+											if(!values_x.includes(d[attr11_2])){
+												values_x.push(d[attr11_2])
+											}													
+										})	
+
+										console.log(values_x)
+
+
+										
+										for(var i=0;i<values_x.length;i++){							
+											var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+											var avgs=[];
+											temp.map(function(d){
+												avgs.push(parseFloat(d[attr11_1]))
+											})
+
+											console.log(avgs)
+
+											var total=0
+											for(var j=0;j<avgs.length;j++){
+												total += avgs[j];
+											}
+											var avg = total / avgs.length;
+
+											values_y.push(avg)
+											
+										}
+
+										console.log(values_y)
+
+
+										var trace1 = {
+										  x: values_x,
+										  y: values_y,
+										  name: attr11_1,
+										  type: 'bar'
+										};
+										
+
+										var data = [trace1];
+
+										var layout = {
+											title: {
+												text:'<b>Histogram:</b> Average of "'+attr11_1+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+										Plotly.newPlot('HistogramGraph', data, layout);
+									})
+								})										 
+							}	
+							else{
+								console.log(this.value)	
+								d3.select("#attr11_1").on("change", function(){
+									var attr11_1 = this.value;
+									d3.select("#attr11_2").on("change", function(){
+										var attr11_2 = this.value;
+
+										var values_x=[]
+										var values_y=[]
+
+										rows.map(function(d){
+											if(!values_x.includes(d[attr11_2])){
+												values_x.push(d[attr11_2])
+											}													
+										})	
+
+										console.log(values_x)
+
+
+										
+										for(var i=0;i<values_x.length;i++){							
+											var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+											var avgs=[];
+											temp.map(function(d){
+												avgs.push(parseFloat(d[attr11_1]))
+											})
+
+											console.log(avgs)
+
+											var total=0
+											for(var j=0;j<avgs.length;j++){
+												total += avgs[j];
+											}
+
+											values_y.push(total)
+											
+										}
+
+										console.log(values_y)
+
+
+										var trace1 = {
+										  x: values_x,
+										  y: values_y,
+										  name: attr11_1,
+										  type: 'bar'
+										};
+										
+
+										var data = [trace1];
+
+										var layout = {
+											title: {
+												text:'<b>Histogram:</b> Frequency of "'+attr11_1+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+										Plotly.newPlot('HistogramGraph', data, layout);
+									})
+								})					
+								d3.select("#attr11_2").on("change", function(){
+									var attr11_2 = this.value;
+									d3.select("#attr11_1").on("change", function(){
+										var attr11_1 = this.value;
+
+										var values_x=[]
+										var values_y=[]
+
+										rows.map(function(d){
+											if(!values_x.includes(d[attr11_2])){
+												values_x.push(d[attr11_2])
+											}													
+										})	
+
+										console.log(values_x)
+
+
+										
+										for(var i=0;i<values_x.length;i++){							
+											var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+											var avgs=[];
+											temp.map(function(d){
+												avgs.push(parseFloat(d[attr11_1]))
+											})
+
+											console.log(avgs)
+
+											var total=0
+											for(var j=0;j<avgs.length;j++){
+												total += avgs[j];
+											}
+
+											values_y.push(total)
+											
+										}
+
+										console.log(values_y)
+
+
+										var trace1 = {
+										  x: values_x,
+										  y: values_y,
+										  name: attr11_1,
+										  type: 'bar'
+										};
+										
+
+										var data = [trace1];
+
+										var layout = {
+											title: {
+												text:'<b>Histogram:</b> Frequency of "'+attr11_1+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+										Plotly.newPlot('HistogramGraph', data, layout);
+									})
+								})						
+							}					
+						})
+
+						$('input[id="averageorsum2_btn"]').change(function() {
+
+							document.getElementById("attr11_3").value = "";
+							document.getElementById("attr11_4").value = "";
+							document.getElementById("attr11_5").value = "";							
+
+							if(this.checked){
+								d3.select("#attr11_5").on("change", function(){
+									var attr11_2 = this.value;
+									d3.select("#attr11_3").on("change", function(){
+										var attr11_1 = this.value;
+										d3.select("#attr11_4").on("change", function(){
+											var attr11_3 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y1.push(avg)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Average of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})	
+								d3.select("#attr11_3").on("change", function(){
+									var attr11_1 = this.value;
+									d3.select("#attr11_5").on("change", function(){
+										var attr11_2 = this.value;
+										d3.select("#attr11_4").on("change", function(){
+											var attr11_3 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y1.push(avg)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Average of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})	
+								d3.select("#attr11_4").on("change", function(){
+									var attr11_3 = this.value;
+									d3.select("#attr11_5").on("change", function(){
+										var attr11_2 = this.value;
+										d3.select("#attr11_3").on("change", function(){
+											var attr11_1 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y1.push(avg)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Average of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})	
+								d3.select("#attr11_3").on("change", function(){
+									var attr11_1 = this.value;
+									d3.select("#attr11_4").on("change", function(){
+										var attr11_3 = this.value;
+										d3.select("#attr11_5").on("change", function(){
+											var attr11_2 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y1.push(avg)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Average of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})								 
+							}	
+							else{
+								d3.select("#attr11_5").on("change", function(){
+									var attr11_2 = this.value;
+									d3.select("#attr11_3").on("change", function(){
+										var attr11_1 = this.value;
+										d3.select("#attr11_4").on("change", function(){
+											var attr11_3 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+
+												values_y1.push(total)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Frequency of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})	
+								d3.select("#attr11_3").on("change", function(){
+									var attr11_1 = this.value;
+									d3.select("#attr11_5").on("change", function(){
+										var attr11_2 = this.value;
+										d3.select("#attr11_4").on("change", function(){
+											var attr11_3 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+
+												values_y1.push(total)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Frequency of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})	
+								d3.select("#attr11_4").on("change", function(){
+									var attr11_3 = this.value;
+									d3.select("#attr11_5").on("change", function(){
+										var attr11_2 = this.value;
+										d3.select("#attr11_3").on("change", function(){
+											var attr11_1 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+
+												values_y1.push(total)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Frequency of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})	
+								d3.select("#attr11_3").on("change", function(){
+									var attr11_1 = this.value;
+									d3.select("#attr11_4").on("change", function(){
+										var attr11_3 = this.value;
+										d3.select("#attr11_5").on("change", function(){
+											var attr11_2 = this.value;
+
+											var values_x=[]
+											var values_y=[]
+											var values_y1=[]
+
+											rows.map(function(d){
+												if(!values_x.includes(d[attr11_2])){
+													values_x.push(d[attr11_2])
+												}													
+											})	
+
+											console.log(values_x)
+
+
+											
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_1]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+												var avg = total / avgs.length;
+
+												values_y.push(avg)
+												
+											}
+
+											for(var i=0;i<values_x.length;i++){							
+												var temp=rows.filter(d=>d[attr11_2]==values_x[i])
+												var avgs=[];
+												temp.map(function(d){
+													avgs.push(parseFloat(d[attr11_3]))
+												})
+
+												console.log(avgs)
+
+												var total=0
+												for(var j=0;j<avgs.length;j++){
+													total += avgs[j];
+												}
+
+												values_y1.push(total)
+												
+											}
+
+											console.log(values_y)
+											console.log(values_y1)
+
+
+											var trace1 = {
+											  x: values_x,
+											  y: values_y,
+											  name: attr11_1,
+											  type: 'bar'
+											};
+
+											var trace2 = {
+											  x: values_x,
+											  y: values_y1,
+											  name: attr11_3,
+											  type: 'bar'
+											};
+											
+
+											var data = [trace1,trace2];
+
+											var layout = {
+											title: {
+												text:'<b>Grouped Bar Chart:</b> Frequency of "'+attr11_1+' and "'+attr11_3+'" by "'+attr11_2+'"',
+												xanchor: 'left', // or 'auto', which matches 'left' in this case
+												yanchor: 'bottom',
+												x: 0,
+												y: 1,
+												xref: 'paper',
+												yref: 'paper',
+												font: {
+													family: 'Courier New, monospace',
+													size: 30
+												}
+											},
+											barmode: 'group'
+										}
+
+											Plotly.newPlot('GroupedBarGraph', data, layout);
+										})
+									})
+								})													
+							}					
+						})	
+
+						d3.select("#attr11_6").on("change", function(){
+							var attr11_6=this.value
+							d3.select("#attr11_7").on("change", function(){
+								var attr11_7=this.value
+
+								var values_x=[]
+								var values_y=[]
+
+								rows.map(function(d){
+									if(!values_x.includes(d[attr11_6])){
+										values_x.push(d[attr11_6])
+									}													
+								})
+
+
+								var arrayToCount=[]
+								rows.map(function(d){
+									arrayToCount.push(d[attr11_7])
+								})
+
+
+								var arraydistinct=arrayToCount.filter((value, index, self) => self.indexOf(value) === index)
+	
+
+								var array_trace=[]
+
+								var x=[]
+								
+								for(var k=0;k<arraydistinct.length;k++){
+									var array_final=[]
+
+									for(var i=0;i<values_x.length;i++){
+									
+										var temp_array=[]
+										var total=0
+										
+
+										rows.filter(d=>d[attr11_7]==arraydistinct[k]).filter(d=>d[attr11_6]==values_x[i]).map(function(d){
+
+											temp_array.push(d[attr11_7])
+											
+										})
+
+									
+										//console.log(total)
+										console.log(arraydistinct[k]   +"        "+values_x[i] + "      "+temp_array.length)									
+
+										array_final.push(temp_array.length)
+
+									}
+						
+									array_trace.push({
+										x: values_x,
+										y: array_final,
+										name: arraydistinct[k],
+										type: 'bar'
+									})
+								}
+
+								var arrays_percentage=[]
+								array_trace.map(function(d){
+									arrays_percentage.push(d.y)
+								})
+
+								
+								var final_array_trace=[]
+								for(var i=0;i<arrays_percentage.length;i++){
+									for(var k=0;k<arrays_percentage[i].length;k++){
+										if(arrays_percentage[i+1]!=undefined){
+											final_array_trace.push(arrays_percentage[i][k]+arrays_percentage[i+1][k])
+										}										
+									}									
+								}	
+
+								array_trace.map(function(d){
+
+									for(var i=0;i<(d.y).length;i++){
+										(d.y)[i]=((d.y)[i]/final_array_trace[i])*100
+									}
+								})
+
+
+								var data = array_trace;
+
+								var layout = {
+									title: {
+										text:'<b>Stacked Bar Chart:</b> Percentage of "'+attr11_7+'" by "'+attr11_6+'"',
+										xanchor: 'left', // or 'auto', which matches 'left' in this case
+										yanchor: 'bottom',
+										x: 0,
+										y: 1,
+										xref: 'paper',
+										yref: 'paper',
+										font: {
+											family: 'Courier New, monospace',
+											size: 30
+										}
+									},
+									barmode: 'stack'
+								}
+
+
+								Plotly.newPlot('StackedBarGraph', data, layout);							
+							})
+						})
 					})
-
-
-					var arraydistinct=arrayToCount.filter((value, index, self) => self.indexOf(value) === index)
-
-
-					var array_count=[]
-
-					for(var i=0;i<arraydistinct.length;i++){
-						var result = arrayToCount.filter(d => d === arraydistinct[i]).length;
-						if(result!=0){
-							array_count.push(result)
-						}	
-
-						console.log(arraydistinct[i]+"    "+result)						
-					}
-
-					console.log(array_count)
-
-					var data = [{
-						values: array_count,
-						labels: arraydistinct,
-						type: 'pie'
-					}];
-
-					var layout = {
-						title: {
-							text:'<b>Graph:</b> Pie Chart',
-							xanchor: 'left', // or 'auto', which matches 'left' in this case
-							yanchor: 'bottom',
-							x: 0,
-							y: 1,
-							xref: 'paper',
-							yref: 'paper',
-							font: {
-								family: 'Courier New, monospace',
-								size: 20
-							}
-						},
-						annotations:[{
-							text: '<b>% for each: "'+attr11+'"</b>',
-							showarrow: false,
-							xanchor: 'left', // or 'auto', which matches 'left' in this case
-							yanchor: 'bottom',
-							x: 0,
-							y: 0.82,
-							xref: 'paper',
-							yref: 'paper',
-							font: {
-								family: 'Courier New, monospace',
-								size: 26
-							}
-						},{
-							text: "- Scroll to the right",
-							showarrow: false,
-							xanchor: 'left', // or 'auto', which matches 'left' in this case
-							yanchor: 'bottom',
-							x: 0,
-							y: 0.72,
-							xref: 'paper',
-							yref: 'paper',
-							font: {
-								family: 'Courier New, monospace',
-								size: 18
-							}
-						},{
-							text: "or Maximize the Container Window -",
-							showarrow: false,
-							xanchor: 'left', // or 'auto', which matches 'left' in this case
-							yanchor: 'bottom',
-							x: 0,
-							y: 0.65,
-							xref: 'paper',
-							yref: 'paper',
-							font: {
-								family: 'Courier New, monospace',
-								size: 18
-							}
-						}]
-					}
-
-					
-
-					Plotly.newPlot('pieGraph', data,layout);
 				})
-
-
-				if(document.getElementById('averageorsum_btn').value == 'on'){	
-						d3.select("#attr11_1").on("change", function(){
-							var attr11_1 = this.value;
-							d3.select("#attr11_2").on("change", function(){
-								var attr11_2 = this.value;
-
-								console.log("entro opcion 1")
-
-								var values_x=[]
-								var values_y=[]
-
-								rows.map(function(d){
-									if(!values_x.includes(d[attr11_2])){
-										values_x.push(d[attr11_2])
-									}													
-								})	
-
-								console.log(values_x)
-
-
-								
-								for(var i=0;i<values_x.length;i++){							
-									var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-									var avgs=[];
-									temp.map(function(d){
-										avgs.push(parseFloat(d[attr11_1]))
-									})
-
-									console.log(avgs)
-
-									var total=0
-									for(var j=0;j<avgs.length;j++){
-										total += avgs[j];
-									}
-									var avg = total / avgs.length;
-
-									values_y.push(avg)
-									
-								}
-
-								console.log(values_y)
-
-
-
-
-
-								var trace1 = {
-								  x: values_x,
-								  y: values_y,
-								  name: attr11_1,
-								  type: 'bar'
-								};
-								
-
-								var data = [trace1];
-
-								var layout = {
-									title: {
-										text:'<b>Histogram:</b> Average of "'+attr11_1+'" by "'+attr11_2+'"',
-										xanchor: 'left', // or 'auto', which matches 'left' in this case
-										yanchor: 'bottom',
-										x: 0,
-										y: 1,
-										xref: 'paper',
-										yref: 'paper',
-										font: {
-											family: 'Courier New, monospace',
-											size: 30
-										}
-									},
-									barmode: 'group'
-								}
-
-
-								Plotly.newPlot('HistogramGraph', data, layout);
-
-							})
-						})
-						d3.select("#attr11_2").on("change", function(){
-							var attr11_2 = this.value;
-							d3.select("#attr11_1").on("change", function(){
-								var attr11_1 = this.value;
-
-								console.log("entro opcion 2")
-
-								var values_x=[]
-								var values_y=[]
-
-								rows.map(function(d){
-									if(!values_x.includes(d[attr11_2])){
-										values_x.push(d[attr11_2])
-									}													
-								})	
-
-								console.log(values_x)
-
-
-								
-								for(var i=0;i<values_x.length;i++){							
-									var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-									var avgs=[];
-									temp.map(function(d){
-										avgs.push(parseFloat(d[attr11_1]))
-									})
-
-									console.log(avgs)
-
-									var total=0
-									for(var j=0;j<avgs.length;j++){
-										total += avgs[j];
-									}
-									var avg = total / avgs.length;
-
-									values_y.push(avg)
-									
-								}
-
-								console.log(values_y)
-
-
-								var trace1 = {
-								  x: values_x,
-								  y: values_y,
-								  name: attr11_1,
-								  type: 'bar'
-								};
-								
-
-								var data = [trace1];
-
-								var layout = {
-									title: {
-										text:'<b>Histogram:</b> Average of "<b>'+attr11_1+'</b>" by "<b>'+attr11_2+'</b>"',
-										xanchor: 'left', // or 'auto', which matches 'left' in this case
-										yanchor: 'bottom',
-										x: 0,
-										y: 1,
-										xref: 'paper',
-										yref: 'paper',
-										font: {
-											family: 'Courier New, monospace',
-											size: 30
-										}
-									},
-									barmode: 'group'
-								}
-
-								Plotly.newPlot('HistogramGraph', data, layout);
-							})
-						})		
-						/*d3.select("#attr11_1").on("change", function(){
-							var attr11_1 = this.value;
-							d3.select("#attr11_2").on("change", function(){
-								var attr11_2 = this.value;
-								d3.select("#attr11_3").on("change", function(){
-									var attr11_3 = this.value;
-
-									console.log("entro opcion 3")
-
-									var values_x=[]
-									var values_y=[]
-									var values_y1=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y1.push(avg)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})
-						d3.select("#attr11_1").on("change", function(){
-							var attr11_1 = this.value;
-							d3.select("#attr11_3").on("change", function(){
-								var attr11_3 = this.value;
-								d3.select("#attr11_2").on("change", function(){
-									var attr11_2 = this.value;
-									console.log("entro opcion 4")
-
-									var values_x=[]
-									var values_y=[]
-									var values_y1=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y1.push(avg)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})
-						d3.select("#attr11_2").on("change", function(){
-							var attr11_2 = this.value;
-							d3.select("#attr11_3").on("change", function(){
-								var attr11_3 = this.value;
-								d3.select("#attr11_1").on("change", function(){
-									var attr11_1 = this.value;
-									console.log("entro opcion 5")
-
-									var values_x=[]
-									var values_y=[]
-									var values_y1=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y1.push(avg)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})
-						d3.select("#attr11_2").on("change", function(){
-							var attr11_2 = this.value;
-							d3.select("#attr11_1").on("change", function(){
-								var attr11_1 = this.value;
-								d3.select("#attr11_3").on("change", function(){
-									var attr11_3 = this.value;
-
-									console.log("entro opcion 6")
-
-									var values_x=[]
-									var values_y=[]
-									var values_y1=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y1.push(avg)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})*/
-				}
-				
-				$('input[id="averageorsum_btn"]').change(function() {
-
-					document.getElementById("attr11_1").value = "";
-					document.getElementById("attr11_2").value = "";
-					//document.getElementById("attr11_3").value = "";
-					//document.getElementById("attr11_4").value = "";
-
-					if(this.checked){
-						console.log(this.value)
-						d3.select("#attr11_1").on("change", function(){
-							var attr11_1 = this.value;
-							d3.select("#attr11_2").on("change", function(){
-								var attr11_2 = this.value;
-
-								var values_x=[]
-								var values_y=[]
-
-								rows.map(function(d){
-									if(!values_x.includes(d[attr11_2])){
-										values_x.push(d[attr11_2])
-									}													
-								})	
-
-								console.log(values_x)
-
-
-								
-								for(var i=0;i<values_x.length;i++){							
-									var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-									var avgs=[];
-									temp.map(function(d){
-										avgs.push(parseFloat(d[attr11_1]))
-									})
-
-									console.log(avgs)
-
-									var total=0
-									for(var j=0;j<avgs.length;j++){
-										total += avgs[j];
-									}
-									var avg = total / avgs.length;
-
-									values_y.push(avg)
-									
-								}
-
-								console.log(values_y)
-
-
-
-
-
-								var trace1 = {
-								  x: values_x,
-								  y: values_y,
-								  name: attr11_2,
-								  type: 'bar'
-								};
-
-								var trace2 = {
-								  x: values_x,
-								  y: values_y,
-								  name: attr11_1,
-								  type: 'bar'
-								};
-
-								var data = [trace1];
-
-								var layout = {
-									title: {
-										text:'<b>Histogram:</b> Average of "'+attr11_1+'" by "'+attr11_2+'"',
-										xanchor: 'left', // or 'auto', which matches 'left' in this case
-										yanchor: 'bottom',
-										x: 0,
-										y: 1,
-										xref: 'paper',
-										yref: 'paper',
-										font: {
-											family: 'Courier New, monospace',
-											size: 30
-										}
-									},
-									barmode: 'group'
-								}
-
-								Plotly.newPlot('HistogramGraph', data, layout);
-
-							})
-						})
-						d3.select("#attr11_2").on("change", function(){
-							var attr11_2 = this.value;
-							d3.select("#attr11_1").on("change", function(){
-								var attr11_1 = this.value;
-
-								var values_x=[]
-								var values_y=[]
-
-								rows.map(function(d){
-									if(!values_x.includes(d[attr11_2])){
-										values_x.push(d[attr11_2])
-									}													
-								})	
-
-								console.log(values_x)
-
-
-								
-								for(var i=0;i<values_x.length;i++){							
-									var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-									var avgs=[];
-									temp.map(function(d){
-										avgs.push(parseFloat(d[attr11_1]))
-									})
-
-									console.log(avgs)
-
-									var total=0
-									for(var j=0;j<avgs.length;j++){
-										total += avgs[j];
-									}
-									var avg = total / avgs.length;
-
-									values_y.push(avg)
-									
-								}
-
-								console.log(values_y)
-
-
-								var trace1 = {
-								  x: values_x,
-								  y: values_y,
-								  name: attr11_1,
-								  type: 'bar'
-								};
-								
-
-								var data = [trace1];
-
-								var layout = {
-									title: {
-										text:'<b>Histogram:</b> Average of "'+attr11_1+'" by "'+attr11_2+'"',
-										xanchor: 'left', // or 'auto', which matches 'left' in this case
-										yanchor: 'bottom',
-										x: 0,
-										y: 1,
-										xref: 'paper',
-										yref: 'paper',
-										font: {
-											family: 'Courier New, monospace',
-											size: 30
-										}
-									},
-									barmode: 'group'
-								}
-
-								Plotly.newPlot('HistogramGraph', data, layout);
-							})
-						})		
-						/*d3.select("#attr11_1").on("change", function(){
-							var attr11_1 = this.value;
-							d3.select("#attr11_2").on("change", function(){
-								var attr11_2 = this.value;
-								d3.select("#attr11_3").on("change", function(){
-									var attr11_3 = this.value;
-
-									var values_x=[]
-									var values_y=[]
-									var values_y1=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y1.push(avg)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})
-						d3.select("#attr11_1").on("change", function(){
-							var attr11_1 = this.value;
-							d3.select("#attr11_3").on("change", function(){
-								var attr11_3 = this.value;
-								d3.select("#attr11_2").on("change", function(){
-									var attr11_2 = this.value;
-
-									var values_x=[]
-									var values_y=[]
-									var values_y1=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y1.push(avg)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})
-						d3.select("#attr11_2").on("change", function(){
-							var attr11_2 = this.value;
-							d3.select("#attr11_3").on("change", function(){
-								var attr11_3 = this.value;
-								d3.select("#attr11_1").on("change", function(){
-									var attr11_1 = this.value;
-
-									var values_x=[]
-									var values_y=[]
-									var values_y1=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y1.push(avg)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})
-						d3.select("#attr11_2").on("change", function(){
-							var attr11_2 = this.value;
-							d3.select("#attr11_1").on("change", function(){
-								var attr11_1 = this.value;
-								d3.select("#attr11_3").on("change", function(){
-									var attr11_3 = this.value;
-
-									var values_x=[]
-									var values_y=[]
-									var values_y1=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y1.push(avg)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})*/				 
-					}	
-					else{
-						console.log(this.value)	
-						d3.select("#attr11_1").on("change", function(){
-							var attr11_1 = this.value;
-							d3.select("#attr11_2").on("change", function(){
-								var attr11_2 = this.value;
-
-								var values_x=[]
-								var values_y=[]
-
-								rows.map(function(d){
-									if(!values_x.includes(d[attr11_2])){
-										values_x.push(d[attr11_2])
-									}													
-								})	
-
-								console.log(values_x)
-
-
-								
-								for(var i=0;i<values_x.length;i++){							
-									var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-									var avgs=[];
-									temp.map(function(d){
-										avgs.push(parseFloat(d[attr11_1]))
-									})
-
-									console.log(avgs)
-
-									var total=0
-									for(var j=0;j<avgs.length;j++){
-										total += avgs[j];
-									}
-
-									values_y.push(total)
-									
-								}
-
-								console.log(values_y)
-
-
-								var trace1 = {
-								  x: values_x,
-								  y: values_y,
-								  name: attr11_1,
-								  type: 'bar'
-								};
-								
-
-								var data = [trace1];
-
-								var layout = {
-									title: {
-										text:'<b>Histogram:</b> Frequency of "'+attr11_1+'" by "'+attr11_2+'"',
-										xanchor: 'left', // or 'auto', which matches 'left' in this case
-										yanchor: 'bottom',
-										x: 0,
-										y: 1,
-										xref: 'paper',
-										yref: 'paper',
-										font: {
-											family: 'Courier New, monospace',
-											size: 30
-										}
-									},
-									barmode: 'group'
-								}
-
-								Plotly.newPlot('HistogramGraph', data, layout);
-							})
-						})					
-						d3.select("#attr11_2").on("change", function(){
-							var attr11_2 = this.value;
-							d3.select("#attr11_1").on("change", function(){
-								var attr11_1 = this.value;
-
-								var values_x=[]
-								var values_y=[]
-
-								rows.map(function(d){
-									if(!values_x.includes(d[attr11_2])){
-										values_x.push(d[attr11_2])
-									}													
-								})	
-
-								console.log(values_x)
-
-
-								
-								for(var i=0;i<values_x.length;i++){							
-									var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-									var avgs=[];
-									temp.map(function(d){
-										avgs.push(parseFloat(d[attr11_1]))
-									})
-
-									console.log(avgs)
-
-									var total=0
-									for(var j=0;j<avgs.length;j++){
-										total += avgs[j];
-									}
-
-									values_y.push(total)
-									
-								}
-
-								console.log(values_y)
-
-
-								var trace1 = {
-								  x: values_x,
-								  y: values_y,
-								  name: attr11_1,
-								  type: 'bar'
-								};
-								
-
-								var data = [trace1];
-
-								var layout = {
-									title: {
-										text:'<b>Histogram:</b> Frequency of "'+attr11_1+'" by "'+attr11_2+'"',
-										xanchor: 'left', // or 'auto', which matches 'left' in this case
-										yanchor: 'bottom',
-										x: 0,
-										y: 1,
-										xref: 'paper',
-										yref: 'paper',
-										font: {
-											family: 'Courier New, monospace',
-											size: 30
-										}
-									},
-									barmode: 'group'
-								}
-
-								Plotly.newPlot('HistogramGraph', data, layout);
-							})
-						})
-						/*d3.select("#attr11_1").on("change", function(){
-							var attr11_1 = this.value;
-							d3.select("#attr11_2").on("change", function(){
-								var attr11_2 = this.value;
-								d3.select("#attr11_3").on("change", function(){
-									var attr11_3 = this.value;
-
-									var values_x=[]
-									var values_y=[]
-									var values_y1=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-
-										values_y1.push(total)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})
-						d3.select("#attr11_1").on("change", function(){
-							var attr11_1 = this.value;
-							d3.select("#attr11_3").on("change", function(){
-								var attr11_3 = this.value;
-								d3.select("#attr11_2").on("change", function(){
-									var attr11_2 = this.value;
-
-									var values_x=[]
-									var values_y=[]
-									var values_y1=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-
-										values_y1.push(total)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})
-						d3.select("#attr11_2").on("change", function(){
-							var attr11_2 = this.value;
-							d3.select("#attr11_3").on("change", function(){
-								var attr11_3 = this.value;
-								d3.select("#attr11_1").on("change", function(){
-									var attr11_1 = this.value;
-
-									var values_x=[]
-									var values_y1=[]
-									var values_y=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-
-										values_y1.push(total)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})
-						d3.select("#attr11_2").on("change", function(){
-							var attr11_2 = this.value;
-							d3.select("#attr11_1").on("change", function(){
-								var attr11_1 = this.value;
-								d3.select("#attr11_3").on("change", function(){
-									var attr11_3 = this.value;
-
-									var values_x=[]
-									var values_y1=[]
-									var values_y=[]
-
-									rows.map(function(d){
-										if(!values_x.includes(d[attr11_2])){
-											values_x.push(d[attr11_2])
-										}													
-									})	
-
-									console.log(values_x)
-
-
-									
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_1]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										var avg = total / avgs.length;
-
-										values_y.push(avg)
-										
-									}
-
-									for(var i=0;i<values_x.length;i++){							
-										var temp=rows.filter(d=>d[attr11_2]==values_x[i])
-										var avgs=[];
-										temp.map(function(d){
-											avgs.push(parseFloat(d[attr11_3]))
-										})
-
-										console.log(avgs)
-
-										var total=0
-										for(var j=0;j<avgs.length;j++){
-											total += avgs[j];
-										}
-										
-
-										values_y1.push(total)
-										
-									}
-
-									console.log(values_y)
-									console.log(values_y1)
-
-
-									var trace1 = {
-									  x: values_x,
-									  y: values_y,
-									  name: attr11_1,
-									  type: 'bar'
-									};
-
-									var trace2 = {
-									  x: values_x,
-									  y: values_y1,
-									  name: attr11_3,
-									  type: 'bar'
-									};
-									
-
-									var data = [trace1,trace2];
-
-									var layout = {barmode: 'group'};
-
-									Plotly.newPlot('HistogramGraph', data, layout);
-								})
-							})
-						})*/
-					}					
-				})	
-				
-			})
-		})		
+			})		
+		})	
 	}])
 	
 
