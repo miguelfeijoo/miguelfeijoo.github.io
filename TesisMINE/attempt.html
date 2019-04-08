@@ -1595,7 +1595,7 @@
 	}])
 	spatioApp.controller('spatioController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) { 	
 		
-		container.layoutManager.eventHub.on( 'columnas_list', function( cols ){		
+		container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){		
 				console.log(cols)
 				container.layoutManager.eventHub.on( 'datos', function( completedata ){		
 					console.log(completedata)	
@@ -2876,37 +2876,6 @@
 											  type: 'box'
 											})
 									}
-									
-									
-
-									
-
-									/*var trace1 = {
-									  y: [0.2, 0.2, 0.6, 1.0, 0.5, 0.4, 0.2, 0.7, 0.9, 0.1, 0.5, 0.3],
-									  x: x,
-									  name: 'kale',
-									  boxpoints: 'all',
-									  marker: {color: '#3D9970'},
-									  type: 'box'
-									};
-
-									var trace2 = {
-									  y: [0.6, 0.7, 0.3, 0.6, 0.0, 0.5, 0.7, 0.9, 0.5, 0.8, 0.7, 0.2],
-									  x: x,
-									  name: 'radishes',
-									  boxpoints: 'all',
-									  marker: {color: '#FF4136'},
-									  type: 'box'
-									};
-
-									var trace3 = {
-									  y: [0.1, 0.3, 0.1, 0.9, 0.6, 0.6, 0.9, 1.0, 0.3, 0.6, 0.8, 0.5],
-									  x: x,
-									  name: 'carrots',
-									  boxpoints: 'all',
-									  marker: {color: '#FF851B'},
-									  type: 'box'
-									};*/
 
 									var data = traces;
 
@@ -2934,8 +2903,133 @@
 									Plotly.newPlot('boxplot', data, layout);
 
 									document.getElementById('boxplot').on('plotly_click',function(data){
-										console.log(data)			
+										returnData=returnData.filter(d=>d[attr4_1]==data.points[0].x).filter(d=>d[attr4_2]==data.points[0].data.name)
+										container.layoutManager.eventHub.emit( 'datosvisibles', returnData );	
+										container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+										document.getElementById("counter").innerHTML=""		
 																
+									})
+									d3.select("#attr5").on("change", function(){
+										var attr5 = this.value;
+										var valores=[];
+										returnData.map(function(d){								
+											valores.push(parseInt(d[attr4]))								
+											valores.sort(function(a, b){return a-b});
+											console.log(valores)
+										})
+										function isOdd(num) { return num % 2;}
+										function calcShowPercentiles(returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max){
+											var data_filter=[]
+											if(attr5=='25th-50th Percentile [Q1 <-> Q2 (Median)]'){
+												returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<value_median).map(function(d){					
+													data_filter.push(d)										
+												})
+												if(data_filter!=null || data_filter!=undefined){
+													document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+													container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );
+
+												}	
+											}
+											if(attr5=='0-25th Percentile [MIN <-> Q1]'){
+												returnData.filter(d=>parseInt(d[attr4])>=value_min && parseInt(d[attr4])<value_Q1).map(function(d){					
+													data_filter.push(d)										
+												})
+												if(data_filter!=null || data_filter!=undefined){
+													datos=data_filter
+													document.getElementById("counter").innerHTML = 'strong>'+returnData.length+'</strong> values were filtered\nbetween the <strong> 0-25th Percentile [MIN <-> Q1] </strong>'
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+													container.layoutManager.eventHub.emit( 'datosvisibles', returnData );											
+												}
+											}
+											if(attr5=='50th-75th Percentile [Q2 (Median) <-> Q3]'){
+												returnData.filter(d=>parseInt(d[attr4])>=value_median && parseInt(d[attr4])<value_Q3).map(function(d){					
+													data_filter.push(d)										
+												})
+												if(data_filter!=null || data_filter!=undefined){
+													document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> 50th-75th Percentile [Q2 (Median) <-> Q3] </strong>'
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+													container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
+												}	
+											}
+											if(attr5=='75th-100th Percentile [Q3 <-> MAX]'){
+												returnData.filter(d=>parseInt(d[attr4])>=value_Q3 && parseInt(d[attr4])<value_max).map(function(d){					
+													data_filter.push(d)										
+												})
+												if(data_filter!=null || data_filter!=undefined){
+													document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> 75th-100th Percentile [Q3 <-> MAX] </strong>'
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+													container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
+												}	
+											}
+											if(attr5=='Interquartile Range'){
+												returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_Q3).map(function(d){					
+													data_filter.push(d)										
+												})
+												if(data_filter!=null || data_filter!=undefined){
+													document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> Interquartile Range </strong>'
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+													container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );												
+												}
+											}
+											if(attr5=='Outliers'){
+												returnData.filter(d=>parseInt(d[attr4])<value_min && parseInt(d[attr4])>value_max).map(function(d){					
+													data_filter.push(d)										
+												})
+
+												if(data_filter.length>0){
+													document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+' values were filtered\nas Outliers </strong>'
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+													container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
+												}
+												else{
+													setTimeout(function(){
+														alert("There are not -Ouliers- in your Selection")
+													},400)
+												}	
+											}
+											
+
+											container.layoutManager.eventHub.on( 'datos', function( data ){
+													console.log(data)
+													$('button[id="complete_data_btn"]').click(function() {  
+
+														console.log("CLICK COMPLETE")
+
+														data_filter=data										
+													   	document.getElementById("counter").innerHTML = '<strong> SHOWING\n'+data_filter.length+' from the original loaded data </strong>'
+													   	container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+														container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );	
+														document.getElementById("counter").innerHTML=""																	   
+													});	
+											})	
+
+
+
+
+										}
+											
+										console.log("valores:   "+valores)
+										console.log("tamaño:    "+ valores.length)
+										var value_median=math.median(valores)
+										var _firstHalf = valores.filter(function(f){ return f < value_median })
+		    							var _secondHalf = valores.filter(function(f){ return f >= value_median })
+		    							var _25percent = math.median(_firstHalf);
+		    								console.log("Q1:   "+_25percent)
+		    							var _50percent = value_median;
+		    								console.log("MEDIAN:  "+_50percent)
+		    							var _75percent = math.median(_secondHalf);
+		    								console.log("Q3:    "+_75percent)  						
+		   							
+										var interquartile_range = _75percent - _25percent;
+											console.log("Interquartile Range:  "+interquartile_range)
+										var value_min= _25percent - (1.5*interquartile_range)
+											console.log("Min Value:  "+value_min)
+										var value_max= _75percent + (1.5*interquartile_range)
+											console.log("Max Value:  "+value_max)									
+										
+										calcShowPercentiles(returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)	
+										container.layoutManager.eventHub.emit('attr4_value',attr4)		
 									})
 								})
 							})
@@ -3710,7 +3804,7 @@
 							    },
 
 							    title: {
-							        text: 'Highcharts bubbles with radial gradient fill'
+							        text: '<b>Bubble Chart - Spatial Representation</b>: "'+attr10+'" in the space coordinated [ Longitude , Latitude ]'
 							    },
 
 							    xAxis: {
@@ -3733,104 +3827,9 @@
 							                ]
 							            }
 							        }
-							    }/*,{
-							        data: series2,
-							        marker: {
-							            fillColor: {
-							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
-							                stops: [
-							                    [0, 'rgba(255,255,255,0.5)'],
-                   								[1, Highcharts.Color(Highcharts.getOptions().colors[1]).setOpacity(0.5).get('rgba')]
-							                ]
-							            }
-							        }
-							    }*/]
+							    }]
 
 							});	
-
-
-
-
-
-
-
-
-							})
-
-						//chart.series[0].update({name:attr10}, false);
-						//chart.redraw();
-						//})
-
-						//d3.select("#attr10_1").on("change", function(){													
-							d3.select("#attr10").on("change", function(){
-
-							var attr10 = this.value;
-							//var attr10_1 = this.value;
-
-							var serie=[]
-							var series2 =[]
-							rows.map(function(d){
-								serie.push([d.Longitude, d.Latitude,parseInt(d[attr10])])								
-							})
-							/*rows.map(function(d){
-								series2.push([d.Longitude, d.Latitude,parseInt(d[attr10_1])])								
-							})*/
-
-							
-
-
-							var chart=Highcharts.chart('bubbleGraph', {
-
-							    chart: {
-							        type: 'bubble',
-							        plotBorderWidth: 1,
-							        zoomType: 'xy'
-							    },
-
-							    title: {
-							        text: 'Highcharts bubbles with radial gradient fill'
-							    },
-
-							    xAxis: {
-							        gridLineWidth: 1
-							    },
-
-							    yAxis: {
-							        startOnTick: false,
-							        endOnTick: false
-							    },
-
-							    series: [{
-							        data: serie,
-							        marker: {
-							            fillColor: {
-							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
-							                stops: [
-							                    [0, 'rgba(255,255,255,0.5)'],
-							                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')]
-							                ]
-							            }
-							        }
-							    }/*,{
-							        data: series2,
-							        marker: {
-							            fillColor: {
-							                radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
-							                stops: [
-							                    [0, 'rgba(255,255,255,0.5)'],
-							                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')]
-							                ]
-							            }
-							        }
-							    }*/]
-
-							});	
-
-
-
-
-
-
 
 
 							})
@@ -4284,7 +4283,8 @@
 											Plotly.newPlot('GroupedBarGraph', data, layout);
 
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
-												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+												console.log(data)
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)		
 
 												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
 												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
@@ -4392,6 +4392,8 @@
 											Plotly.newPlot('GroupedBarGraph', data, layout);
 
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+
+												console.log(data)
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
 												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
@@ -5929,9 +5931,123 @@
 								Plotly.newPlot('StackedBarGraph', data, layout);	
 
 								document.getElementById('StackedBarGraph').on('plotly_click',function(data){
-									//console.log(data)
+									console.log(data)
 
-									rows=rows.filter(d=>d[attr11_6]==data.points[0].x)	
+									rows=rows.filter(d=>d[attr11_6]==data.points[0].x).filter(d=>d[attr11_7]==data.points[0].data.name)
+
+									container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+									container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );														
+								})						
+							})
+						})
+						d3.select("#attr11_7").on("change", function(){
+							var attr11_7=this.value
+							d3.select("#attr11_7").on("change", function(){
+								var attr11_7=this.value
+
+								var values_x=[]
+								var values_y=[]
+
+								rows.map(function(d){
+									if(!values_x.includes(d[attr11_6])){
+										values_x.push(d[attr11_6])
+									}													
+								})
+
+
+								var arrayToCount=[]
+								rows.map(function(d){
+									arrayToCount.push(d[attr11_7])
+								})
+
+
+								var arraydistinct=arrayToCount.filter((value, index, self) => self.indexOf(value) === index)
+	
+
+								var array_trace=[]
+
+								var x=[]
+								
+								for(var k=0;k<arraydistinct.length;k++){
+									var array_final=[]
+
+									for(var i=0;i<values_x.length;i++){
+									
+										var temp_array=[]
+										var total=0
+										
+
+										rows.filter(d=>d[attr11_7]==arraydistinct[k]).filter(d=>d[attr11_6]==values_x[i]).map(function(d){
+
+											temp_array.push(d[attr11_7])
+											
+										})
+
+									
+										//console.log(total)
+										console.log(arraydistinct[k]   +"        "+values_x[i] + "      "+temp_array.length)									
+
+										array_final.push(temp_array.length)
+
+									}
+						
+									array_trace.push({
+										x: values_x,
+										y: array_final,
+										name: arraydistinct[k],
+										type: 'bar'
+									})
+								}
+
+								var arrays_percentage=[]
+								array_trace.map(function(d){
+									arrays_percentage.push(d.y)
+								})
+
+								
+								var final_array_trace=[]
+								for(var i=0;i<arrays_percentage.length;i++){
+									for(var k=0;k<arrays_percentage[i].length;k++){
+										if(arrays_percentage[i+1]!=undefined){
+											final_array_trace.push(arrays_percentage[i][k]+arrays_percentage[i+1][k])
+										}										
+									}									
+								}	
+
+								array_trace.map(function(d){
+
+									for(var i=0;i<(d.y).length;i++){
+										(d.y)[i]=((d.y)[i]/final_array_trace[i])*100
+									}
+								})
+
+
+								var data = array_trace;
+
+								var layout = {
+									title: {
+										text:'<b>Stacked Bar Chart:</b> Percentage of "'+attr11_7+'" by "'+attr11_6+'"',
+										xanchor: 'left', // or 'auto', which matches 'left' in this case
+										yanchor: 'bottom',
+										x: 0,
+										y: 1,
+										xref: 'paper',
+										yref: 'paper',
+										font: {
+											family: 'Courier New, monospace',
+											size: 30
+										}
+									},
+									barmode: 'stack'
+								}
+
+
+								Plotly.newPlot('StackedBarGraph', data, layout);	
+
+								document.getElementById('StackedBarGraph').on('plotly_click',function(data){
+									console.log(data)
+
+									rows=rows.filter(d=>d[attr11_6]==data.points[0].x).filter(d=>d[attr11_7]==data.points[0].data.name)
 
 									container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
 									container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );														
