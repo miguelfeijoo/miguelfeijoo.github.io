@@ -3755,7 +3755,7 @@
 						document.getElementById("text_bar").innerHTML='<strong><font size="5">BAR CHART</font></strong>'
 						document.getElementById("text_grouped").innerHTML='<strong><font size="5">GROUPED BAR CHART</font></strong>'
 						document.getElementById("text_stack").innerHTML='<strong><font size="5">STACKED BAR CHART</font></strong>'
-						document.getElementById("list11").innerHTML='<p></p><strong>Select an attribute to display a BAR CHART: </strong> <input list="attrs11" type="text" id="attr11"><datalist id="attrs11">'+cols
+						document.getElementById("list11").innerHTML='<p></p><strong>Select an attribute to display a BAR CHART: </strong> <input list="attrs11" type="text" id="attr11"><datalist id="attrs11">'+totales
 						document.getElementById("list11_1").innerHTML='<p></p><strong>Select a <font color="green">QUANTITATIVE attribute</font> to display a HISTOGRAM by FREQUENCY/AVERAGE: </strong> <input list="attrs11_1" type="text" id="attr11_1"><datalist id="attrs11_1">'+cols
 						document.getElementById("list11_2").innerHTML='<p></p><strong>Select a <font color="blue">CATEGORICAL attribute</font> for your analysis: </strong> <input list="attrs11_2" type="text" id="attr11_2"><datalist id="attrs11_2">'+lista
 
@@ -3867,6 +3867,18 @@
 							
 
 							Plotly.newPlot('pieGraph', data,layout);
+
+
+
+							document.getElementById('pieGraph').on('plotly_click',function(data){
+								console.log(data.points[0].label)
+
+								rows=rows.filter(d=>d[attr11]==data.points[0].label)	
+
+								container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+								container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );	
+														
+							})
 						})
 
 
@@ -3946,6 +3958,15 @@
 
 										Plotly.newPlot('HistogramGraph', data, layout);
 
+										document.getElementById('HistogramGraph').on('plotly_click',function(data){
+											console.log(data.points[0].x)
+
+											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+										})
+
 									})
 								})
 								d3.select("#attr11_2").on("change", function(){
@@ -4018,6 +4039,15 @@
 										}
 
 										Plotly.newPlot('HistogramGraph', data, layout);
+
+										document.getElementById('HistogramGraph').on('plotly_click',function(data){
+											console.log(data.points[0].x)
+
+											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+										})
 									})
 								})									
 						}
@@ -4121,6 +4151,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})	
@@ -4222,6 +4259,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})	
@@ -4323,6 +4367,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})	
@@ -4424,6 +4475,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})						
@@ -4514,6 +4572,15 @@
 
 										Plotly.newPlot('HistogramGraph', data, layout);
 
+										document.getElementById('HistogramGraph').on('plotly_click',function(data){
+											console.log(data.points[0].x)
+
+											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+										})
+
 									})
 								})
 								d3.select("#attr11_2").on("change", function(){
@@ -4584,6 +4651,15 @@
 										}
 
 										Plotly.newPlot('HistogramGraph', data, layout);
+
+										document.getElementById('HistogramGraph').on('plotly_click',function(data){
+											console.log(data.points[0].x)
+
+											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+										})
 									})
 								})										 
 							}	
@@ -4656,6 +4732,15 @@
 										}
 
 										Plotly.newPlot('HistogramGraph', data, layout);
+
+										document.getElementById('HistogramGraph').on('plotly_click',function(data){
+											console.log(data.points[0].x)
+
+											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+										})
 									})
 								})					
 								d3.select("#attr11_2").on("change", function(){
@@ -4725,6 +4810,15 @@
 										}
 
 										Plotly.newPlot('HistogramGraph', data, layout);
+
+										document.getElementById('HistogramGraph').on('plotly_click',function(data){
+											console.log(data.points[0].x)
+
+											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+										})
 									})
 								})						
 							}					
@@ -4835,6 +4929,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})	
@@ -4936,6 +5037,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})	
@@ -5037,6 +5145,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})	
@@ -5138,6 +5253,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})								 
@@ -5177,9 +5299,8 @@
 												for(var j=0;j<avgs.length;j++){
 													total += avgs[j];
 												}
-												var avg = total / avgs.length;
 
-												values_y.push(avg)
+												values_y.push(total)
 												
 											}
 
@@ -5240,6 +5361,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})	
@@ -5277,9 +5405,8 @@
 												for(var j=0;j<avgs.length;j++){
 													total += avgs[j];
 												}
-												var avg = total / avgs.length;
 
-												values_y.push(avg)
+												values_y.push(total)
 												
 											}
 
@@ -5340,6 +5467,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})	
@@ -5377,9 +5511,8 @@
 												for(var j=0;j<avgs.length;j++){
 													total += avgs[j];
 												}
-												var avg = total / avgs.length;
 
-												values_y.push(avg)
+												values_y.push(total)
 												
 											}
 
@@ -5440,6 +5573,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})	
@@ -5540,6 +5680,13 @@
 										}
 
 											Plotly.newPlot('GroupedBarGraph', data, layout);
+
+											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
+												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
+
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											})
 										})
 									})
 								})													
@@ -5648,7 +5795,16 @@
 								}
 
 
-								Plotly.newPlot('StackedBarGraph', data, layout);							
+								Plotly.newPlot('StackedBarGraph', data, layout);	
+
+								document.getElementById('StackedBarGraph').on('plotly_click',function(data){
+									//console.log(data)
+
+									rows=rows.filter(d=>d[attr11_6]==data.points[0].x)	
+
+									container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+									container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );														
+								})						
 							})
 						})
 					})
