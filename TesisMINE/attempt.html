@@ -248,6 +248,12 @@
 		<div id="pieGraph"align="left"></div>
 		<p></p>
 		<p></p>
+		<div id="text_freq"></div>
+		<p></p>
+		<div id="list11_8" align="left"></div>
+		<p></p>
+		<div id="FreqHistogram" align="left"></div>		
+		<p></p>
 		<div id="text_bar"></div>
 		<p></p>
 		<div id='averageorsum' align="left"></div>
@@ -453,7 +459,7 @@
 							if (d.hasOwnProperty("ID_ENCUESTA")){
 							     d["ID"] = +d["ID_ENCUESTA"];
 							    delete d["ID_ENCUESTA"];
-							}
+							}							
 
 							if(d.hasOwnProperty('ID_ACTIVIDAD')){
 								if(d['ID_ACTIVIDAD']==1){
@@ -861,11 +867,25 @@
 					  var dats= XLSX.utils.sheet_to_json(worksheet,{raw:true});
 					  var cols = Object.keys(dats[0]);
 
+					  var ids=[]
 					  dats.map(function(d){
 
 					  	parsing(d)
 
+					  	ids.push(d.ID)
 					  })
+
+					  var t=[]
+					  for(var i=0;i<ids.length;i++){
+					  	t.push(dats.filter(d=>d.ID==ids[0]))
+					  }
+
+					  for(var i=0;i<t.length;i++){	
+
+					  		//console.log(t[i][t[i].length-1])
+					  		console.log(t[i])
+					  	
+					  }
 
 					  if(cols.includes('Time')){
 						  console.log(cols.indexOf('Time'))
@@ -3882,6 +3902,7 @@
 						lista=lista_seq.join('')
 
 						document.getElementById("text_pie").innerHTML='<strong><font size="5">PIE CHART</font></strong>'
+						document.getElementById("text_freq").innerHTML='<strong><font size="5">FREQUENCY HISTOGRAM</font></strong>'
 						document.getElementById("text_bar").innerHTML='<strong><font size="5">BAR CHART</font></strong>'
 						document.getElementById("text_grouped").innerHTML='<strong><font size="5">GROUPED BAR CHART</font></strong>'
 						document.getElementById("text_stack").innerHTML='<strong><font size="5">STACKED BAR CHART</font></strong>'
@@ -3898,6 +3919,8 @@
 						document.getElementById("list11_3").innerHTML='<p></p><strong>     Select a <font color="red">FIRST QUANTITATIVE attribute </font> to display a GROUPED HISTOGRAM: </strong> <input list="attrs11_3" type="text" id="attr11_3"><datalist id="attrs11_3">'+cols
 
 						document.getElementById("list11_4").innerHTML='<p></p><strong>          Select a <font color="red">SECOND QUANTITATIVE attribute </font> to display a GROUPED HISTOGRAM: </strong> <input list="attrs11_4" type="text" id="attr11_4"><datalist id="attrs11_4">'+cols
+
+						document.getElementById("list11_8").innerHTML='<p></p><strong>          Select a <font color="green"> QUANTITATIVE attribute </font> to display its FREQUENCY HISTOGRAM: </strong> <input list="attrs11_8" type="text" id="attr11_8"><datalist id="attrs11_8">'+cols
 
 						document.getElementById("averageorsum").innerHTML='<p><strong>Select the analysis you want to check on the following HISTOGRAM:</strong></p><label class="switch"> <input type="checkbox" id="averageorsum_btn"><div class="slider round">         <span class="on">Average</span>           <span class="off">Sum</span>           </div>         </label><p><strong>Now SELECT the attributes below:</strong></p>'
 
@@ -4009,6 +4032,43 @@
 								container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );	
 														
 							})
+						})
+
+
+						d3.select("#attr11_8").on("change", function(){
+							var attr11_8 = this.value;
+
+							var x = [];
+
+							rows.map(function(d){
+								x.push(d[attr11_8])
+							})							
+
+							var trace = {
+							    x: x,
+							    name: attr11_8,
+							    type: 'histogram',
+							  };
+
+							var layout = {
+								title: {
+									text:'<b>Graph:</b> Frequency Histogram',
+									xanchor: 'left', // or 'auto', which matches 'left' in this case
+									yanchor: 'bottom',
+									x: 0,
+									y: 1,
+									xref: 'paper',
+									yref: 'paper',
+									font: {
+										family: 'Courier New, monospace',
+										size: 30
+									}
+								}
+							}
+
+							var data = [trace];
+							Plotly.newPlot('FreqHistogram', data);
+
 						})
 
 
@@ -5871,7 +5931,7 @@
 
 									
 										//console.log(total)
-										console.log(arraydistinct[k]   +"        "+values_x[i] + "      "+temp_array.length)									
+										//console.log(arraydistinct[k]   +"        "+values_x[i] + "      "+temp_array.length)									
 
 										array_final.push(temp_array.length)
 
@@ -5885,28 +5945,40 @@
 									})
 								}
 
+
 								var arrays_percentage=[]
-								array_trace.map(function(d){
+								array_trace.map(function(d){									
 									arrays_percentage.push(d.y)
 								})
 
+								var sum = (r, a) => r.map((b, i) => a[i] + b)
+								var array_totales=arrays_percentage.reduce(sum)
+
 								
 								var final_array_trace=[]
+
 								for(var i=0;i<arrays_percentage.length;i++){
-									for(var k=0;k<arrays_percentage[i].length;k++){
-										if(arrays_percentage[i+1]!=undefined){
-											final_array_trace.push(arrays_percentage[i][k]+arrays_percentage[i+1][k])
-										}										
+									console.log(arrays_percentage[i])
+									var t_array=[]
+									for(var k=0;k<array_totales.length;k++){									
+										console.log(arrays_percentage[i][k]+"             "+arrays_percentage[i][k]/array_totales[k]*100)
+
+										t_array.push(arrays_percentage[i][k]/array_totales[k]*100)
+										if(k==array_totales.length-1){
+											final_array_trace.push(t_array)
+										}																		
 									}									
 								}	
 
-								array_trace.map(function(d){
+								console.log(final_array_trace)
 
-									for(var i=0;i<(d.y).length;i++){
-										(d.y)[i]=((d.y)[i]/final_array_trace[i])*100
+								
+								for(var k=0;k<array_trace.length;k++){
+									for(var i=0;i<(array_trace[k].y).length;i++){
+										array_trace[k].y=final_array_trace[k]
 									}
-								})
-
+								}					
+							
 
 								var data = array_trace;
 
