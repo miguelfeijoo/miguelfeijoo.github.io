@@ -117,11 +117,20 @@
 <template type="text/html" id="boxplotTemplate">
 	<div id='boxplotid' ng-controller="boxplotController" class="boxplot">
 		<span style=" float:left; padding-left:2%;"> 
+		<div id="text_boxplot_2" align="left"></div>
+		<p></p>
+		<div id="list40_1" align="left"></div>	
+		<p></p>
+		<div id="list40_2" align="left"></div>
+		<p></p>
+		<div id="boxplot1"></div>
+		<p></p>
+		<div id="text_boxplot_1" align="left"></div>
 		<p></p>
 		<div id="list4_1" align="left"></div>	
 		<p></p>
 		<div id="list4_2" align="left"></div>	
-		<p></p>
+		<p></p>		
 		<div id="list4" align="left"></div>		
 		<div id="boxplot"></div>
 		<p></p>
@@ -2628,209 +2637,6 @@
 			});				
 	}])
 	boxplotApp.controller('boxplotController', ["$scope",'$timeout',"container","state","TestService",function( $scope,$timeout,container, state,TestService ) {	
-		/*container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
-				container.layoutManager.eventHub.on( 'redrawVisibleData', function( returnData ){
-					
-					if(returnData[0].hasOwnProperty("Year")){
-						document.getElementById("list4").innerHTML = '<strong>Select Quantitative Value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols				
-						function onlyUnique(value, index, self) { 
-						    return self.indexOf(value) === index;
-						}
-						var years_temp=[]
-							var years = returnData.map(function(d){
-								years_temp.push(parseInt(d.Year))				
-							})
-						var years_temp_array = years_temp.filter(onlyUnique)
-						if(returnData[0].hasOwnProperty("Month")){
-							var months_temp=[]
-								var months = returnData.map(function(d){
-									months_temp.push(parseInt(d.Date.getMonth()))				
-								})
-							var months_temp_array = months_temp.filter(onlyUnique)
-						}
-						
-						d3.select("#attr4").on("change", function(){
-							document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'//'<option value="COMPLETE DATA">'
-							var attr4 = this.value;							
-							console.log("Selected Value Attr4: "+attr4)		
-							var data=[]
-							var colors = [];
-							while (colors.length < 100) {
-							    do {
-							        var color = Math.floor((Math.random()*1000000)+1);
-							    } while (colors.indexOf(color) >= 0);
-							    colors.push("#" + ("000000" + color.toString(16)).slice(-6));
-							}							
-							var new_colors=[];
-							if(colors.length>years_temp_array.length){
-								new_colors=colors.slice(0,years_temp_array.length+1)
-							}	
-
-							for(var i=0;i<years_temp_array.length;i++){	
-								if (i!=0){				
-									new_colors.pop()
-								}
-								var temp_array_int=[]
-								returnData.filter(d=>parseInt(d.Year)==years_temp_array[i]).map(function(d){
-									temp_array_int.push(parseInt(d[attr4]))
-								})
-								console.log(temp_array_int)
-								for(var j=0;j<new_colors.length;j++){
-									data[i]={
-									  y: temp_array_int,
-									  type: 'box',
-									  name: "Year:  "+years_temp_array[i],
-									  marker: {
-									    color: new_colors[j],
-									    outliercolor: 'rgb(219, 64, 82, 0.6)',
-									    line: {
-									      outliercolor: 'rgb(219, 64, 82, 1.0)',
-									      outlierwidth: 2
-									    }
-									  },
-									  boxpoints: 'all'
-									};
-								}
-								
-							}
-							var layout = {
-							  title: 'Representation: Box Plot'
-							};
-							Plotly.newPlot('boxplot', data, layout);
-							d3.select("#attr5").on("change", function(){
-								var attr5 = this.value;
-								var valores=[];
-								returnData.map(function(d){								
-									valores.push(parseInt(d[attr4]))								
-									valores.sort(function(a, b){return a-b});
-									console.log(valores)
-								})
-								function isOdd(num) { return num % 2;}
-								function calcShowPercentiles(returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max){
-									var data_filter=[]
-									if(attr5=='25th-50th Percentile [Q1 <-> Q2 (Median)]'){
-										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<value_median).map(function(d){					
-											data_filter.push(d)										
-										})
-										if(data_filter!=null || data_filter!=undefined){
-											document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
-											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );
-
-										}	
-									}
-									if(attr5=='0-25th Percentile [MIN <-> Q1]'){
-										returnData.filter(d=>parseInt(d[attr4])>=value_min && parseInt(d[attr4])<value_Q1).map(function(d){					
-											data_filter.push(d)										
-										})
-										if(data_filter!=null || data_filter!=undefined){
-											datos=data_filter
-											document.getElementById("counter").innerHTML = 'strong>'+returnData.length+'</strong> values were filtered\nbetween the <strong> 0-25th Percentile [MIN <-> Q1] </strong>'
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-											container.layoutManager.eventHub.emit( 'datosvisibles', returnData );											
-										}
-									}
-									if(attr5=='50th-75th Percentile [Q2 (Median) <-> Q3]'){
-										returnData.filter(d=>parseInt(d[attr4])>=value_median && parseInt(d[attr4])<value_Q3).map(function(d){					
-											data_filter.push(d)										
-										})
-										if(data_filter!=null || data_filter!=undefined){
-											document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> 50th-75th Percentile [Q2 (Median) <-> Q3] </strong>'
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
-											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
-										}	
-									}
-									if(attr5=='75th-100th Percentile [Q3 <-> MAX]'){
-										returnData.filter(d=>parseInt(d[attr4])>=value_Q3 && parseInt(d[attr4])<value_max).map(function(d){					
-											data_filter.push(d)										
-										})
-										if(data_filter!=null || data_filter!=undefined){
-											document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> 75th-100th Percentile [Q3 <-> MAX] </strong>'
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
-											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
-										}	
-									}
-									if(attr5=='Interquartile Range'){
-										returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_Q3).map(function(d){					
-											data_filter.push(d)										
-										})
-										if(data_filter!=null || data_filter!=undefined){
-											document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> Interquartile Range </strong>'
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
-											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );												
-										}
-									}
-									if(attr5=='Outliers'){
-										returnData.filter(d=>parseInt(d[attr4])<value_min && parseInt(d[attr4])>value_max).map(function(d){					
-											data_filter.push(d)										
-										})
-
-										if(data_filter.length>0){
-											document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+' values were filtered\nas Outliers </strong>'
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
-											container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
-										}
-										else{
-											setTimeout(function(){
-												alert("There are not -Ouliers- in your Selection")
-											},400)
-										}	
-									}
-									
-
-									container.layoutManager.eventHub.on( 'datos', function( data ){
-											console.log(data)
-											$('button[id="complete_data_btn"]').click(function() {  
-
-												console.log("CLICK COMPLETE")
-
-												data_filter=data										
-											   	document.getElementById("counter").innerHTML = '<strong> SHOWING\n'+data_filter.length+' from the original loaded data </strong>'
-											   	container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
-												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );	
-																   
-											});	
-									})	
-
-
-
-
-								}
-									
-								console.log("valores:   "+valores)
-								console.log("tamaño:    "+ valores.length)
-								var value_median=math.median(valores)
-								var _firstHalf = valores.filter(function(f){ return f < value_median })
-    							var _secondHalf = valores.filter(function(f){ return f >= value_median })
-    							var _25percent = math.median(_firstHalf);
-    								console.log("Q1:   "+_25percent)
-    							var _50percent = value_median;
-    								console.log("MEDIAN:  "+_50percent)
-    							var _75percent = math.median(_secondHalf);
-    								console.log("Q3:    "+_75percent)  						
-   							
-								var interquartile_range = _75percent - _25percent;
-									console.log("Interquartile Range:  "+interquartile_range)
-								var value_min= _25percent - (1.5*interquartile_range)
-									console.log("Min Value:  "+value_min)
-								var value_max= _75percent + (1.5*interquartile_range)
-									console.log("Max Value:  "+value_max)									
-								
-								calcShowPercentiles(returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)	
-								container.layoutManager.eventHub.emit('attr4_value',attr4)		
-							})
-						})
-
-						
-
-
-					}
-					else{
-						document.getElementById("list4").innerHTML = '<strong><font size="3"> THERE ARE NOT ANY TEMPORAL ATTRIBUTES THAT PERMITS THE PRELIMINARY STATISTICAL ANALYSIS </font></strong>'
-					}
-				})	
-			})*/
-
 		container.layoutManager.eventHub.on( 'columnas_list', function( totales ){
 			container.layoutManager.eventHub.on( 'columnasSeq_list', function( cols ){
 				container.layoutManager.eventHub.on( 'catColumns', function( cat ){	
@@ -2846,9 +2652,15 @@
 						}
 						lista=lista_seq.join('')	
 
+						document.getElementById("text_boxplot_1").innerHTML='<strong><font size="5">BOX PLOT BY GROUPED VALUES:</font></strong>'
+						document.getElementById("text_boxplot_2").innerHTML='<strong><font size="5">BOX PLOT BY A <b>SINGLE</b> VALUE:</font></strong>'
+
 						document.getElementById("list4").innerHTML = '<strong>Select a <font color="blue">QUANTITATIVE </font> value: </strong> <input list="attrs4" type="text" id="attr4"><datalist id="attrs4">'+cols	
-						document.getElementById("list4_1").innerHTML = '<strong>Select a <font color="green"> FIRST CATEGORICAL </font> value: </strong> <input list="attrs4_1" type="text" id="attr4_1"><datalist id="attrs4_1">'+lista	
-						document.getElementById("list4_2").innerHTML = '<strong>Select a <font color="green"> SECOND CATEGORICAL </font> value: </strong> <input list="attrs4_2" type="text" id="attr4_2"><datalist id="attrs4_2">'+lista	
+						document.getElementById("list4_1").innerHTML = '<strong>Select a <font color="red"> FIRST CATEGORICAL </font> value: </strong> <input list="attrs4_1" type="text" id="attr4_1"><datalist id="attrs4_1">'+lista	
+						document.getElementById("list4_2").innerHTML = '<strong>Select a <font color="red"> SECOND CATEGORICAL </font> value: </strong> <input list="attrs4_2" type="text" id="attr4_2"><datalist id="attrs4_2">'+lista	
+
+						document.getElementById("list40_1").innerHTML = '<strong>Select a <font color="green"> FIRST CATEGORICAL </font> value: </strong> <input list="attrs40_1" type="text" id="attr40_1"><datalist id="attrs40_1">'+lista	
+						document.getElementById("list40_2").innerHTML = '<strong>Select a <font color="blue">QUANTITATIVE </font> value: </strong> <input list="attrs40_2" type="text" id="attr40_2"><datalist id="attrs40_2">'+cols		
 
 						d3.select("#attr4_1").on("change", function(){
 							var attr4_1 = this.value;	
@@ -3054,6 +2866,401 @@
 								})
 							})
 						})
+						
+						d3.select("#attr40_1").on("change", function(){
+							var attr40_1 = this.value;			
+							d3.select("#attr40_2").on("change", function(){
+								document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'//'<option value="COMPLETE DATA">'
+								var attr40_2 = this.value;							
+								console.log("Selected Value Attr4: "+attr40_2)	
+
+								var values_x=[]
+
+								returnData.map(function(d){
+									values_x.push(d[attr40_1])
+								})		
+
+								var arraydistinct=values_x.filter((value, index, self) => self.indexOf(value) === index)
+
+
+
+								var traces=[]
+								for(var k=0;k<arraydistinct.length;k++){
+									
+									var temp_array=[]
+									var values_y=[]									
+
+									returnData.filter(d=>d[attr40_1]==arraydistinct[k]).map(function(d){
+
+										temp_array.push(+d[attr40_2])
+									
+									})		
+
+									console.log(temp_array)								
+										
+								
+									traces.push({
+										  y: temp_array,
+										  name: arraydistinct[k],
+										  boxpoints: 'all',
+										 // marker: {color: '#3D9970'},
+										  type: 'box'
+										})
+								}
+
+								var data = traces;
+
+								var layout = {
+								  title: {
+									text:'<b>Box Plot</b> relating: "<b>'+attr40_1+'</b>" by "<b>'+attr40_2+'</b>"',
+									xanchor: 'left', // or 'auto', which matches 'left' in this case
+									yanchor: 'bottom',
+									x: 0,
+									y: 1,
+									xref: 'paper',
+									yref: 'paper',
+									font: {
+										family: 'Courier New, monospace',
+										size: 20
+									}
+								},
+								  yaxis: {
+								    title: attr40_2,
+								    zeroline: false
+								  }
+								};
+
+								Plotly.newPlot('boxplot1', data, layout);
+
+								document.getElementById('boxplot1').on('plotly_click',function(data){
+									returnData=returnData.filter(d=>d[attr4_1]==data.points[0].x).filter(d=>d[attr40_2]==data.points[0].data.name)
+									container.layoutManager.eventHub.emit( 'datosvisibles', returnData );	
+									container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+									document.getElementById("counter").innerHTML=""		
+															
+								})
+								d3.select("#attr5").on("change", function(){
+									var attr5 = this.value;
+									var valores=[];
+									returnData.map(function(d){								
+										valores.push(parseInt(d[attr4]))								
+										valores.sort(function(a, b){return a-b});
+										console.log(valores)
+									})
+									function isOdd(num) { return num % 2;}
+									function calcShowPercentiles(returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max){
+										var data_filter=[]
+										if(attr5=='25th-50th Percentile [Q1 <-> Q2 (Median)]'){
+											returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<value_median).map(function(d){					
+												data_filter.push(d)										
+											})
+											if(data_filter!=null || data_filter!=undefined){
+												document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );
+
+											}	
+										}
+										if(attr5=='0-25th Percentile [MIN <-> Q1]'){
+											returnData.filter(d=>parseInt(d[attr4])>=value_min && parseInt(d[attr4])<value_Q1).map(function(d){					
+												data_filter.push(d)										
+											})
+											if(data_filter!=null || data_filter!=undefined){
+												datos=data_filter
+												document.getElementById("counter").innerHTML = 'strong>'+returnData.length+'</strong> values were filtered\nbetween the <strong> 0-25th Percentile [MIN <-> Q1] </strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+												container.layoutManager.eventHub.emit( 'datosvisibles', returnData );											
+											}
+										}
+										if(attr5=='50th-75th Percentile [Q2 (Median) <-> Q3]'){
+											returnData.filter(d=>parseInt(d[attr4])>=value_median && parseInt(d[attr4])<value_Q3).map(function(d){					
+												data_filter.push(d)										
+											})
+											if(data_filter!=null || data_filter!=undefined){
+												document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> 50th-75th Percentile [Q2 (Median) <-> Q3] </strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
+											}	
+										}
+										if(attr5=='75th-100th Percentile [Q3 <-> MAX]'){
+											returnData.filter(d=>parseInt(d[attr4])>=value_Q3 && parseInt(d[attr4])<value_max).map(function(d){					
+												data_filter.push(d)										
+											})
+											if(data_filter!=null || data_filter!=undefined){
+												document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> 75th-100th Percentile [Q3 <-> MAX] </strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
+											}	
+										}
+										if(attr5=='Interquartile Range'){
+											returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_Q3).map(function(d){					
+												data_filter.push(d)										
+											})
+											if(data_filter!=null || data_filter!=undefined){
+												document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> Interquartile Range </strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );												
+											}
+										}
+										if(attr5=='Outliers'){
+											returnData.filter(d=>parseInt(d[attr4])<value_min && parseInt(d[attr4])>value_max).map(function(d){					
+												data_filter.push(d)										
+											})
+
+											if(data_filter.length>0){
+												document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+' values were filtered\nas Outliers </strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
+											}
+											else{
+												setTimeout(function(){
+													alert("There are not -Ouliers- in your Selection")
+												},400)
+											}	
+										}
+										
+
+										container.layoutManager.eventHub.on( 'datos', function( data ){
+												console.log(data)
+												$('button[id="complete_data_btn"]').click(function() {  
+
+													console.log("CLICK COMPLETE")
+
+													data_filter=data										
+												   	document.getElementById("counter").innerHTML = '<strong> SHOWING\n'+data_filter.length+' from the original loaded data </strong>'
+												   	container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+													container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );	
+													document.getElementById("counter").innerHTML=""																	   
+												});	
+										})	
+
+
+
+
+									}
+										
+									console.log("valores:   "+valores)
+									console.log("tamaño:    "+ valores.length)
+									var value_median=math.median(valores)
+									var _firstHalf = valores.filter(function(f){ return f < value_median })
+	    							var _secondHalf = valores.filter(function(f){ return f >= value_median })
+	    							var _25percent = math.median(_firstHalf);
+	    								console.log("Q1:   "+_25percent)
+	    							var _50percent = value_median;
+	    								console.log("MEDIAN:  "+_50percent)
+	    							var _75percent = math.median(_secondHalf);
+	    								console.log("Q3:    "+_75percent)  						
+	   							
+									var interquartile_range = _75percent - _25percent;
+										console.log("Interquartile Range:  "+interquartile_range)
+									var value_min= _25percent - (1.5*interquartile_range)
+										console.log("Min Value:  "+value_min)
+									var value_max= _75percent + (1.5*interquartile_range)
+										console.log("Max Value:  "+value_max)									
+									
+									calcShowPercentiles(returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)	
+									container.layoutManager.eventHub.emit('attr4_value',attr4)		
+								})
+							})
+						})
+
+						d3.select("#attr40_2").on("change", function(){
+							var attr40_2 = this.value;			
+							d3.select("#attr40_1").on("change", function(){
+								document.getElementById("list5").innerHTML = '<strong>Select between the values of "PERCENTILE" / "INTERQUARTILE RANGE" / OUTLIERS as you prefer to filter the current data: </strong> <input list="attrs5" type="text" id="attr5"><datalist id="attrs5"><option value="0-25th Percentile [MIN <-> Q1]"><option value="25th-50th Percentile [Q1 <-> Q2 (Median)]"><option value="50th-75th Percentile [Q2 (Median) <-> Q3]"><option value="75th-100th Percentile [Q3 <-> MAX]"><option value="Interquartile Range"><option value="Outliers">'//'<option value="COMPLETE DATA">'
+								var attr40_1 = this.value;							
+								console.log("Selected Value Attr4: "+attr40_2)	
+
+								var values_x=[]
+
+								returnData.map(function(d){
+									values_x.push(d[attr40_1])
+								})		
+
+								var arraydistinct=values_x.filter((value, index, self) => self.indexOf(value) === index)
+
+
+
+								var traces=[]
+								for(var k=0;k<arraydistinct.length;k++){
+									
+									var temp_array=[]
+									var values_y=[]									
+
+									returnData.filter(d=>d[attr40_1]==arraydistinct[k]).map(function(d){
+
+										temp_array.push(+d[attr40_2])
+									
+									})		
+
+									console.log(temp_array)								
+										
+								
+									traces.push({
+										  y: temp_array,
+										  name: arraydistinct[k],
+										  boxpoints: 'all',
+										 // marker: {color: '#3D9970'},
+										  type: 'box'
+										})
+								}
+
+								var data = traces;
+
+								var layout = {
+								  title: {
+									text:'<b>Box Plot</b> relating: "<b>'+attr40_1+'</b>" by "<b>'+attr40_2+'</b>"',
+									xanchor: 'left', // or 'auto', which matches 'left' in this case
+									yanchor: 'bottom',
+									x: 0,
+									y: 1,
+									xref: 'paper',
+									yref: 'paper',
+									font: {
+										family: 'Courier New, monospace',
+										size: 20
+									}
+								},
+								  yaxis: {
+								    title: attr40_2,
+								    zeroline: false
+								  }
+								};
+
+								Plotly.newPlot('boxplot1', data, layout);
+
+								document.getElementById('boxplot1').on('plotly_click',function(data){
+									returnData=returnData.filter(d=>d[attr4_1]==data.points[0].x).filter(d=>d[attr40_2]==data.points[0].data.name)
+									container.layoutManager.eventHub.emit( 'datosvisibles', returnData );	
+									container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+									document.getElementById("counter").innerHTML=""		
+															
+								})
+								d3.select("#attr5").on("change", function(){
+									var attr5 = this.value;
+									var valores=[];
+									returnData.map(function(d){								
+										valores.push(parseInt(d[attr4]))								
+										valores.sort(function(a, b){return a-b});
+										console.log(valores)
+									})
+									function isOdd(num) { return num % 2;}
+									function calcShowPercentiles(returnData,attr5,attr4,value_Q1,value_median,value_Q3,value_min,value_max){
+										var data_filter=[]
+										if(attr5=='25th-50th Percentile [Q1 <-> Q2 (Median)]'){
+											returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<value_median).map(function(d){					
+												data_filter.push(d)										
+											})
+											if(data_filter!=null || data_filter!=undefined){
+												document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong>25th-50th Percentile [Q1 <-> Q2 (Median)]</strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );
+
+											}	
+										}
+										if(attr5=='0-25th Percentile [MIN <-> Q1]'){
+											returnData.filter(d=>parseInt(d[attr4])>=value_min && parseInt(d[attr4])<value_Q1).map(function(d){					
+												data_filter.push(d)										
+											})
+											if(data_filter!=null || data_filter!=undefined){
+												datos=data_filter
+												document.getElementById("counter").innerHTML = 'strong>'+returnData.length+'</strong> values were filtered\nbetween the <strong> 0-25th Percentile [MIN <-> Q1] </strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+												container.layoutManager.eventHub.emit( 'datosvisibles', returnData );											
+											}
+										}
+										if(attr5=='50th-75th Percentile [Q2 (Median) <-> Q3]'){
+											returnData.filter(d=>parseInt(d[attr4])>=value_median && parseInt(d[attr4])<value_Q3).map(function(d){					
+												data_filter.push(d)										
+											})
+											if(data_filter!=null || data_filter!=undefined){
+												document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> 50th-75th Percentile [Q2 (Median) <-> Q3] </strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
+											}	
+										}
+										if(attr5=='75th-100th Percentile [Q3 <-> MAX]'){
+											returnData.filter(d=>parseInt(d[attr4])>=value_Q3 && parseInt(d[attr4])<value_max).map(function(d){					
+												data_filter.push(d)										
+											})
+											if(data_filter!=null || data_filter!=undefined){
+												document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> 75th-100th Percentile [Q3 <-> MAX] </strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
+											}	
+										}
+										if(attr5=='Interquartile Range'){
+											returnData.filter(d=>parseInt(d[attr4])>=value_Q1 && parseInt(d[attr4])<=value_Q3).map(function(d){					
+												data_filter.push(d)										
+											})
+											if(data_filter!=null || data_filter!=undefined){
+												document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+'</strong> values were filtered\nbetween the <strong> Interquartile Range </strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );												
+											}
+										}
+										if(attr5=='Outliers'){
+											returnData.filter(d=>parseInt(d[attr4])<value_min && parseInt(d[attr4])>value_max).map(function(d){					
+												data_filter.push(d)										
+											})
+
+											if(data_filter.length>0){
+												document.getElementById("counter").innerHTML = '<strong>'+data_filter.length+' values were filtered\nas Outliers </strong>'
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+												container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );											
+											}
+											else{
+												setTimeout(function(){
+													alert("There are not -Ouliers- in your Selection")
+												},400)
+											}	
+										}
+										
+
+										container.layoutManager.eventHub.on( 'datos', function( data ){
+												console.log(data)
+												$('button[id="complete_data_btn"]').click(function() {  
+
+													console.log("CLICK COMPLETE")
+
+													data_filter=data										
+												   	document.getElementById("counter").innerHTML = '<strong> SHOWING\n'+data_filter.length+' from the original loaded data </strong>'
+												   	container.layoutManager.eventHub.emit( 'redrawVisibleData', data_filter );
+													container.layoutManager.eventHub.emit( 'datosvisibles', data_filter );	
+													document.getElementById("counter").innerHTML=""																	   
+												});	
+										})	
+
+
+
+
+									}
+										
+									console.log("valores:   "+valores)
+									console.log("tamaño:    "+ valores.length)
+									var value_median=math.median(valores)
+									var _firstHalf = valores.filter(function(f){ return f < value_median })
+	    							var _secondHalf = valores.filter(function(f){ return f >= value_median })
+	    							var _25percent = math.median(_firstHalf);
+	    								console.log("Q1:   "+_25percent)
+	    							var _50percent = value_median;
+	    								console.log("MEDIAN:  "+_50percent)
+	    							var _75percent = math.median(_secondHalf);
+	    								console.log("Q3:    "+_75percent)  						
+	   							
+									var interquartile_range = _75percent - _25percent;
+										console.log("Interquartile Range:  "+interquartile_range)
+									var value_min= _25percent - (1.5*interquartile_range)
+										console.log("Min Value:  "+value_min)
+									var value_max= _75percent + (1.5*interquartile_range)
+										console.log("Max Value:  "+value_max)									
+									
+									calcShowPercentiles(returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)	
+									container.layoutManager.eventHub.emit('attr4_value',attr4)		
+								})
+							})
+						})
+
 					})
 				})
 			})
