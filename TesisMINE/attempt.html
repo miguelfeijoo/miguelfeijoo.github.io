@@ -852,6 +852,9 @@
 								d.Month = month[d.Date.getMonth()];
 								d.Day = d.Date.getDate();
 							}
+							else if(d.hasOwnProperty("HORA_INICIO")){
+								d.DayNight = d['HORA_INICIO'] < 6 || d['HORA_INICIO']>18 ? "night": "diurnal"
+							}
 							return d;
 				}
 				if(event.target.files[0].name.includes(".xlsx") || event.target.files[0].name.includes(".xls")){
@@ -2377,12 +2380,7 @@
 										if(datos.length>0){
 											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
-
-											if(this.value=='diurnal'){
-												slider3.conf.set=[6,18]
-												console.log(slider3.conf.set)
-												console.log(slider3)
-											}
+											
 										}
 										else{
 											alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
@@ -2545,11 +2543,7 @@
 											container.layoutManager.eventHub.emit( 'redrawVisibleData2', datos );	
 											container.layoutManager.eventHub.emit( 'datosvisibles', datos );
 
-											if(this.value=='diurnal'){
-												slider3.conf.set=[6,18]
-												console.log(slider3.conf.set)
-												console.log(slider3)
-											}
+
 										}
 										else{
 											alert('Your current filtered data has no attribute: "'+this.value+'" or is the only value existent in its column')
