@@ -2736,9 +2736,14 @@
 
 									document.getElementById('boxplot').on('plotly_click',function(data){
 										returnData=returnData.filter(d=>d[attr4_1]==data.points[0].x).filter(d=>d[attr4_2]==data.points[0].data.name)
-										container.layoutManager.eventHub.emit( 'datosvisibles', returnData );	
-										container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-										document.getElementById("counter").innerHTML=""		
+										if(returnData.length!=0){
+											container.layoutManager.eventHub.emit( 'datosvisibles', returnData );	
+											container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+											document.getElementById("counter").innerHTML=""	
+										}
+										else{
+											alert("Your current filtered data does not have the value '"+d[attr4_1]+"' of the attribute '"+attr4_1+"'")
+										}	
 																
 									})
 									d3.select("#attr5").on("change", function(){
@@ -2933,17 +2938,24 @@
 								Plotly.newPlot('boxplot1', data, layout);
 
 								document.getElementById('boxplot1').on('plotly_click',function(data){
-									returnData=returnData.filter(d=>d[attr4_1]==data.points[0].x).filter(d=>d[attr40_2]==data.points[0].data.name)
-									container.layoutManager.eventHub.emit( 'datosvisibles', returnData );	
-									container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-									document.getElementById("counter").innerHTML=""		
+
+									returnData=returnData.filter(d=>d[attr40_1]==data.points[0].x)
+									if(returnData.length!=0){
+										container.layoutManager.eventHub.emit( 'datosvisibles', returnData );	
+										container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+										document.getElementById("counter").innerHTML=""	
+									}
+									else{
+										alert('Your current filtered data does not have the value "'+ d[attr40_1]+'" of the attribute "'+attr40_1+'"')
+									}
+										
 															
 								})
 								d3.select("#attr5").on("change", function(){
 									var attr5 = this.value;
 									var valores=[];
 									returnData.map(function(d){								
-										valores.push(parseInt(d[attr4]))								
+										valores.push(parseInt(d[attr40_2]))								
 										valores.sort(function(a, b){return a-b});
 										console.log(valores)
 									})
@@ -3033,10 +3045,6 @@
 													document.getElementById("counter").innerHTML=""																	   
 												});	
 										})	
-
-
-
-
 									}
 										
 									console.log("valores:   "+valores)
@@ -3058,8 +3066,8 @@
 									var value_max= _75percent + (1.5*interquartile_range)
 										console.log("Max Value:  "+value_max)									
 									
-									calcShowPercentiles(returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)	
-									container.layoutManager.eventHub.emit('attr4_value',attr4)		
+									calcShowPercentiles(returnData,attr5,attr40_2,_25percent,_50percent,_75percent,value_min,value_max)	
+									container.layoutManager.eventHub.emit('attr4_value',attr40_2)		
 								})
 							})
 						})
@@ -3130,17 +3138,24 @@
 								Plotly.newPlot('boxplot1', data, layout);
 
 								document.getElementById('boxplot1').on('plotly_click',function(data){
-									returnData=returnData.filter(d=>d[attr4_1]==data.points[0].x).filter(d=>d[attr40_2]==data.points[0].data.name)
-									container.layoutManager.eventHub.emit( 'datosvisibles', returnData );	
-									container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
-									document.getElementById("counter").innerHTML=""		
+
+									returnData=returnData.filter(d=>d[attr40_1]==data.points[0].x)
+									if(returnData.length!=0){
+										container.layoutManager.eventHub.emit( 'datosvisibles', returnData );	
+										container.layoutManager.eventHub.emit( 'redrawVisibleData', returnData );
+										document.getElementById("counter").innerHTML=""	
+									}
+									else{
+										alert('Your current filtered data does not have the value "'+ d[attr40_1]+'" of the attribute "'+attr40_1+'"')
+									}
+										
 															
 								})
 								d3.select("#attr5").on("change", function(){
 									var attr5 = this.value;
 									var valores=[];
 									returnData.map(function(d){								
-										valores.push(parseInt(d[attr4]))								
+										valores.push(parseInt(d[attr40_2]))								
 										valores.sort(function(a, b){return a-b});
 										console.log(valores)
 									})
@@ -3230,10 +3245,6 @@
 													document.getElementById("counter").innerHTML=""																	   
 												});	
 										})	
-
-
-
-
 									}
 										
 									console.log("valores:   "+valores)
@@ -3255,11 +3266,12 @@
 									var value_max= _75percent + (1.5*interquartile_range)
 										console.log("Max Value:  "+value_max)									
 									
-									calcShowPercentiles(returnData,attr5,attr4,_25percent,_50percent,_75percent,value_min,value_max)	
-									container.layoutManager.eventHub.emit('attr4_value',attr4)		
+									calcShowPercentiles(returnData,attr5,attr40_2,_25percent,_50percent,_75percent,value_min,value_max)	
+									container.layoutManager.eventHub.emit('attr4_value',attr40_2)		
 								})
 							})
 						})
+						
 
 					})
 				})
@@ -4235,8 +4247,13 @@
 
 								rows=rows.filter(d=>d[attr11]==data.points[0].label)	
 
-								container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-								container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );	
+								if(rows.length!=0){
+									container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+									container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+								}
+								else{
+									alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11+"'")
+								}	
 														
 							})
 						})
@@ -4275,6 +4292,46 @@
 
 							var data = [trace];
 							Plotly.newPlot('FreqHistogram', data,layout);
+
+							/*document.getElementById('FreqHistogram').on('plotly_click',function(data){
+
+								console.log(data.points[0].x)
+
+								var new_array_numbers=[]
+
+								
+								if(data.points[0].x>=1000){
+									for(var i=0;i<(data.points[0].x)+999;i++){
+										new_array_numbers()
+									}
+								}
+								else{
+									for(var i=0;i<(data.points[0].x)+10;i++){
+										new_array_numbers()
+									}
+								}
+								
+
+
+
+
+
+								var temp_rows=[]
+								for(var i=0;i<data.points[0].pointNumbers.length;i++){
+									console.log(attr11_8)
+									console.log(rows.filter(d=>Math.floor(d[attr11_8])==(data.points[0].pointNumbers)[i]))
+									temp_rows.push(rows.filter(d=>d[attr11_8]==(data.points[0].pointNumbers)[i]))
+								}								
+
+								if(temp_rows.length!=0){
+									container.layoutManager.eventHub.emit( 'datosvisibles', temp_rows );	
+									container.layoutManager.eventHub.emit( 'redrawVisibleData', temp_rows );
+								}
+								else{
+									alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_8+"'")
+								}	
+														
+							})*/
 						})
 
 
@@ -4359,8 +4416,13 @@
 
 											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+											}
+											else{
+												alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+											}														
 										})
 
 									})
@@ -4441,8 +4503,13 @@
 
 											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+											}
+											else{
+												alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+											}														
 										})
 									})
 								})									
@@ -4552,8 +4619,13 @@
 												console.log(data)
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)		
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}														
 											})
 										})
 									})
@@ -4662,8 +4734,13 @@
 												console.log(data)
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -4770,8 +4847,13 @@
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -4878,8 +4960,13 @@
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -4976,8 +5063,13 @@
 
 											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											if(rows.length!=0){
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+											}
+											else{
+												alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+											}															
 										})
 
 									})
@@ -5056,8 +5148,13 @@
 
 											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											if(rows.length!=0){
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+											}
+											else{
+												alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+											}															
 										})
 									})
 								})										 
@@ -5137,8 +5234,13 @@
 
 											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											if(rows.length!=0){
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+											}
+											else{
+												alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+											}															
 										})
 									})
 								})					
@@ -5215,8 +5317,13 @@
 
 											rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-											container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-											container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+											if(rows.length!=0){
+												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+											}
+											else{
+												alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+											}															
 										})
 									})
 								})						
@@ -5332,8 +5439,13 @@
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -5440,8 +5552,13 @@
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -5548,8 +5665,13 @@
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -5656,8 +5778,13 @@
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -5764,8 +5891,13 @@
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -5870,8 +6002,13 @@
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -5976,8 +6113,13 @@
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -6083,8 +6225,13 @@
 											document.getElementById('GroupedBarGraph').on('plotly_click',function(data){
 												rows=rows.filter(d=>d[attr11_2]==data.points[0].x)	
 
-												container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-												container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );															
+												if(rows.length!=0){
+													container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+													container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+												}
+												else{
+													alert("Your current filtered data does not have the value you selected to filter, of the attribute '"+attr11_2+"'")
+												}															
 											})
 										})
 									})
@@ -6213,8 +6360,13 @@
 
 									rows=rows.filter(d=>d[attr11_6]==data.points[0].x).filter(d=>d[attr11_7]==data.points[0].data.name)
 
-									container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-									container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );														
+									if(rows.length!=0){
+										container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+										container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+									}
+									else{
+										alert("Your current filtered data does not have the value you selected to filter")
+									}														
 								})						
 							})
 						})
@@ -6327,8 +6479,14 @@
 
 									rows=rows.filter(d=>d[attr11_6]==data.points[0].x).filter(d=>d[attr11_7]==data.points[0].data.name)
 
-									container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
-									container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );														
+									
+									if(rows.length!=0){
+										container.layoutManager.eventHub.emit( 'datosvisibles', rows );	
+										container.layoutManager.eventHub.emit( 'redrawVisibleData', rows );
+									}
+									else{
+										alert("Your current filtered data does not have the value you selected to filter")
+									}													
 								})						
 							})
 						})
